@@ -30,9 +30,6 @@ export const PongComponent = defineComponent({
   },
   onSet: (entity, component, json) => {
     if (!json) return
-    console.log("**************************  got json",json)
-    console.log("**************************  got json",json)
-    console.log("**************************  got json",json)
     if (matches.string.test(json.ball)) component.ball.set(json.ball)
     if (matches.string.test(json.paddle1)) component.paddle1.set(json.paddle1)
     if (matches.string.test(json.paddle2)) component.paddle2.set(json.paddle2)
@@ -61,7 +58,6 @@ export const PongComponent = defineComponent({
     const wall1 = UUIDComponent.entitiesByUUID[pong.wall1.value]
     const collision1 = useComponent(wall1, CollisionComponent )
     useEffect(() => {
-      console.log("******* hello collision detected wall 1")
       removeComponent(wall1, CollisionComponent)
     }, [collision1.size])
 
@@ -69,7 +65,6 @@ export const PongComponent = defineComponent({
     const wall2 = UUIDComponent.entitiesByUUID[pong.wall2.value]
     const collision2 = useComponent(wall2, CollisionComponent )
     useEffect(() => {
-      console.log("******* hello collision detected wall 2 ")
       removeComponent(wall2, CollisionComponent)
     }, [collision2.size])
     

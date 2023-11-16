@@ -25,7 +25,6 @@ export const PongComponentEditor: EditorComponentType = (props) => {
     const label = getComponent(entity, NameComponent)
     const value = getComponent(entity, UUIDComponent) as any as Entity
     if(!first) first = value
-    console.log("found ", label, value)
     return { label, value }
   })
 
@@ -101,6 +100,3 @@ export const PongComponentEditor: EditorComponentType = (props) => {
 }
 PongComponent.iconComponent = AlbumIcon
 
-function useTranslation(): { t: any } {
-  throw new Error('Function not implemented.')
-}

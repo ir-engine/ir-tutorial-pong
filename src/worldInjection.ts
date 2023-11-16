@@ -6,8 +6,12 @@ import { EngineState } from "@etherealengine/engine/src/ecs/classes/EngineState"
 import { startSystem } from "@etherealengine/engine/src/ecs/functions/SystemFunctions";
 import { SimulationSystemGroup } from "@etherealengine/engine/src/ecs/functions/EngineFunctions";
 
+import { TextComponent } from "./components/TextComponent";
+import { TextComponentEditor } from "./editors/TextComponentEditor";
+
 import { PongComponent } from "./components/PongComponent";
 import { PongComponentEditor } from "./editors/PongComponentEditor";
+
 import { PongSystem } from "./systems/PongSystem";
 
 export default async function worldInjection() {
@@ -15,6 +19,8 @@ export default async function worldInjection() {
     if (getState(EngineState).isEditing) {
       EntityNodeEditor.set(PongComponent, PongComponentEditor)
       ComponentShelfCategories.Misc.push(PongComponent)
+      EntityNodeEditor.set(TextComponent, TextComponentEditor)
+      ComponentShelfCategories.Misc.push(TextComponent)
     }
     startSystem(PongSystem, { after: SimulationSystemGroup })
   }
