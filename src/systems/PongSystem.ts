@@ -44,12 +44,10 @@ export const PongSystem = defineSystem({
       // monstrously brute force search for collisions related to this game
       for (const collisionEntity of query2()) {
         if(collisionEntity == wall1) {
-          console.log("hit wall1")
           score1text.text.set(`${collisions1++}`)
           //updateComponent(score1,TextComponent,{text:`${collisions1++}`})
         }
         if(collisionEntity == wall2) {
-          console.log("hit wall2")
           score2text.text.set(`${collisions2++}`)
           //updateComponent(score2,TextComponent,{text:`${collisions2++}`})
         }

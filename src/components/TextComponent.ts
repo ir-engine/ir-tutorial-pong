@@ -52,6 +52,7 @@ export const TextComponent = defineComponent({
     return {
       text: "",
       geometry: null! as Geometry,
+      mesh: null! as Mesh,
     }
   },
 
@@ -82,13 +83,20 @@ function TextReactor() {
   const transform = useComponent(entity, TransformComponent)
 
   const material = new MeshLambertMaterial()
-  const mesh = useState<Mesh>(new Mesh())
 
   const helper = (text = "hello") => {
     const loader = new FontLoader()
     let url = "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/helvetiker_regular.typeface.json"
     loader.load(url, function ( font ) {
-      const raw = new TextGeometry(text, {
+      if(textComponent.geometry.value) {
+        console.log("disposing")
+        textComponent.geometry.value.dispose()
+      }
+      if(textComponent.mesh && textComponent.mesh.value && textComponent.mesh.value.geometry) {
+        textComponent.mesh.value.geometry.dispose()
+        removeObjectFromGroup(entity, textComponent.mesh.value)
+      }
+      const geometry = new TextGeometry(text, {
         font: font,
         size: 80,
         height: 5,
@@ -99,39 +107,40 @@ function TextReactor() {
         bevelOffset: 0,
         bevelSegments: 5
       })
-      mesh.set(new Mesh(raw, material))
-      mesh.value.name = `${entity}-text-geometry`
-      mesh.value.visible = true
-      mesh.value.updateMatrixWorld(true)
-      setObjectLayers(mesh.value, ObjectLayers.Scene)
-      addObjectToGroup(entity, mesh.value)
-      if(textComponent.geometry.value) {
-        textComponent.geometry.value.dispose()
-      }
-      textComponent.geometry.set(raw)
+      textComponent.mesh.set(new Mesh(geometry, material))
+      textComponent.mesh.value.name = `${entity}-text-geometry`
+      textComponent.mesh.value.visible = true
+      textComponent.mesh.value.updateMatrixWorld(true)
+      setObjectLayers(textComponent.mesh.value, ObjectLayers.Scene)
+      addObjectToGroup(entity, textComponent.mesh.value)
+      textComponent.geometry.set(geometry)
+      console.log("created " + text)
     })
   }
 
   useEffect(() => {
     helper(textComponent.text.value)
     return () => {
-      removeObjectFromGroup(entity, mesh.value)
+      if(!textComponent.mesh.value) return
+      removeObjectFromGroup(entity, textComponent.mesh.value)
     }
   },[])
 
   // sync geometry with transform
   useEffect(() => {
-    mesh.position.value.copy(transform.position.value)
-    mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
-    mesh.scale.value.copy(transform.scale.value)
+    if(!textComponent.mesh.value) return
+    textComponent.mesh.position.value.copy(transform.position.value)
+    textComponent.mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
+    textComponent.mesh.scale.value.copy(transform.scale.value)
   }, [textComponent.geometry])
 
   // if text changes
   useEffect(() => {
     helper(textComponent.text.value)
-    mesh.position.value.copy(transform.position.value)
-    mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
-    mesh.scale.value.copy(transform.scale.value)
+    if(!textComponent.mesh.value) return
+    textComponent.mesh.position.value.copy(transform.position.value)
+    textComponent.mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
+    textComponent.mesh.scale.value.copy(transform.scale.value)
   }, [textComponent.text])
 
   return null
