@@ -244,4 +244,15 @@ other ideas
 - gravity, attractors, fans etc
 - larger smaller paddles
 
+
+todo nov 17
+
+- control polish: improve player pose detection to use mocap or xrstate input hands ... and also allow a bit of depth, and also need to orient the paddle on the playfield axis rather than hardcode the axis ... must still prevent paddle from hitting the back wall because that would self score ... probably also want to prevent the avatar from hitting their own goal net also.... or like better evaluate what is hitting the goal and make sure it is the ball only...
+- win polish: have some kind of winning effect
+- robot player
+- merge in my updated collision component pr
+- optionally capture the player camera
+- improve the scoreboard art - i had added a text3d component but only one player can read it because font glyphs are not invariant to mirroring... it could be done with art rather than visual numbers and then it would be readable by anybody in any direction...
+there is a lot of sloppy redundant code where work could be achieved programmatically instead of repeating work over and over
+
 */
