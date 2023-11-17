@@ -36,7 +36,7 @@ export const PongComponentEditor: EditorComponentType = (props) => {
     return { label, value }
   })
 
-  // @todo cleanup
+  // @todo manufacture this programmatically.
 
   const set1 = (args) => {
     pong.ball.set(args)
@@ -73,9 +73,24 @@ export const PongComponentEditor: EditorComponentType = (props) => {
     return commitProperty(PongComponent, 'score2') as any
   }
 
+  const set8 = (args) => {
+    pong.plate1.set(args)
+    return commitProperty(PongComponent, 'plate1') as any
+  }
+
+  const set9 = (args) => {
+    pong.plate2.set(args)
+    return commitProperty(PongComponent, 'plate2') as any
+  }
+
+  const set10 = (args) => {
+    pong.tilter.set(args)
+    return commitProperty(PongComponent, 'tilter') as any
+  }
+
 
   return <NodeEditor description={'Description'} {...props}>
-      <InputGroup name="Ball">
+      <InputGroup name="Ball" label="Ball">
         <SelectInput
           key="ball"
           options={entities}
@@ -83,7 +98,7 @@ export const PongComponentEditor: EditorComponentType = (props) => {
           onChange={set1}
         />
       </InputGroup>
-      <InputGroup name="Paddle1">
+      <InputGroup name="Paddle1" label="Paddle1">
         <SelectInput
           key="paddle1"
           options={entities}
@@ -91,7 +106,7 @@ export const PongComponentEditor: EditorComponentType = (props) => {
           onChange={set2}
         />
       </InputGroup>
-      <InputGroup name="Paddle2">
+      <InputGroup name="Paddle2" label="Paddle2">
         <SelectInput
           key="paddle2"
           options={entities}
@@ -99,7 +114,7 @@ export const PongComponentEditor: EditorComponentType = (props) => {
           onChange={set3}
         />
       </InputGroup>
-      <InputGroup name="Wall1">
+      <InputGroup name="Wall1" label="Wall1">
         <SelectInput
           key="wall1"
           options={entities}
@@ -107,7 +122,7 @@ export const PongComponentEditor: EditorComponentType = (props) => {
           onChange={set4}
         />
       </InputGroup>
-      <InputGroup name="Wall2">
+      <InputGroup name="Wall2" label="Wall2">
         <SelectInput
           key="wall2"
           options={entities}
@@ -115,7 +130,7 @@ export const PongComponentEditor: EditorComponentType = (props) => {
           onChange={set5}
         />
       </InputGroup>
-      <InputGroup name="Score1">
+      <InputGroup name="Score1" label="Score1">
         <SelectInput
           key="score1"
           options={scoreboards}
@@ -123,12 +138,36 @@ export const PongComponentEditor: EditorComponentType = (props) => {
           onChange={set6}
         />
       </InputGroup>
-      <InputGroup name="Score2">
+      <InputGroup name="Score2" label="Score2">
         <SelectInput
           key="score2"
           options={scoreboards}
           value={pong.score2.value || first}
           onChange={set7}
+        />
+      </InputGroup>
+      <InputGroup name="Plate1" label="Plate1">
+        <SelectInput
+          key="plate1"
+          options={entities}
+          value={pong.plate1.value || first}
+          onChange={set8}
+        />
+      </InputGroup>
+      <InputGroup name="Plate2" label="Plate2">
+        <SelectInput
+          key="plate2"
+          options={entities}
+          value={pong.plate2.value || first}
+          onChange={set9}
+        />
+      </InputGroup>
+      <InputGroup name="Tilter" label="Tilter">
+        <SelectInput
+          key="tilter"
+          options={entities}
+          value={pong.tilter.value || first}
+          onChange={set10}
         />
       </InputGroup>
     </NodeEditor>

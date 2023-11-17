@@ -23,11 +23,18 @@ export const PongComponent = defineComponent({
       wall2: "" as EntityUUID,
       score1: "" as EntityUUID,
       score2: "" as EntityUUID,
+      plate1: "" as EntityUUID,
+      plate2: "" as EntityUUID,
+      tilter: "" as EntityUUID,
+      player1: "" as EntityUUID,
+      player2: "" as EntityUUID,
       collisions1: 0,
       collisions2: 0,
+      mode: 0,
     }
   },
   onSet: (entity, component, json) => {
+    // @todo do this programmatically
     if (!json) return
     if (matches.string.test(json.ball)) component.ball.set(json.ball)
     if (matches.string.test(json.paddle1)) component.paddle1.set(json.paddle1)
@@ -36,6 +43,9 @@ export const PongComponent = defineComponent({
     if (matches.string.test(json.wall2)) component.wall2.set(json.wall2)
     if (matches.string.test(json.score1)) component.score1.set(json.score1)
     if (matches.string.test(json.score2)) component.score2.set(json.score2)
+    if (matches.string.test(json.plate1)) component.plate1.set(json.plate1)
+    if (matches.string.test(json.plate2)) component.plate2.set(json.plate2)
+    if (matches.string.test(json.tilter)) component.tilter.set(json.tilter)
   },
   toJSON: (entity, component) => {
     const state = {
@@ -45,7 +55,10 @@ export const PongComponent = defineComponent({
       wall1: component.wall1.value,
       wall2: component.wall2.value,
       score1: component.score1.value,
-      score2: component.score2.value
+      score2: component.score2.value,
+      plate1: component.score1.value,
+      plate2: component.score1.value,
+      tilter: component.score2.value,
     }
     return state
   },
@@ -57,14 +70,21 @@ export const PongComponent = defineComponent({
     const entity = useEntityContext()
     const pong = useComponent(entity, PongComponent)
 
+    return null
+  }
+})
+
+
+
+/*
+
+Was debating doing this here but this is not synchronous with physics
+
     // hit wall1?
     const wall1 = UUIDComponent.entitiesByUUID[pong.wall1.value]
     const collision1 = useOptionalComponent(wall1, CollisionComponent )
 
-    // this is a way to detect a collision
-    // it is however not synchronous and in some use cases would be a problem
-    // in our case it is ok because we intend to reset the game state on a collision
-
+    // this is a way to detect a collision - it is however not synchronous and will be laggy
     useEffect(() => {
       //removeComponent(wall1, CollisionComponent)
       const score1 = UUIDComponent.entitiesByUUID[pong.score1.value]
@@ -85,12 +105,4 @@ export const PongComponent = defineComponent({
         text.text.set(`${collisions2++}`)
       }
     }, [collision2])
-
-    return null
-  }
-})
-
-function useMutableComponent(score1: Entity, TextComponent: { name: string; jsonID: string; onInit: (this: import("bitecs").ComponentType<Record<string, any>>, entity: import("@etherealengine/engine/src/ecs/classes/Entity").Entity) => { text: string; geometry: import("@etherealengine/engine/src/assets/constants/Geometry").Geometry; mesh: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap> }; toJSON: (entity: import("@etherealengine/engine/src/ecs/classes/Entity").Entity, component: import("@hookstate/core").State<{ text: string; geometry: import("@etherealengine/engine/src/assets/constants/Geometry").Geometry; mesh: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap> }>) => { text: string }; onSet: (entity: import("@etherealengine/engine/src/ecs/classes/Entity").Entity, component: import("@hookstate/core").State<{ text: string; geometry: import("@etherealengine/engine/src/assets/constants/Geometry").Geometry; mesh: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap> }>, json: Partial<{ text: string }> | undefined) => void; onRemove: (entity: import("@etherealengine/engine/src/ecs/classes/Entity").Entity, component: import("@hookstate/core").State<{ text: string; geometry: import("@etherealengine/engine/src/assets/constants/Geometry").Geometry; mesh: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap> }>) => void; reactor: () => null } & import("bitecs").ComponentType<Record<string, any>> & import("@etherealengine/engine/src/ecs/functions/ComponentFunctions").Component<{ text: string; geometry: import("@etherealengine/engine/src/assets/constants/Geometry").Geometry; mesh: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap> }, Record<string, any>, { text: string }, Partial<{ text: string }>, ""> & { _TYPE: { text: string; geometry: import("@etherealengine/engine/src/assets/constants/Geometry").Geometry; mesh: import("three").Mesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap> } }) {
-  throw new Error("Function not implemented.")
-}
-
+*/
