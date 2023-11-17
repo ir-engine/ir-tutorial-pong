@@ -6,27 +6,37 @@ import NodeEditor from '@etherealengine/editor/src/components/properties/NodeEdi
 import InputGroup from '@etherealengine/editor/src/components/inputs/InputGroup'
 import { ColorInput } from '@etherealengine/editor/src/components/inputs/ColorInput'
 import AlbumIcon from '@mui/icons-material/Album';
-import NumericInput from '@etherealengine/editor/src/components/inputs/NumericInput'
-import Vector3Input from '@etherealengine/editor/src/components/inputs/Vector3Input'
 
-import { PongComponent } from '../components/PongComponent'
 import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
 import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
 import SelectInput from '@etherealengine/editor/src/components/inputs/SelectInput'
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
 
+import { PongComponent } from '../components/PongComponent'
+import { TextComponent } from '../components/TextComponent'
+
 export const PongComponentEditor: EditorComponentType = (props) => {
 
   const pong = useComponent(props.entity, PongComponent)
 
   let first = 0 as Entity
+
   const entities = useQuery([ColliderComponent]).map((entity) => {
     const label = getComponent(entity, NameComponent)
     const value = getComponent(entity, UUIDComponent) as any as Entity
     if(!first) first = value
     return { label, value }
   })
+
+  const scoreboards = useQuery([TextComponent]).map((entity) => {
+    const label = getComponent(entity, NameComponent)
+    const value = getComponent(entity, UUIDComponent) as any as Entity
+    if(!first) first = value
+    return { label, value }
+  })
+
+  // @todo cleanup
 
   const set1 = (args) => {
     pong.ball.set(args)
@@ -49,9 +59,18 @@ export const PongComponentEditor: EditorComponentType = (props) => {
   }
 
   const set5 = (args) => {
-    console.log("doing work setting  to ", args)
     pong.wall2.set(args)
     return commitProperty(PongComponent, 'wall2') as any
+  }
+
+  const set6 = (args) => {
+    pong.score1.set(args)
+    return commitProperty(PongComponent, 'score1') as any
+  }
+
+  const set7 = (args) => {
+    pong.score2.set(args)
+    return commitProperty(PongComponent, 'score2') as any
   }
 
 
@@ -94,6 +113,22 @@ export const PongComponentEditor: EditorComponentType = (props) => {
           options={entities}
           value={pong.wall2.value || first}
           onChange={set5}
+        />
+      </InputGroup>
+      <InputGroup name="Score1">
+        <SelectInput
+          key="score1"
+          options={scoreboards}
+          value={pong.score1.value || first}
+          onChange={set6}
+        />
+      </InputGroup>
+      <InputGroup name="Score2">
+        <SelectInput
+          key="score2"
+          options={scoreboards}
+          value={pong.score2.value || first}
+          onChange={set7}
         />
       </InputGroup>
     </NodeEditor>

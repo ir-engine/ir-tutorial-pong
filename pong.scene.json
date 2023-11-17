@@ -1498,7 +1498,9 @@
             "paddle1": "0a3dc842-d789-4ce9-a07a-49db5a44381f",
             "paddle2": "a118a168-6434-46a3-bd21-2e15e5ce41c5",
             "wall1": "5a4f580f-8bf5-4112-96a4-fa16e83c3a70",
-            "wall2": "e950debf-e4f6-4451-9fad-2601e902f624"
+            "wall2": "e950debf-e4f6-4451-9fad-2601e902f624",
+            "score1": "e1b552de-c601-488f-8725-a0d28ef5249a",
+            "score2": "c5723371-2332-4b04-a08c-ba253eadb0be"
           }
         },
         {
@@ -1536,7 +1538,7 @@
         {
           "name": "text-geometry",
           "props": {
-            "text": ""
+            "text": "0"
           }
         },
         {
@@ -1563,6 +1565,25 @@
               "z": 0.030000000000000027
             }
           }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
         }
       ],
       "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
@@ -1574,7 +1595,7 @@
         {
           "name": "text-geometry",
           "props": {
-            "text": ""
+            "text": "0"
           }
         },
         {
@@ -1600,6 +1621,25 @@
               "y": 0.030000000000000027,
               "z": 0.030000000000000027
             }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
           }
         }
       ],
