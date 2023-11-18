@@ -89,7 +89,6 @@ function TextReactor() {
     let url = "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/helvetiker_regular.typeface.json"
     loader.load(url, function ( font ) {
       if(textComponent.geometry.value) {
-        console.log("disposing")
         textComponent.geometry.value.dispose()
       }
       if(textComponent.mesh && textComponent.mesh.value && textComponent.mesh.value.geometry) {
@@ -114,7 +113,6 @@ function TextReactor() {
       setObjectLayers(textComponent.mesh.value, ObjectLayers.Scene)
       addObjectToGroup(entity, textComponent.mesh.value)
       textComponent.geometry.set(geometry)
-      console.log("created " + text)
     })
   }
 

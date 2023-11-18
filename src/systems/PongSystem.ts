@@ -1,10 +1,10 @@
-import { defineQuery, getComponent, getMutableComponent, getOptionalComponent, removeComponent, updateComponent, useOptionalComponent } from "@etherealengine/engine/src/ecs/functions/ComponentFunctions";
+import { componentJsonDefaults, defineQuery, getComponent, getMutableComponent, getOptionalComponent, updateComponent, useOptionalComponent } from "@etherealengine/engine/src/ecs/functions/ComponentFunctions";
 import { defineSystem } from "@etherealengine/engine/src/ecs/functions/SystemFunctions";
 import { PongComponent } from "../components/PongComponent";
 import { LocalTransformComponent, TransformComponent, TransformComponentType } from "@etherealengine/engine/src/transform/components/TransformComponent";
 import { NO_PROXY, getState } from "@etherealengine/hyperflux";
 import { EngineState } from "@etherealengine/engine/src/ecs/classes/EngineState";
-import { Vector3 } from "three";
+import { Quaternion, Vector3 } from "three";
 import { CollisionComponent } from "@etherealengine/engine/src/physics/components/CollisionComponent";
 import { UUIDComponent } from "@etherealengine/engine/src/scene/components/UUIDComponent";
 import { Entity } from "@etherealengine/engine/src/ecs/classes/Entity";
@@ -32,6 +32,9 @@ export const PongSystem = defineSystem({
 
     const play = (pongEntity) => {
 
+      // find parts
+      // @todo these could be pulled in magically by name also
+
       const pong = getComponent(pongEntity,PongComponent)
       const pongMutable = getMutableComponent(pongEntity,PongComponent)
       const ball = UUIDComponent.entitiesByUUID[pong.ball]
@@ -44,13 +47,14 @@ export const PongSystem = defineSystem({
       const plate1 = UUIDComponent.entitiesByUUID[pong.plate1]
       const plate2 = UUIDComponent.entitiesByUUID[pong.plate2]
       const tilter = UUIDComponent.entitiesByUUID[pong.tilter]
-      let player1 = 0 as Entity
-      let player2 = 0 as Entity
 
+      // expect at least these parts to be present
       if(!ball || !paddle1 || !paddle2 || !wall1 || !wall2 || !score1 || !score2 || !plate1 || !plate2 || !tilter) {
         console.warn("pong: game is not wired up")
         return
       }
+
+      // sanity check
       let score1text = getMutableComponent(score1,TextComponent)
       let score2text = getMutableComponent(score2,TextComponent)
       if(!score1text || !score2text) {
@@ -58,9 +62,15 @@ export const PongSystem = defineSystem({
         return
       }
 
+      // see if there are players on the plates
+      // @todo this could be improved; will mess up if > 2 players
       const c1 = getComponent(plate1,CollisionComponent)
       const c2 = getComponent(plate2,CollisionComponent)
-      const participants = (c1 && c1.size) || (c2 && c2.size) ? true : false
+      const player1 = c1 && c1.size ? c1.entries().next().value[0] : 0 as Entity
+      const player2 = c2 && c2.size ? c2.entries().next().value[0] : 0 as Entity
+
+      const participants = player1 || player2
+
       let winner = pong.collisions1 > 10 || pong.collisions2 > 10 ? true : false
 
       //////////////////////////////////////////////////////////////////////////
@@ -77,7 +87,7 @@ export const PongSystem = defineSystem({
             pongMutable.collisions1.set( 0 )
             pongMutable.collisions2.set( 0 )
             score1text.text.set(`${pong.collisions1}`)
-            score1text.text.set(`${pong.collisions2}`)
+            score2text.text.set(`${pong.collisions2}`)
             winner = false
           }
           break
@@ -94,6 +104,19 @@ export const PongSystem = defineSystem({
       // update physics
       //
 
+      // rotate the ball drop randomizer always
+      // @todo unsure if this whole idea is any good
+      {
+        const rotate1 = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), -Math.PI / 32)
+        const rotate2 = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 32)
+        const rotate3 = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 32)
+        const tiltTransform = getComponent(tilter,TransformComponent)
+        tiltTransform?.rotation.multiply(rotate1)
+        tiltTransform?.rotation.multiply(rotate2)
+        tiltTransform?.rotation.multiply(rotate3)
+      }
+
+      // don't run other stuff if no game is up
       if(!participants || winner) {
         // @todo rather than thrashing physics I'd set the collider to static
         const transform = getComponent(ball,TransformComponent)
@@ -105,13 +128,29 @@ export const PongSystem = defineSystem({
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      // move puck1
-      if(c1 && c1.size > 0) {
-        const player1 = c1.entries().next().value[0]
+      // move paddles
+
+      const move_paddle = (player,paddle) => {
+
+        if(!player) {
+          // move via a robot
+          return
+        }
 
         /*
-        // unsure about this
-        // this is one way to get an input
+        // search for the hand by brute force - not useful approach
+        const hands :Array<TransformComponentType> = []
+        for (const entity of handQuery()) {
+          const name = getComponent(entity,NameComponent)
+          if(!name) continue
+          const transform = getComponent(entity,TransformComponent)
+          if(!transform) continue
+          hands.push(transform)
+        }
+        */
+
+        /*
+        // this is one way to get an input - maybe use later
         const preferredInputSource = XRState.getPreferredInputSource()
         if (preferredInputSource) {
           const xrFrame = getState(XRState).xrFrame
@@ -127,7 +166,7 @@ export const PongSystem = defineSystem({
         }
         */
 
-        // this is another way - just peek at the avatar...
+        // find avatar from engine - not useful
         //const rig = getOptionalComponent(Engine.instance.localClientEntity, AvatarRigComponent)
         //if (rig) {
           //const handPose = rig.rig.rightHand.node
@@ -139,89 +178,48 @@ export const PongSystem = defineSystem({
         // paddle1.targetKinematicPosition.copy(body.position)
         // paddle1.body.setTranslation(body.position, true)
 
-        // this is another way, just use the player body for now
+        // use the whole player body for now
+        const transformPlayer = getComponent(player,TransformComponent)
+        const transformPaddle = getMutableComponent(paddle,TransformComponent)
 
-        const transformPlayer = getComponent(player1,TransformComponent)
-        const transformPaddle = getMutableComponent(paddle1,TransformComponent)
+        // @todo - we must compute frame of reference
+        // - transform player into pong frame of reference @todo
+        // - place paddle forward of player by some amount; facing the center
 
         const xyz = new Vector3(
           transformPlayer.position.x,
           transformPlayer.position.y + 1.0,
-          transformPaddle.position.z.value
+          transformPlayer.position.z > 0 ? (transformPlayer.position.z - 4.0) : (transformPlayer.position.z + 4.0)
         )
 
         transformPaddle.position.set(xyz)
-        const rigid = getComponent(paddle1, RigidBodyComponent)
-        if (rigid) {
-          rigid.targetKinematicPosition.copy(xyz)
-          rigid.body.setTranslation(xyz, true)
-        } else {
+        //const rigid = getComponent(paddle, RigidBodyComponent)
+        //if (rigid) {
+        //  rigid.targetKinematicPosition.copy(xyz)
+        //  rigid.body.setTranslation(xyz, true)
+        //}
+      }
+    
+      move_paddle(player1,paddle1)
+      move_paddle(player2,paddle2)
+
+      // if a ball hits a goal then count scores and reset the ball
+      const resolve_goals = (wall,score,counter) => {
+        const collidants = getComponent(wall,CollisionComponent)
+        if(!collidants || !collidants.size) return
+        for (let [key, value] of collidants) {
+          if(key != ball) continue
+          counter.set( counter.value + 1 )
+          score.text.set(`${counter.value}`)
+          const transform = getComponent(ball,TransformComponent)
+          transform?.position.set(0,10,0)
+          return
         }
-
-        /*
-
-        paddle needs some of this?
-
-    const gripBodyDesc = RigidBodyDesc.kinematicPositionBased()
-    gripColliderDesc.setCollisionGroups(0)
-    const physicsWorld = getState(PhysicsState).physicsWorld
-    const gripBody = Physics.createRigidBody(gripBodyEntity, physicsWorld, gripBodyDesc, [gripColliderDesc])
-    const gripBodyComponent = getComponent(gripBodyEntity, RigidBodyComponent)
-    gripBodyComponent.targetKinematicLerpMultiplier = 40
-
-        */
-
-
-        /*
-        // search for the hand by brute force
-        const hands :Array<TransformComponentType> = []
-        for (const entity of handQuery()) {
-          const name = getComponent(entity,NameComponent)
-          if(!name) continue
-          const transform = getComponent(entity,TransformComponent)
-          if(!transform) continue
-          hands.push(transform)
-        }
-        */
-
-      } else {
-        // - move puck robotically
       }
 
-      ///////////////////////////////////////////////////////////////////////////
-      // move puck2
-      if(c2 && c2.size > 0) {
-        const entity = c2.entries().next().value[0]
-      } else {
-        // - move puck robotically
-      }
+      resolve_goals(wall1,score1text,pongMutable.collisions1)
+      resolve_goals(wall2,score2text,pongMutable.collisions2)
 
-      // re-drop the ball?
-      let drop = false
-
-      // if hit an active wall then mark collision and reset ball
-      // @todo check for enter specifically, and perhaps make sure it is the ball!
-      if(getComponent(wall1,CollisionComponent)) {
-        removeComponent(wall1, CollisionComponent)
-        pongMutable.collisions1.set( pong.collisions1 + 1 )
-        score1text.text.set(`${pong.collisions1}`)
-        drop = true
-      }
-
-      // if hit an active wall then mark collision and reset ball
-      // @todo check for enter specifically, and perhaps make sure it is the ball!
-      if(getComponent(wall2,CollisionComponent)) {
-        removeComponent(wall2, CollisionComponent)
-        pongMutable.collisions2.set( pong.collisions2 + 1 )
-        score1text.text.set(`${pong.collisions2}`)
-        drop = true
-      }
-
-      // reset the puck?
-      if(drop) {
-        const transform = getComponent(ball,TransformComponent)
-        transform?.position.set(0,10,0)
-      }
     }
 
     //
@@ -236,23 +234,30 @@ export const PongSystem = defineSystem({
 
 /*
 
-other ideas
+todo nov 17
+
+valuable to improve
+
+- use player mocap if avail; or use xrstate
+- rotate frame of reference for player to allow for arbitrary pong table location
+- merge in collision pf
+
+minor
+
+- perhaps time out exit from game rather than strictly stopping game on exit
+- perhaps some win effect
+- optionally a robot
+- optionally capture the player camera
+- optionally improve scoreboard art to be not arabic numerals but rather just dots
+- improve the spinner to be more fair
+- it is hard to see the game state from a first person view
+
+future
 
 - different shaped volumes
 - multiball
 - obstacles
 - gravity, attractors, fans etc
 - larger smaller paddles
-
-
-todo nov 17
-
-- control polish: improve player pose detection to use mocap or xrstate input hands ... and also allow a bit of depth, and also need to orient the paddle on the playfield axis rather than hardcode the axis ... must still prevent paddle from hitting the back wall because that would self score ... probably also want to prevent the avatar from hitting their own goal net also.... or like better evaluate what is hitting the goal and make sure it is the ball only...
-- win polish: have some kind of winning effect
-- robot player
-- merge in my updated collision component pr
-- optionally capture the player camera
-- improve the scoreboard art - i had added a text3d component but only one player can read it because font glyphs are not invariant to mirroring... it could be done with art rather than visual numbers and then it would be readable by anybody in any direction...
-there is a lot of sloppy redundant code where work could be achieved programmatically instead of repeating work over and over
 
 */

@@ -927,7 +927,7 @@
         {
           "name": "collider",
           "props": {
-            "bodyType": 1,
+            "bodyType": 2,
             "shapeType": 1,
             "isTrigger": false,
             "removeMesh": false,
@@ -956,15 +956,25 @@
               "z": 0
             },
             "rotation": {
-              "x": 0.3420201433256687,
-              "y": 0,
-              "z": 0,
-              "w": 0.9396926207859084
+              "x": 0.0870507598385479,
+              "y": -0.04888095701266627,
+              "z": -0.004276529600906315,
+              "w": 0.9949947379497189
             },
             "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+              "x": 0.3999999999999999,
+              "y": 0.39999999999999986,
+              "z": 0.39999999999999986
+            }
+          }
+        },
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 8,
+            "geometryParams": {
+              "radius": 1,
+              "detail": 0
             }
           }
         }
