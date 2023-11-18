@@ -20,9 +20,6 @@ import { Engine } from "@etherealengine/engine/src/ecs/classes/Engine";
 import { AvatarRigComponent } from "@etherealengine/engine/src/avatar/components/AvatarAnimationComponent";
 import { AvatarInputSystem } from "@etherealengine/engine/src/avatar/systems/AvatarInputSystem";
 
-const pongQuery = defineQuery([PongComponent])
-const handQuery = defineQuery([AvatarIKTargetComponent])
-
 //
 // helper to rotate a tilter effect to drop ball somewhat randomly
 //
@@ -103,12 +100,12 @@ const move_paddle = (player : Entity ,paddle : Entity ) => {
     transformPlayer.position.z > 0 ? (transformPlayer.position.z - 4.0) : (transformPlayer.position.z + 4.0)
   )
 
-  transformPaddle.position.set(xyz)
-  //const rigid = getComponent(paddle, RigidBodyComponent)
-  //if (rigid) {
-  //  rigid.targetKinematicPosition.copy(xyz)
-  //  rigid.body.setTranslation(xyz, true)
-  //}
+  //transformPaddle.position.set(xyz)
+  const rigid = getComponent(paddle, RigidBodyComponent)
+  if (rigid) {
+    rigid.targetKinematicPosition.copy(xyz)
+    rigid.body.setTranslation(xyz, true)
+  }
 }
 
 //
@@ -186,6 +183,7 @@ const play = (pongEntity) => {
     case 0:
       // allow a new session to start once players show up; don't reset display till then
       if(participants) {
+        console.log("pong: starting game")
         pongMutable.mode.set(1)
         pongMutable.collisions1.set( 0 )
         pongMutable.collisions2.set( 0 )
@@ -231,6 +229,8 @@ const play = (pongEntity) => {
   return null
 }
 
+const pongQuery = defineQuery([PongComponent])
+
 export const PongSystem = defineSystem({
   uuid: "PongSystem",
   execute: () => {
@@ -239,7 +239,7 @@ export const PongSystem = defineSystem({
     }
   },
   insert: { after: AvatarInputSystem },
-}
+})
 
 
 /*
@@ -251,6 +251,10 @@ valuable to improve
 - use player mocap if avail; or use xrstate
 - rotate frame of reference for player to allow for arbitrary pong table location
 - merge in collision pf
+- must use rigid body positioner or else physics blow up
+- ball can get out
+- paddle size is off
+- move paddle forward of player more
 
 minor
 
