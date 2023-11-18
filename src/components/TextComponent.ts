@@ -1,4 +1,3 @@
-
 /*
 CPAL-1.0 License
 
@@ -24,25 +23,19 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import {
-  BoxGeometry,
-  Euler, Vector3,
-  Mesh,
-  MeshLambertMaterial,
-} from 'three'
+import { Euler, Mesh, MeshLambertMaterial } from 'three'
 
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader'
 
-import { useEffect } from 'react'
-import { defineComponent, useComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
 import { Geometry } from '@etherealengine/engine/src/assets/constants/Geometry'
+import { defineComponent, useComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
 import { useEntityContext } from '@etherealengine/engine/src/ecs/functions/EntityFunctions'
-import { NO_PROXY, useState } from '@etherealengine/hyperflux'
-import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
+import { addObjectToGroup, removeObjectFromGroup } from '@etherealengine/engine/src/scene/components/GroupComponent'
 import { ObjectLayers } from '@etherealengine/engine/src/scene/constants/ObjectLayers'
 import { setObjectLayers } from '@etherealengine/engine/src/scene/functions/setObjectLayers'
-import { addObjectToGroup, removeObjectFromGroup } from '@etherealengine/engine/src/scene/components/GroupComponent'
+import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
+import { useEffect } from 'react'
 
 export const TextComponent = defineComponent({
   name: 'TextComponent',
@@ -50,9 +43,9 @@ export const TextComponent = defineComponent({
 
   onInit: (entity) => {
     return {
-      text: "",
+      text: '',
       geometry: null! as Geometry,
-      mesh: null! as Mesh,
+      mesh: null! as Mesh
     }
   },
 
@@ -64,7 +57,7 @@ export const TextComponent = defineComponent({
 
   onSet: (entity, component, json) => {
     if (!json) return
-    if(json.text) component.text.set(json.text)
+    if (json.text) component.text.set(json.text)
   },
 
   onRemove: (entity, component) => {
@@ -77,21 +70,20 @@ export const TextComponent = defineComponent({
 })
 
 function TextReactor() {
-
   const entity = useEntityContext()
   const textComponent = useComponent(entity, TextComponent)
   const transform = useComponent(entity, TransformComponent)
 
   const material = new MeshLambertMaterial()
 
-  const helper = (text = "hello") => {
+  const helper = (text = 'hello') => {
     const loader = new FontLoader()
-    let url = "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/helvetiker_regular.typeface.json"
-    loader.load(url, function ( font ) {
-      if(textComponent.geometry.value) {
+    let url = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/helvetiker_regular.typeface.json'
+    loader.load(url, function (font) {
+      if (textComponent.geometry.value) {
         textComponent.geometry.value.dispose()
       }
-      if(textComponent.mesh && textComponent.mesh.value && textComponent.mesh.value.geometry) {
+      if (textComponent.mesh && textComponent.mesh.value && textComponent.mesh.value.geometry) {
         textComponent.mesh.value.geometry.dispose()
         removeObjectFromGroup(entity, textComponent.mesh.value)
       }
@@ -119,14 +111,14 @@ function TextReactor() {
   useEffect(() => {
     helper(textComponent.text.value)
     return () => {
-      if(!textComponent.mesh.value) return
+      if (!textComponent.mesh.value) return
       removeObjectFromGroup(entity, textComponent.mesh.value)
     }
-  },[])
+  }, [])
 
   // sync geometry with transform
   useEffect(() => {
-    if(!textComponent.mesh.value) return
+    if (!textComponent.mesh.value) return
     textComponent.mesh.position.value.copy(transform.position.value)
     textComponent.mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
     textComponent.mesh.scale.value.copy(transform.scale.value)
@@ -135,7 +127,7 @@ function TextReactor() {
   // if text changes
   useEffect(() => {
     helper(textComponent.text.value)
-    if(!textComponent.mesh.value) return
+    if (!textComponent.mesh.value) return
     textComponent.mesh.position.value.copy(transform.position.value)
     textComponent.mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
     textComponent.mesh.scale.value.copy(transform.scale.value)
@@ -143,6 +135,3 @@ function TextReactor() {
 
   return null
 }
-
-
-

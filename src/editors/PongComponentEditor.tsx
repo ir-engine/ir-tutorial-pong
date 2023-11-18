@@ -1,23 +1,21 @@
 import React from 'react'
 
-import { EditorComponentType, commitProperty, updateProperty } from '@etherealengine/editor/src/components/properties/Util'
-import { getComponent, useComponent, useQuery } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
-import NodeEditor from '@etherealengine/editor/src/components/properties/NodeEditor'
 import InputGroup from '@etherealengine/editor/src/components/inputs/InputGroup'
-import { ColorInput } from '@etherealengine/editor/src/components/inputs/ColorInput'
-import AlbumIcon from '@mui/icons-material/Album';
+import NodeEditor from '@etherealengine/editor/src/components/properties/NodeEditor'
+import { EditorComponentType, commitProperty } from '@etherealengine/editor/src/components/properties/Util'
+import { getComponent, useComponent, useQuery } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import AlbumIcon from '@mui/icons-material/Album'
 
+import SelectInput from '@etherealengine/editor/src/components/inputs/SelectInput'
+import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
 import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
 import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
-import SelectInput from '@etherealengine/editor/src/components/inputs/SelectInput'
-import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
 
 import { PongComponent } from '../components/PongComponent'
 import { TextComponent } from '../components/TextComponent'
 
 export const PongComponentEditor: EditorComponentType = (props) => {
-
   const pong = useComponent(props.entity, PongComponent)
 
   let first = 0 as Entity
@@ -25,14 +23,14 @@ export const PongComponentEditor: EditorComponentType = (props) => {
   const entities = useQuery([ColliderComponent]).map((entity) => {
     const label = getComponent(entity, NameComponent)
     const value = getComponent(entity, UUIDComponent) as any as Entity
-    if(!first) first = value
+    if (!first) first = value
     return { label, value }
   })
 
   const scoreboards = useQuery([TextComponent]).map((entity) => {
     const label = getComponent(entity, NameComponent)
     const value = getComponent(entity, UUIDComponent) as any as Entity
-    if(!first) first = value
+    if (!first) first = value
     return { label, value }
   })
 
@@ -88,89 +86,39 @@ export const PongComponentEditor: EditorComponentType = (props) => {
     return commitProperty(PongComponent, 'tilter') as any
   }
 
-
-  return <NodeEditor description={'Description'} {...props}>
+  return (
+    <NodeEditor description={'Description'} {...props}>
       <InputGroup name="Ball" label="Ball">
-        <SelectInput
-          key="ball"
-          options={entities}
-          value={pong.ball.value || first}
-          onChange={set1}
-        />
+        <SelectInput key="ball" options={entities} value={pong.ball.value || first} onChange={set1} />
       </InputGroup>
       <InputGroup name="Paddle1" label="Paddle1">
-        <SelectInput
-          key="paddle1"
-          options={entities}
-          value={pong.paddle1.value || first}
-          onChange={set2}
-        />
+        <SelectInput key="paddle1" options={entities} value={pong.paddle1.value || first} onChange={set2} />
       </InputGroup>
       <InputGroup name="Paddle2" label="Paddle2">
-        <SelectInput
-          key="paddle2"
-          options={entities}
-          value={pong.paddle2.value || first}
-          onChange={set3}
-        />
+        <SelectInput key="paddle2" options={entities} value={pong.paddle2.value || first} onChange={set3} />
       </InputGroup>
       <InputGroup name="Wall1" label="Wall1">
-        <SelectInput
-          key="wall1"
-          options={entities}
-          value={pong.wall1.value || first}
-          onChange={set4}
-        />
+        <SelectInput key="wall1" options={entities} value={pong.wall1.value || first} onChange={set4} />
       </InputGroup>
       <InputGroup name="Wall2" label="Wall2">
-        <SelectInput
-          key="wall2"
-          options={entities}
-          value={pong.wall2.value || first}
-          onChange={set5}
-        />
+        <SelectInput key="wall2" options={entities} value={pong.wall2.value || first} onChange={set5} />
       </InputGroup>
       <InputGroup name="Score1" label="Score1">
-        <SelectInput
-          key="score1"
-          options={scoreboards}
-          value={pong.score1.value || first}
-          onChange={set6}
-        />
+        <SelectInput key="score1" options={scoreboards} value={pong.score1.value || first} onChange={set6} />
       </InputGroup>
       <InputGroup name="Score2" label="Score2">
-        <SelectInput
-          key="score2"
-          options={scoreboards}
-          value={pong.score2.value || first}
-          onChange={set7}
-        />
+        <SelectInput key="score2" options={scoreboards} value={pong.score2.value || first} onChange={set7} />
       </InputGroup>
       <InputGroup name="Plate1" label="Plate1">
-        <SelectInput
-          key="plate1"
-          options={entities}
-          value={pong.plate1.value || first}
-          onChange={set8}
-        />
+        <SelectInput key="plate1" options={entities} value={pong.plate1.value || first} onChange={set8} />
       </InputGroup>
       <InputGroup name="Plate2" label="Plate2">
-        <SelectInput
-          key="plate2"
-          options={entities}
-          value={pong.plate2.value || first}
-          onChange={set9}
-        />
+        <SelectInput key="plate2" options={entities} value={pong.plate2.value || first} onChange={set9} />
       </InputGroup>
       <InputGroup name="Tilter" label="Tilter">
-        <SelectInput
-          key="tilter"
-          options={entities}
-          value={pong.tilter.value || first}
-          onChange={set10}
-        />
+        <SelectInput key="tilter" options={entities} value={pong.tilter.value || first} onChange={set10} />
       </InputGroup>
     </NodeEditor>
+  )
 }
 PongComponent.iconComponent = AlbumIcon
-
