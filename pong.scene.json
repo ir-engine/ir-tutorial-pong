@@ -484,504 +484,6 @@
       "index": 5,
       "name": "directional light"
     },
-    "0a3dc842-d789-4ce9-a07a-49db5a44381f": {
-      "name": "paddle1",
-      "components": [
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 3,
-              "z": 4
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 0.10000000000000009
-            }
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 12
-    },
-    "a118a168-6434-46a3-bd21-2e15e5ce41c5": {
-      "name": "paddle2",
-      "components": [
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 3,
-              "z": -3
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 0.10000000000000009
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 11
-    },
-    "5a4f580f-8bf5-4112-96a4-fa16e83c3a70": {
-      "name": "wall_endcap1",
-      "components": [
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 3,
-              "z": 5
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 2,
-              "y": 2,
-              "z": 0.10000000000000009
-            }
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 10
-    },
-    "70b602ed-c9d3-4763-bc64-2f9046284dd0": {
-      "name": "wall_floor",
-      "components": [
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 2,
-              "y": 0.10000000000000009,
-              "z": 5
-            }
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 9
-    },
-    "02417f7b-a843-4df7-b58e-12f772267c39": {
-      "name": "wall3_side1",
-      "components": [
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": -2,
-              "y": 3,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.10000000000000009,
-              "y": 2,
-              "z": 5
-            }
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 8
-    },
-    "71c51390-6854-4338-88b4-e38c8ad42191": {
-      "name": "wall4_side2",
-      "components": [
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 2,
-              "y": 3,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.10000000000000009,
-              "y": 2,
-              "z": 5.002
-            }
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 7
-    },
-    "e950debf-e4f6-4451-9fad-2601e902f624": {
-      "name": "wall_endcap2",
-      "components": [
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 3,
-              "z": -5
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 2,
-              "y": 2,
-              "z": 0.10000000000000009
-            }
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 6
-    },
-    "f491760f-090e-4fc5-8dbb-ac0c545411e3": {
-      "name": "ball",
-      "components": [
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 1,
-            "geometryParams": {
-              "radius": 1,
-              "widthSegments": 32,
-              "heightSegments": 16,
-              "phiStart": 0,
-              "phiLength": 6.283185307179586,
-              "thetaStart": 0,
-              "thetaLength": 3.141592653589793
-            }
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 10,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.30000000000000004,
-              "y": 0.30000000000000004,
-              "z": 0.30000000000000004
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 0,
-            "shapeType": 0,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 1
-    },
-    "74ce8970-6be5-4b23-b7a4-2208e86e7d5f": {
-      "name": "tilter",
-      "components": [
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 8,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0.0870507598385479,
-              "y": -0.04888095701266627,
-              "z": -0.004276529600906315,
-              "w": 0.9949947379497189
-            },
-            "scale": {
-              "x": 0.3999999999999999,
-              "y": 0.39999999999999986,
-              "z": 0.39999999999999986
-            }
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 8,
-            "geometryParams": {
-              "radius": 1,
-              "detail": 0
-            }
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 5
-    },
     "2be2d0f1-68f1-45fb-8674-f629f7956a29": {
       "name": "pong",
       "components": [
@@ -1029,73 +531,24 @@
       "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
       "index": 8
     },
-    "e1b552de-c601-488f-8725-a0d28ef5249a": {
-      "name": "score1",
+    "c4b6706c-69a6-4ada-b44f-036c72e39e0f": {
+      "name": "table",
       "components": [
         {
-          "name": "text-geometry",
+          "name": "primitive-geometry",
           "props": {
-            "text": "0"
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": -10,
-              "y": 6,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.030000000000000027,
-              "y": 0.030000000000000027,
-              "z": 0.030000000000000027
+            "geometryType": 0,
+            "geometryParams": {
+              "width": 2,
+              "height": 2,
+              "depth": 2,
+              "widthSegments": 1,
+              "heightSegments": 1,
+              "depthSegments": 1
             }
           }
         },
         {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 0
-    },
-    "c5723371-2332-4b04-a08c-ba253eadb0be": {
-      "name": "score2",
-      "components": [
-        {
-          "name": "text-geometry",
-          "props": {
-            "text": "0"
-          }
-        },
-        {
           "name": "visible",
           "props": {}
         },
@@ -1103,8 +556,8 @@
           "name": "transform",
           "props": {
             "position": {
-              "x": 3,
-              "y": 6,
+              "x": 0,
+              "y": 1,
               "z": 0
             },
             "rotation": {
@@ -1114,9 +567,9 @@
               "w": 1
             },
             "scale": {
-              "x": 0.030000000000000027,
-              "y": 0.030000000000000027,
-              "z": 0.030000000000000027
+              "x": 2,
+              "y": 0.1,
+              "z": 4
             }
           }
         },
@@ -1144,26 +597,11 @@
       "index": 2
     },
     "124e9fa3-f23e-4cdb-ad30-0b0ed62283be": {
-      "name": "plate1",
+      "name": "goal1",
       "components": [
         {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": true,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
+          "name": "GoalComponent",
+          "props": {}
         },
         {
           "name": "visible",
@@ -1175,7 +613,7 @@
             "position": {
               "x": 0,
               "y": 2,
-              "z": 8
+              "z": 6
             },
             "rotation": {
               "x": 0,
@@ -1184,25 +622,272 @@
               "w": 1
             },
             "scale": {
-              "x": 2,
-              "y": 2,
-              "z": 2
+              "x": 1,
+              "y": 1,
+              "z": 1
             }
           }
         }
       ],
       "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 3
+      "index": 1
     },
     "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362": {
-      "name": "plate2",
+      "name": "goal2",
       "components": [
+        {
+          "name": "GoalComponent",
+          "props": {}
+        },
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 2,
+              "z": -6
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
         {
           "name": "collider",
           "props": {
             "bodyType": 1,
             "shapeType": 1,
             "isTrigger": true,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        }
+      ],
+      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
+      "index": 1
+    },
+    "0a3dc842-d789-4ce9-a07a-49db5a44381f": {
+      "name": "paddle1",
+      "components": [
+        {
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": -6.123234262925839e-17,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.5,
+              "y": 0.5,
+              "z": 0.5
+            }
+          }
+        },
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 1,
+            "geometryParams": null
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 2,
+            "shapeType": 0,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        }
+      ],
+      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
+      "index": 0
+    },
+    "a118a168-6434-46a3-bd21-2e15e5ce41c5": {
+      "name": "paddle2",
+      "components": [
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 1,
+            "geometryParams": null
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.5,
+              "y": 0.5,
+              "z": 0.5
+            }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 2,
+            "shapeType": 0,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        }
+      ],
+      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
+      "index": 0
+    },
+    "e1b552de-c601-488f-8725-a0d28ef5249a": {
+      "name": "score1",
+      "components": [
+        {
+          "name": "text-geometry",
+          "props": {
+            "text": "0"
+          }
+        },
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 2,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.03,
+              "y": 0.03,
+              "z": 0.03
+            }
+          }
+        }
+      ],
+      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
+      "index": 1
+    },
+    "c5723371-2332-4b04-a08c-ba253eadb0be": {
+      "name": "score2",
+      "components": [
+        {
+          "name": "text-geometry",
+          "props": {
+            "text": "0"
+          }
+        },
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 2,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.03,
+              "y": 0.03,
+              "z": 0.03
+            }
+          }
+        }
+      ],
+      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
+      "index": 1
+    },
+    "36e9c2e1-a74a-4e49-87b8-288bf1df283b": {
+      "name": "trigger1",
+      "components": [
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": false,
             "removeMesh": false,
             "collisionLayer": 1,
             "collisionMask": 7,
@@ -1225,8 +910,8 @@
           "props": {
             "position": {
               "x": 0,
-              "y": 2,
-              "z": -8
+              "y": 0,
+              "z": 0
             },
             "rotation": {
               "x": 0,
@@ -1242,8 +927,59 @@
           }
         }
       ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 4
+      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
+      "index": 2
+    },
+    "6fe5ac6a-71fe-4aec-97cc-ffaa196a794a": {
+      "name": "trigger2",
+      "components": [
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        },
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 2,
+              "y": 2,
+              "z": 2
+            }
+          }
+        }
+      ],
+      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
+      "index": 2
     }
   },
   "root": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71"

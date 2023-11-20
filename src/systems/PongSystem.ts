@@ -1,34 +1,36 @@
+import { Quaternion, Vector3 } from 'three'
+
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
 import {
   defineQuery,
   getComponent,
-  getMutableComponent
+  getMutableComponent,
+  useQuery
 } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { isClient } from '@etherealengine/engine/src/common/functions/getEnvironment'
 import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFunctions'
 import { CollisionComponent } from '@etherealengine/engine/src/physics/components/CollisionComponent'
 import { RigidBodyComponent } from '@etherealengine/engine/src/physics/components/RigidBodyComponent'
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
-import { Quaternion, Vector3 } from 'three'
+import { PhysicsSystem } from '@etherealengine/engine/src/physics/systems/PhysicsSystem'
+
+import { matches, matchesEntityUUID, matchesNetworkId, matchesQuaternion, matchesVector3, matchesWithDefault } from '@etherealengine/engine/src/common/functions/MatchesUtils'
+import { NetworkTopics } from '@etherealengine/engine/src/networking/classes/Network'
+import { defineAction, defineActionQueue, dispatchAction, useHookstate } from '@etherealengine/hyperflux'
+import { AvatarControllerComponent } from '@etherealengine/engine/src/avatar/components/AvatarControllerComponent'
+import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
+import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
+import { BallComponent } from '../components/BallComponent'
+import { NetworkObjectComponent } from '@etherealengine/engine/src/networking/components/NetworkObjectComponent'
+
+
+import { GoalComponent } from '../components/GoalComponent'
 import { PongComponent } from '../components/PongComponent'
 import { TextComponent } from '../components/TextComponent'
 
-import { PhysicsSystem } from '@etherealengine/engine/src/physics/systems/PhysicsSystem'
 
-//
-// helper to rotate a tilter effect to drop ball somewhat randomly
-//
-
-const rotate_tilter = (tilter: Entity) => {
-  const rotate1 = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), -Math.PI / 32)
-  const rotate2 = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 32)
-  const rotate3 = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 32)
-  const tiltTransform = getComponent(tilter, TransformComponent)
-  tiltTransform?.rotation.multiply(rotate1)
-  tiltTransform?.rotation.multiply(rotate2)
-  tiltTransform?.rotation.multiply(rotate3)
-}
-
+//////////////////////////////////////////////////////////////////////////////////////
 //
 // helper to move paddle
 //
@@ -102,167 +104,243 @@ const move_paddle = (player: Entity, paddle: Entity) => {
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 //
-// helper - if a ball hits a goal then count scores and reset the ball
-//
+// action schemas
 
-const resolve_goals = (ball: Entity, wall: Entity, score: any, counter: any) => {
-  const collidants = getComponent(wall, CollisionComponent)
-  if (!collidants || !collidants.size) return
-  for (let [key, value] of collidants) {
-    if (key != ball) continue
-    counter.set(counter.value + 1)
-    score.text.set(`${counter.value}`)
-    const transform = getComponent(ball, TransformComponent)
-    transform?.position.set(0, 10, 0)
+class PongAction {
+
+  static gameStart = defineAction({
+    type: 'pong.gameStart',
+    uuid: matchesEntityUUID,
+    $topic: NetworkTopics.world
+  })
+
+  static gameStop = defineAction({
+    type: 'pong.gameStop',
+    uuid: matchesEntityUUID,
+    $topic: NetworkTopics.world
+  })
+
+  static goalScore = defineAction({
+    type: 'pong.goalScore',
+    uuid: matchesEntityUUID,
+    damage: matches.number,
+    $topic: NetworkTopics.world
+  })
+
+  static playerPaddle = defineAction({
+    type: 'pong.playerPaddle',
+    number: matches.number,
+    $topic: NetworkTopics.world
+  })
+
+  static playerVolley = defineAction({
+    type: 'pong.playerVolley',
+    entityUUID: matchesEntityUUID,
+    networkId: matchesWithDefault(matchesNetworkId, () => NetworkObjectComponent.createNetworkId()),
+    position: matchesVector3.optional(),
+    rotation: matchesQuaternion.optional(),
+    $topic: NetworkTopics.world,
+    $cache: {
+      removePrevious: ['prefab']
+    }
+  })
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+// action handling
+
+export const gameStart = (action: ReturnType<typeof PongAction.gameStart>) => {
+  const pong = UUIDComponent.entitiesByUUID[action.uuid]
+  if(!pong) return
+  const pongMutable = getMutableComponent(pong,PongComponent)
+  pongMutable.playing.set(true)
+  // @todo find all children goals and reset them
+}
+
+export const gameStop = (action: ReturnType<typeof PongAction.gameStop>) => {
+  const pong = UUIDComponent.entitiesByUUID[action.uuid]
+  if(!pong) return
+  const pongMutable = getMutableComponent(pong,PongComponent)
+  pongMutable.playing.set(true)
+  // @todo remove all balls from play
+}
+
+export const goalScore = (action: ReturnType<typeof PongAction.goalScore>) => {
+  const goal = UUIDComponent.entitiesByUUID[action.uuid]
+  if(!goal) return
+  const goalComponent = getMutableComponent(goal,GoalComponent)
+  if(!goalComponent) return
+  goalComponent.damage.set( action.damage )
+  const text = getMutableComponent(goal,TextComponent) // @todo look for children
+  if(!text) return
+  text.text.set(`${action.damage}`)
+}
+
+export const playerPaddle = (action: ReturnType<typeof PongAction.playerPaddle>) => {
+  // @todo
+}
+
+export const playerVolley = (action: ReturnType<typeof PongAction.playerVolley>) => {
+  // @todo
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//
+// action receptor queues
+
+function PongActionQueueReceptorContext() {
+
+  const gameStartQueue = defineActionQueue(PongAction.gameStart.matches)
+  const gameStopQueue = defineActionQueue(PongAction.gameStop.matches)
+  const playerPaddleQueue = defineActionQueue(PongAction.playerPaddle.matches)
+  const playerVolleyQueue = defineActionQueue(PongAction.playerVolley.matches)
+  const goalScoreQueue = defineActionQueue(PongAction.goalScore.matches)
+
+  const exhaustActionQueues = () => {
+    for (const action of gameStartQueue()) gameStart(action)
+    for (const action of gameStopQueue()) gameStop(action)
+    for (const action of playerPaddleQueue()) playerPaddle(action)
+    for (const action of playerVolleyQueue()) playerVolley(action)
+    for (const action of goalScoreQueue()) goalScore(action)
+  }
+
+  return exhaustActionQueues
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//
+// system execute
+
+const PongActionReceptor = PongActionQueueReceptorContext()
+
+const pongQuery = defineQuery([PongComponent])
+const goalQuery = defineQuery([GoalComponent])
+
+const playServer = (pong: Entity) => {
+
+  const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
+  const pongComponent = getComponent(pong, PongComponent)
+  const pongMutable = getMutableComponent(pong, PongComponent)
+  if(!pong) {
+    console.error("pong: something is horribly wrong")
     return
+  }
+
+  const goals = goalQuery()
+
+  //
+  // check for minimum number of players
+  //
+
+  let numAvatars = 0
+  const ballCollisions : any = []
+
+  goals.forEach( (goal) => {
+    const collidants = getComponent(goal, CollisionComponent)
+    if (!collidants || !collidants.size) return
+    for (let [entity, collision] of collidants) {
+      const ballComponent = getComponent(entity,BallComponent)
+      const isAvatar = ballComponent ? false : true
+      if(isAvatar) {
+        numAvatars++
+      } else {
+        const ball = entity
+        const parts = [ goal, ball, collision]
+        ballCollisions.push(parts)
+      }
+    }
+  })
+
+  //
+  // modally stop the game if nobody is playing, and modally start the game if players enter goals
+  //
+
+  if(pongComponent.playing) {
+    if(numAvatars == 0) {
+      dispatchAction(PongAction.gameStop({ uuid: pongUUID }))
+      pongMutable.playing.set(false)
+      return
+    }
+  } else {
+    if(numAvatars > 0){
+      dispatchAction(PongAction.gameStart({ uuid: pongUUID }))
+      pongMutable.playing.set(true)    
+    }
+  }
+
+  //
+  // Resolve goal collisions after game running check; may also end game
+  //
+
+  for(let [goal,ball,collision] of ballCollisions) {
+    const goalComponent = getComponent(goal,GoalComponent)
+    const uuid = getComponent(goal,UUIDComponent) as EntityUUID
+    const damage = goalComponent.damage + 1 as number
+
+    // dispatch a score increase
+    dispatchAction(PongAction.goalScore({ uuid, damage }))
+
+    // dispatch end of game
+    if(goalComponent.damage > 9) {
+      dispatchAction(PongAction.gameStop({ uuid: pongUUID }))
+      pongMutable.playing.set(false)
+      break
+    }
+  }
+
+
+}
+
+const playClient = (pongEntity: Entity) => {
+
+  // @todo - move the paddles during game play
+  // @todo - let players volley balls
+
+}
+
+function execute() {
+  PongActionReceptor()
+  for (const pongEntity of pongQuery()) {
+    playServer(pongEntity)
+    playClient(pongEntity)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 //
-// resolve one game instance
+// system reactor
 //
+/*
 
-const play = (pongEntity: Entity) => {
-  // find parts per game
-  // @todo these could be pulled in magically by name also
+import React, { useEffect } from 'react'
+import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
+import { NetworkObjectComponent } from '@etherealengine/engine/src/networking/components/NetworkObjectComponent'
+import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 
-  const pong = getComponent(pongEntity, PongComponent)
-  const pongMutable = getMutableComponent(pongEntity, PongComponent)
-  const ball = UUIDComponent.entitiesByUUID[pong.ball]
-  const paddle1 = UUIDComponent.entitiesByUUID[pong.paddle1]
-  const paddle2 = UUIDComponent.entitiesByUUID[pong.paddle2]
-  const wall1 = UUIDComponent.entitiesByUUID[pong.wall1]
-  const wall2 = UUIDComponent.entitiesByUUID[pong.wall2]
-  const score1 = UUIDComponent.entitiesByUUID[pong.score1]
-  const score2 = UUIDComponent.entitiesByUUID[pong.score2]
-  const plate1 = UUIDComponent.entitiesByUUID[pong.plate1]
-  const plate2 = UUIDComponent.entitiesByUUID[pong.plate2]
-  const tilter = UUIDComponent.entitiesByUUID[pong.tilter]
-
-  // expect at least these parts to be present
-  if (!ball || !paddle1 || !paddle2 || !wall1 || !wall2 || !score1 || !score2 || !plate1 || !plate2 || !tilter) {
-    console.warn('pong: game is not wired up')
-    return
-  }
-
-  // sanity check
-  let score1text = getMutableComponent(score1, TextComponent)
-  let score2text = getMutableComponent(score2, TextComponent)
-  if (!score1text || !score2text) {
-    console.warn('pong: game score text components are not wired up')
-    return
-  }
-
-  // see if there are players on the plates
-  // @todo this could be improved; will mess up if > 2 players
-  const c1 = getComponent(plate1, CollisionComponent)
-  const c2 = getComponent(plate2, CollisionComponent)
-  const player1 = c1 && c1.size ? c1.entries().next().value[0] : (0 as Entity)
-  const player2 = c2 && c2.size ? c2.entries().next().value[0] : (0 as Entity)
-
-  const participants = player1 || player2
-
-  let winner = pong.collisions1 > 10 || pong.collisions2 > 10 ? true : false
-
-  //////////////////////////////////////////////////////////////////////////
-  //
-  // reason about game state
-  //
-  //
-
-  switch (pong.mode) {
-    case 0:
-      // allow a new session to start once players show up; don't reset display till then
-      if (participants) {
-        console.log('pong: starting game')
-        pongMutable.mode.set(1)
-        pongMutable.collisions1.set(0)
-        pongMutable.collisions2.set(0)
-        score1text.text.set(`${pong.collisions1}`)
-        score2text.text.set(`${pong.collisions2}`)
-        winner = false
-      }
-      break
-    case 1:
-      // a play session is ongoing - latch back to allow a new game once players leave
-      if (!participants) {
-        pongMutable.mode.set(0)
-      }
-      break
-  }
-
-  ///////////////////////////////////////////////////////////////////////////
-  //
-  // update physics
-  //
-
-  // rotate the ball drop randomizer always
-  // @todo unsure if this whole idea is any good
-  rotate_tilter(tilter)
-
-  // don't run other stuff if no game is up
-  if (!participants || winner) {
-    // @todo rather than thrashing physics I'd set the collider to static
-    const transform = getComponent(ball, TransformComponent)
-    transform?.position.set(0, 10, 0)
-    //pongMutable.playmode.set(0) // it is not critical to set this in this case
-    //const collider = getMutableComponent(ball,ColliderComponent)
-    //collider.bodyType.set(RigidBodyKinematicPositionBasedTagComponent)
-    return
-  }
-
-  move_paddle(player1, paddle1)
-  move_paddle(player2, paddle2)
-
-  resolve_goals(ball, wall1, score1text, pongMutable.collisions1)
-  resolve_goals(ball, wall2, score2text, pongMutable.collisions2)
-
+function reactor() {
+  if(!isClient) return null
+  const entitiesByName = useHookstate(NameComponent.entitiesByNameState)
+  const playerAvatar = useQuery([AvatarControllerComponent])
+  useEffect( () => {
+    //return <PongReactor />
+  },[entitiesByName,playerAvatar])
   return null
 }
 
-const pongQuery = defineQuery([PongComponent])
+*/
+///////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// system
+///
 
 export const PongSystem = defineSystem({
-  uuid: 'PongSystem',
-  execute: () => {
-    for (const pongEntity of pongQuery()) {
-      play(pongEntity)
-    }
-  },
+  uuid: 'pong.system',
+  execute,
+ // reactor,
   insert: { after: PhysicsSystem }
 })
 
-/*
-
-todo nov 17
-
-valuable to improve
-
-- use player mocap if avail; or use xrstate
-- rotate frame of reference for player to allow for arbitrary pong table location
-- merge in collision pf
-- must use rigid body positioner or else physics blow up
-- ball can get out
-- paddle size is off
-- move paddle forward of player more
-
-minor
-
-- perhaps time out exit from game rather than strictly stopping game on exit
-- perhaps some win effect
-- optionally a robot
-- optionally capture the player camera
-- optionally improve scoreboard art to be not arabic numerals but rather just dots
-- improve the spinner to be more fair
-- it is hard to see the game state from a first person view
-
-future
-
-- different shaped volumes
-- multiball
-- obstacles
-- gravity, attractors, fans etc
-- larger smaller paddles
-
-*/
