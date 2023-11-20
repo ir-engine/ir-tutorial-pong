@@ -17,7 +17,7 @@ import { PhysicsSystem } from '@etherealengine/engine/src/physics/systems/Physic
 
 import { matches, matchesEntityUUID, matchesNetworkId, matchesQuaternion, matchesVector3, matchesWithDefault } from '@etherealengine/engine/src/common/functions/MatchesUtils'
 import { NetworkTopics } from '@etherealengine/engine/src/networking/classes/Network'
-import { defineAction, defineActionQueue, dispatchAction, useHookstate } from '@etherealengine/hyperflux'
+import { defineAction, defineActionQueue, dispatchAction, getState, useHookstate } from '@etherealengine/hyperflux'
 import { AvatarControllerComponent } from '@etherealengine/engine/src/avatar/components/AvatarControllerComponent'
 import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
@@ -29,6 +29,7 @@ import { ColliderComponent } from '@etherealengine/engine/src/scene/components/C
 import { PongComponent } from '../components/PongComponent'
 import { GoalComponent } from '../components/GoalComponent'
 import { TextComponent } from '../components/TextComponent'
+import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -64,7 +65,6 @@ class PongAction {
   static pongVolley = defineAction({
     type: 'pong.volley',
     entityUUID: matchesEntityUUID,
-    // @todo what is this
     networkId: matchesWithDefault(matchesNetworkId, () => NetworkObjectComponent.createNetworkId()),
     position: matchesVector3.optional(),
     rotation: matchesQuaternion.optional(),
@@ -287,6 +287,7 @@ const pongServer = (pong: Entity) => {
           dispatchAction(PongAction.pongWin({ uuid: pongUUID }))
           return
         }
+        // @todo withdraw ball
       }
 
       // else assume it is an avatar and move paddle @todo may wish to improve avatar detection
@@ -317,26 +318,16 @@ const pongServer = (pong: Entity) => {
   }
 
   //
-  // Resolve goal/ball collisions; may also win game
+  // Periodically launch balls into play
+  // @todo in general withdraw balls that are inactive
   //
 
-  pongNode.children.forEach( (goal) => {
-    const goalComponent = getComponent(goal,GoalComponent)
-    if(!goalComponent) return
-    const collidants = getComponent(goal, CollisionComponent)
-    if (!collidants || !collidants.size) return
-    const uuid = getComponent(goal,UUIDComponent) as EntityUUID
-    for (let [entity, collision] of collidants) {
-      const ballComponent = getComponent(entity,BallComponent)
-      if(!ballComponent) continue
-      const damage = goalComponent.damage > 0 ? goalComponent.damage - 1 : 0
-      dispatchAction(PongAction.pongGoal({ uuid, damage }))
-      if(goalComponent.damage) continue
-      dispatchAction(PongAction.pongWin({ uuid: pongUUID }))
-      pongMutable.playing.set(false)
-      break
-    }
-  })
+  if(pongComponent.playing && pongComponent.timer + 5 < getState(EngineState).elapsedSeconds ) {
+    pongMutable.timer.set( getState(EngineState).elapsedSeconds )
+    // @have to build the ball here and then publish it
+    //    dispatchAction(PongAction.pongVolley({}))
+  }
+
 }
 
 const pongQuery = defineQuery([PongComponent])

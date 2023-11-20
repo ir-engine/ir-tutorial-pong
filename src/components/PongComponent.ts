@@ -8,7 +8,8 @@ export const PongComponent = defineComponent({
   jsonID: 'pong',
   onInit: (entity) => {
     return {
-      playing: false
+      playing: false,
+      timer: 0
     }
   },
   onSet: (entity, pong, json) => {
