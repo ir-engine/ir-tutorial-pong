@@ -40,7 +40,7 @@ class PongAction {
   static pongStart = defineAction({
     type: 'pong.start',
     uuid: matchesEntityUUID,
-    $topic: NetworkTopics.world // @todo what is this?
+    $topic: NetworkTopics.world
   })
 
   static pongStop = defineAction({
@@ -64,14 +64,10 @@ class PongAction {
 
   static pongVolley = defineAction({
     type: 'pong.volley',
-    entityUUID: matchesEntityUUID,
-    networkId: matchesWithDefault(matchesNetworkId, () => NetworkObjectComponent.createNetworkId()),
-    position: matchesVector3.optional(),
-    rotation: matchesQuaternion.optional(),
+    ballUUID: matchesEntityUUID,
+    position: matchesVector3,
+    velocity: matchesVector3,
     $topic: NetworkTopics.world,
-    $cache: {
-      removePrevious: ['prefab']
-    }
   })
 
   static pongPaddle = defineAction({
@@ -140,6 +136,20 @@ export const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
 
 export const pongVolley = (action: ReturnType<typeof PongAction.pongVolley>) => {
   // @todo
+  const ball = UUIDComponent.entitiesByUUID[action.ballUUID]
+  if(!ball) return
+  const ballComponent = getComponent(ball,BallComponent)
+  if(!ballComponent) return
+  const rigid = getComponent(ball,RigidBodyComponent)
+  if(!rigid) return
+  const transform = getMutableComponent(ball,TransformComponent)
+  if(!transform) return
+
+  //rigid.targetKinematicPosition.copy(action.position)
+  transform.position.set(action.position)
+
+  // apply a force to the ball
+
 }
 
 export const pongPaddle = (action: ReturnType<typeof PongAction.pongPaddle>) => {
@@ -201,7 +211,7 @@ export const pongPaddle = (action: ReturnType<typeof PongAction.pongPaddle>) => 
     transformAvatar.position.z
   )
   rigidPaddle.targetKinematicPosition.copy(xyz)
-  rigidPaddle.body.setTranslation(xyz, true)
+  rigidPaddle.body.setTranslation(xyz, true) // @todo this may not be needed
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -318,15 +328,44 @@ const pongServer = (pong: Entity) => {
   }
 
   //
-  // Periodically launch balls into play
-  // @todo in general withdraw balls that are inactive
+  // wait a few seconds and then re-fire any old ball
   //
 
-  if(pongComponent.playing && pongComponent.timer + 5 < getState(EngineState).elapsedSeconds ) {
-    pongMutable.timer.set( getState(EngineState).elapsedSeconds )
-    // @have to build the ball here and then publish it
-    //    dispatchAction(PongAction.pongVolley({}))
+  const seconds = getState(EngineState).elapsedSeconds
+  if(pongComponent.playing && seconds > pongComponent.timer ) {
+    pongMutable.timer.set( seconds + 3.0 )
+
+    let ball = 0 as Entity
+    let ballComponent : any = null
+    for(const candidate of pongNode.children) {
+      const candidateComponent = getComponent(candidate,BallComponent)
+      if(!candidateComponent) continue
+      if(!ballComponent || candidateComponent.elapsedSeconds < ballComponent.elapsedSeconds) {
+        ball = candidate
+        ballComponent = candidateComponent
+      }
+    }
+
+    if(ball) {
+      const rigid = getComponent(ball,RigidBodyComponent)
+      if(!rigid) return
+      const ballMutable = getMutableComponent(ball,BallComponent)
+      const ballUUID = getComponent(ball, UUIDComponent) as EntityUUID
+      ballMutable.elapsedSeconds.set(seconds)
+
+      const position = new Vector3(0,2,0)
+      const velocity = new Vector3(2,0,0)
+
+      dispatchAction(PongAction.pongVolley({
+        ballUUID: ballUUID,
+        position,
+        velocity,
+      }))
+       
+    }
+
   }
+
 
 }
 

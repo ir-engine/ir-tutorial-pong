@@ -5,6 +5,7 @@ export const BallComponent = defineComponent({
   jsonID: 'pong.ball',
   onInit: (entity) => {
     return {
+      elapsedSeconds: 0
     }
   },
   onSet: (entity, component, json) => {
