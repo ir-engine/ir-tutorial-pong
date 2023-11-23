@@ -951,7 +951,7 @@
       "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
       "index": 2
     },
-    "72c046eb-9cb7-4509-b485-0338bd7d50ee": {
+    "f491760f-090e-4fc5-8dbb-ac0c545411e3": {
       "name": "ball1",
       "components": [
         {
@@ -982,7 +982,7 @@
           "props": {
             "position": {
               "x": 0,
-              "y": 5,
+              "y": 10,
               "z": 0
             },
             "rotation": {
@@ -992,9 +992,9 @@
               "w": 1
             },
             "scale": {
-              "x": 0.19999999999999996,
-              "y": 0.19999999999999996,
-              "z": 0.19999999999999996
+              "x": 0.3,
+              "y": 0.3,
+              "z": 0.3
             }
           }
         },
@@ -1018,148 +1018,8 @@
           }
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
-      "index": 3
-    },
-    "dee76cd1-9388-46b2-bb98-4e3eea7c0bf9": {
-      "name": "ball2",
-      "components": [
-        {
-          "name": "pong.ball",
-          "props": {}
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 1,
-            "geometryParams": {
-              "radius": 1,
-              "widthSegments": 32,
-              "heightSegments": 16,
-              "phiStart": 0,
-              "phiLength": 6.283185307179586,
-              "thetaStart": 0,
-              "thetaLength": 3.141592653589793
-            }
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 4,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.30000000000000004,
-              "y": 0.30000000000000004,
-              "z": 0.30000000000000004
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 0,
-            "shapeType": 0,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
-      "index": 4
-    },
-    "af0ab829-e917-48b9-8179-691092632560": {
-      "name": "ball3",
-      "components": [
-        {
-          "name": "pong.ball",
-          "props": {}
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 1,
-            "geometryParams": {
-              "radius": 1,
-              "widthSegments": 32,
-              "heightSegments": 16,
-              "phiStart": 0,
-              "phiLength": 6.283185307179586,
-              "thetaStart": 0,
-              "thetaLength": 3.141592653589793
-            }
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 3,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.40000000000000013,
-              "y": 0.40000000000000013,
-              "z": 0.40000000000000013
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 0,
-            "shapeType": 0,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
-      "index": 5
+      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
+      "index": 1
     }
   },
   "root": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71"

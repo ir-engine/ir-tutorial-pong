@@ -146,23 +146,23 @@ export const pongVolley = (action: ReturnType<typeof PongAction.pongVolley>) => 
   if(!ballComponent) return
   const rigid = getComponent(ball,RigidBodyComponent)
   if(!rigid) return
-  const transform = getMutableComponent(ball,TransformComponent)
+  const transform = getComponent(ball,TransformComponent)
   if(!transform) return
 
   const xyz = new Vector3(0,5,0)
   const zero = new Vector3(0,0,0)
   const vel = new Vector3(0.1,0.1,0)
 
-  //rigid.body.resetForces(true)
-  //rigid.body.wakeUp()
-  //rigid.body.setLinvel(zero, false)
-  //rigid.body.setAngvel(zero, false)
-  transform.position.set(xyz)
-  //rigid.position.copy(xyz)
-  //rigid.targetKinematicPosition.copy(xyz)
+  rigid.body.resetForces(true)
+  rigid.body.wakeUp()
+  rigid.body.setLinvel(zero, false)
+  rigid.body.setAngvel(zero, false)
+  transform.position.set(0,5,0)
+  rigid.position.copy(xyz)
+  rigid.targetKinematicPosition.copy(xyz)
 
-  //rigid.body.setLinvel(vel,true)
-  //rigid.body.applyImpulse(vel,true)
+  rigid.body.setLinvel(vel,true)
+  rigid.body.applyImpulse(vel,true)
 
 }
 
@@ -367,7 +367,7 @@ const pongServer = (pong: Entity) => {
   if(pongComponent.playing) {
     const seconds = getState(EngineState).elapsedSeconds
     if(seconds > pongComponent.timer ) {
-      pongMutable.timer.set( seconds + 1.0 )
+      pongMutable.timer.set( seconds + 5.0 )
       console.log("*** pong: may launch a ball",seconds,pongComponent.timer)
 
       let ball = 0 as Entity
