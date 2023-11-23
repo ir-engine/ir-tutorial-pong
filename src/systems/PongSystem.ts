@@ -154,15 +154,17 @@ export const pongVolley = (action: ReturnType<typeof PongAction.pongVolley>) => 
   const vel = new Vector3(0.1,0.1,0)
 
   rigid.body.resetForces(true)
-  rigid.body.wakeUp()
-  rigid.body.setLinvel(zero, false)
-  rigid.body.setAngvel(zero, false)
-  transform.position.set(0,5,0)
+  transform.position.copy(xyz)
   rigid.position.copy(xyz)
-  rigid.targetKinematicPosition.copy(xyz)
 
-  rigid.body.setLinvel(vel,true)
-  rigid.body.applyImpulse(vel,true)
+  //rigid.body.wakeUp()
+  //rigid.body.setLinvel(zero, true)
+  //rigid.body.setAngvel(zero, true)
+  //rigid.targetKinematicPosition.copy(xyz)
+  //rigid.body.setLinvel(vel,true)
+  setTimeout(()=>{
+    rigid.body.applyImpulse(vel,true)
+  },10);
 
 }
 
@@ -445,13 +447,3 @@ export const PongSystem = defineSystem({
   insert: { after: PhysicsSystem }
 })
 
-
-/*
-
- - when i walk into play do balls start
-
- - can i shoot them at me
-
- - can i hit them somehow
-
- */
