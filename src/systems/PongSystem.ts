@@ -151,16 +151,18 @@ export const pongVolley = (action: ReturnType<typeof PongAction.pongVolley>) => 
 
   const xyz = new Vector3(0,5,0)
   const zero = new Vector3(0,0,0)
-  const vel = new Vector3(1,1,0)
+  const vel = new Vector3(0.1,0.1,0)
 
-  //rigid.body.setLinvel(zero, true)
-  //rigid.body.setAngvel(zero, true)
-  //rigid.position.copy(xyz)
+  //rigid.body.resetForces(true)
+  //rigid.body.wakeUp()
+  //rigid.body.setLinvel(zero, false)
+  //rigid.body.setAngvel(zero, false)
   transform.position.set(xyz)
+  //rigid.position.copy(xyz)
   //rigid.targetKinematicPosition.copy(xyz)
 
   //rigid.body.setLinvel(vel,true)
-  rigid.body.applyImpulse(vel,true)
+  //rigid.body.applyImpulse(vel,true)
 
 }
 
@@ -256,6 +258,8 @@ const PongActionReceptor = PongActionQueueReceptorContext()
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
 // system execute
+
+const balls = defineQuery([BallComponent])
 
 const pongServer = (pong: Entity) => {
 
@@ -368,7 +372,7 @@ const pongServer = (pong: Entity) => {
 
       let ball = 0 as Entity
       let ballComponent : any = null
-      for(const candidate of pongNode.children) {
+      for(const candidate of balls() ) { // pongNode.children) {
         const candidateComponent = getComponent(candidate,BallComponent)
         if(!candidateComponent) continue
         if(!ballComponent || candidateComponent.elapsedSeconds < ballComponent.elapsedSeconds) {
@@ -378,9 +382,6 @@ const pongServer = (pong: Entity) => {
       }
 
       if(ball) {
-        console.log("*** pong found ball to fire off")
-        const rigid = getComponent(ball,RigidBodyComponent)
-        if(!rigid) return
         const ballMutable = getMutableComponent(ball,BallComponent)
         const ballUUID = getComponent(ball, UUIDComponent) as EntityUUID
         ballMutable.elapsedSeconds.set(seconds)
