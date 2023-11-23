@@ -489,18 +489,7 @@
       "components": [
         {
           "name": "pong",
-          "props": {
-            "ball": "f491760f-090e-4fc5-8dbb-ac0c545411e3",
-            "paddle1": "0a3dc842-d789-4ce9-a07a-49db5a44381f",
-            "paddle2": "a118a168-6434-46a3-bd21-2e15e5ce41c5",
-            "wall1": "5a4f580f-8bf5-4112-96a4-fa16e83c3a70",
-            "wall2": "e950debf-e4f6-4451-9fad-2601e902f624",
-            "score1": "e1b552de-c601-488f-8725-a0d28ef5249a",
-            "score2": "c5723371-2332-4b04-a08c-ba253eadb0be",
-            "plate1": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
-            "plate2": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
-            "tilter": "74ce8970-6be5-4b23-b7a4-2208e86e7d5f"
-          }
+          "props": {}
         },
         {
           "name": "visible",
@@ -600,7 +589,7 @@
       "name": "goal1",
       "components": [
         {
-          "name": "GoalComponent",
+          "name": "pong.goal",
           "props": {}
         },
         {
@@ -636,7 +625,7 @@
       "name": "goal2",
       "components": [
         {
-          "name": "GoalComponent",
+          "name": "pong.goal",
           "props": {}
         },
         {
@@ -662,25 +651,6 @@
               "y": 1,
               "z": 1
             }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": true,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
           }
         }
       ],
@@ -887,7 +857,7 @@
           "props": {
             "bodyType": 1,
             "shapeType": 1,
-            "isTrigger": false,
+            "isTrigger": true,
             "removeMesh": false,
             "collisionLayer": 1,
             "collisionMask": 7,
@@ -938,7 +908,7 @@
           "props": {
             "bodyType": 1,
             "shapeType": 1,
-            "isTrigger": false,
+            "isTrigger": true,
             "removeMesh": false,
             "collisionLayer": 1,
             "collisionMask": 7,
@@ -985,7 +955,7 @@
       "name": "ball1",
       "components": [
         {
-          "name": "BallComponent",
+          "name": "pong.ball",
           "props": {}
         },
         {
@@ -993,7 +963,7 @@
           "props": {
             "geometryType": 1,
             "geometryParams": {
-              "radius": 0.19999999999999996,
+              "radius": 1,
               "widthSegments": 32,
               "heightSegments": 16,
               "phiStart": 0,
@@ -1022,16 +992,16 @@
               "w": 1
             },
             "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+              "x": 0.19999999999999996,
+              "y": 0.19999999999999996,
+              "z": 0.19999999999999996
             }
           }
         },
         {
           "name": "collider",
           "props": {
-            "bodyType": 1,
+            "bodyType": 0,
             "shapeType": 0,
             "isTrigger": false,
             "removeMesh": false,
@@ -1055,7 +1025,7 @@
       "name": "ball2",
       "components": [
         {
-          "name": "BallComponent",
+          "name": "pong.ball",
           "props": {}
         },
         {
@@ -1063,7 +1033,7 @@
           "props": {
             "geometryType": 1,
             "geometryParams": {
-              "radius": 0.30000000000000004,
+              "radius": 1,
               "widthSegments": 32,
               "heightSegments": 16,
               "phiStart": 0,
@@ -1092,16 +1062,16 @@
               "w": 1
             },
             "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+              "x": 0.30000000000000004,
+              "y": 0.30000000000000004,
+              "z": 0.30000000000000004
             }
           }
         },
         {
           "name": "collider",
           "props": {
-            "bodyType": 1,
+            "bodyType": 0,
             "shapeType": 0,
             "isTrigger": false,
             "removeMesh": false,
@@ -1125,7 +1095,7 @@
       "name": "ball3",
       "components": [
         {
-          "name": "BallComponent",
+          "name": "pong.ball",
           "props": {}
         },
         {
@@ -1133,7 +1103,7 @@
           "props": {
             "geometryType": 1,
             "geometryParams": {
-              "radius": 0.40000000000000013,
+              "radius": 1,
               "widthSegments": 32,
               "heightSegments": 16,
               "phiStart": 0,
@@ -1162,16 +1132,16 @@
               "w": 1
             },
             "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+              "x": 0.40000000000000013,
+              "y": 0.40000000000000013,
+              "z": 0.40000000000000013
             }
           }
         },
         {
           "name": "collider",
           "props": {
-            "bodyType": 1,
+            "bodyType": 0,
             "shapeType": 0,
             "isTrigger": false,
             "removeMesh": false,

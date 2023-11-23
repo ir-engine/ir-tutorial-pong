@@ -4,7 +4,7 @@ import InputGroup from '@etherealengine/editor/src/components/inputs/InputGroup'
 import NodeEditor from '@etherealengine/editor/src/components/properties/NodeEditor'
 import { EditorComponentType, commitProperty } from '@etherealengine/editor/src/components/properties/Util'
 import { getComponent, useComponent, useQuery } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
-import AlbumIcon from '@mui/icons-material/Album'
+import RocketIcon from '@mui/icons-material/Rocket'
 
 import SelectInput from '@etherealengine/editor/src/components/inputs/SelectInput'
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
@@ -18,8 +18,8 @@ import { TextComponent } from '../components/TextComponent'
 export const PongComponentEditor: EditorComponentType = (props) => {
   const pong = useComponent(props.entity, PongComponent)
   return (
-    <NodeEditor description={'Description'} {...props}>
+    <NodeEditor description={'Pong Game'} {...props}>
     </NodeEditor>
   )
 }
-PongComponent.iconComponent = AlbumIcon
+PongComponent.iconComponent = RocketIcon

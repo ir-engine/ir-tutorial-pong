@@ -13,7 +13,7 @@ export const TextComponentEditor: EditorComponentType = (props) => {
   const text = useComponent(props.entity, TextComponent)
 
   return (
-    <NodeEditor description={'Description'} {...props}>
+    <NodeEditor description={'Text3D'} {...props}>
       <InputGroup name="Text" label="Text">
         <StringInput
           value={text.text.value}

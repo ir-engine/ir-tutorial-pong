@@ -1,5 +1,6 @@
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
 import { defineComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+
 export const GoalComponent = defineComponent({
   name: 'Goal Component',
   jsonID: 'pong.goal',
