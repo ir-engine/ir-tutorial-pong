@@ -1,12 +1,10 @@
-
 import { defineComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
 
-export const BallComponent = defineComponent({
-  name: 'Ball Component',
-  jsonID: 'pong.ball',
+export const PaddleComponent = defineComponent({
+  name: 'Paddle Component',
+  jsonID: 'pong.paddle',
   onInit: (entity) => {
     return {
-      elapsedSeconds: 0
     }
   },
   onSet: (entity, component, json) => {

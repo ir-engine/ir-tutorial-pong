@@ -8,6 +8,12 @@ import { TextComponentEditor } from './editors/TextComponentEditor'
 import { BallComponent } from './components/BallComponent'
 import { BallComponentEditor } from './editors/BallComponentEditor'
 
+import { PaddleComponent } from './components/PaddleComponent'
+import { PaddleComponentEditor } from './editors/PaddleComponentEditor'
+
+import { PlateComponent } from './components/PlateComponent'
+import { PlateComponentEditor } from './editors/PlateComponentEditor'
+
 import { GoalComponent } from './components/GoalComponent'
 import { GoalComponentEditor } from './editors/GoalComponentEditor'
 
@@ -22,6 +28,10 @@ export default async function worldInjection() {
     ComponentShelfCategories.Misc.push(TextComponent)
     EntityNodeEditor.set(BallComponent, BallComponentEditor)
     ComponentShelfCategories.Misc.push(BallComponent)
+    EntityNodeEditor.set(PaddleComponent, PaddleComponentEditor)
+    ComponentShelfCategories.Misc.push(PaddleComponent)
+    EntityNodeEditor.set(PlateComponent, PlateComponentEditor)
+    ComponentShelfCategories.Misc.push(PlateComponent)
     EntityNodeEditor.set(GoalComponent, GoalComponentEditor)
     ComponentShelfCategories.Misc.push(GoalComponent)
     EntityNodeEditor.set(PongComponent, PongComponentEditor)

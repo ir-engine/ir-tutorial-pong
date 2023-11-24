@@ -6,11 +6,12 @@ export const GoalComponent = defineComponent({
   jsonID: 'pong.goal',
   onInit: (entity) => {
     return {
-      collider: 0 as Entity,
+      plate: 0 as Entity,
       paddle: 0 as Entity,
       text: 0 as Entity,
       avatar: 0 as Entity,
-      damage: 9,
+      health: 9,
+      startingHealth: 9,
     }
   },
   onSet: (entity, component, json) => {

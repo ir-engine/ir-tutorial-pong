@@ -661,6 +661,10 @@
       "name": "paddle1",
       "components": [
         {
+          "name": "pong.paddle",
+          "props": {}
+        },
+        {
           "name": "visible",
           "props": true
         },
@@ -718,6 +722,10 @@
     "a118a168-6434-46a3-bd21-2e15e5ce41c5": {
       "name": "paddle2",
       "components": [
+        {
+          "name": "pong.paddle",
+          "props": {}
+        },
         {
           "name": "primitive-geometry",
           "props": {
@@ -850,8 +858,12 @@
       "index": 1
     },
     "36e9c2e1-a74a-4e49-87b8-288bf1df283b": {
-      "name": "trigger1",
+      "name": "plate11",
       "components": [
+        {
+          "name": "pong.plate",
+          "props": {}
+        },
         {
           "name": "collider",
           "props": {
@@ -901,8 +913,12 @@
       "index": 2
     },
     "6fe5ac6a-71fe-4aec-97cc-ffaa196a794a": {
-      "name": "trigger2",
+      "name": "plate2",
       "components": [
+        {
+          "name": "pong.plate",
+          "props": {}
+        },
         {
           "name": "collider",
           "props": {
