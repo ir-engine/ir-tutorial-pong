@@ -62,7 +62,7 @@ class PongAction {
   static pongMove = defineAction({
     type: 'pong.move',
     entityUUID: matchesEntityUUID,
-    visibility: matches.number.optional(), // 123 = visible, 456 = not visible
+    visibility: matches.number.optional(), // 123 = visible, 456 = not visible @todo improve
     position: matchesVector3.optional(),
     rotation: matchesQuaternion.optional(),
     impulse: matchesVector3.optional(),
@@ -183,29 +183,22 @@ function helperBindParts(goal:Entity) {
   const goalMutable = getMutableComponent(goal,GoalComponent)
   if(!goalMutable || goalMutable.paddle.value) return
   const goalNode = getComponent(goal,EntityTreeComponent)
-  if(!goalNode) return
-  goalNode.children.forEach((child)=> {
-    const textComponent = getComponent(child,TextComponent)
-    if(textComponent) {
+  goalNode?.children.forEach((child)=> {
+    if(getComponent(child,TextComponent)) {
       goalMutable.text.set(child)
-      return
     }
-    const plateComponent = getComponent(child,PlateComponent)
-    if(plateComponent) {
+    else if(getComponent(child,PlateComponent)) {
       goalMutable.plate.set(child)
-      return
     }
-    const paddleComponent = getComponent(child,PaddleComponent)
-    if(paddleComponent) {
+    else if(getComponent(child,PaddleComponent)) {
       goalMutable.paddle.set(child)
-      return
     }
   })
 }
 
 function helperDispatchResetGoals(pong:Entity) {
   const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongNode.children || !pongNode.children.length) return
+  if(!pongNode || !pongNode.children || !pongNode.children.length) return
   pongNode.children.forEach( (child) => {
     const goalComponent = getComponent(child,GoalComponent)
     if(goalComponent) {
@@ -218,7 +211,7 @@ function helperDispatchResetGoals(pong:Entity) {
 
 function helperDispatchResetBalls(pong:Entity) {
   const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongNode.children || !pongNode.children.length) return
+  if(!pongNode || !pongNode.children || !pongNode.children.length) return
   pongNode.children.forEach( (child) => {
     const ballComponent = getComponent(child,BallComponent)
     if(ballComponent) {
@@ -274,7 +267,7 @@ function helperDispatchMovePaddle(avatar:Entity,paddle:Entity) {
   dispatchAction(PongAction.pongMove({entityUUID,position}))
 }
 
-function helperDispatchEvaluateGoals(pong : Entity, goal : Entity ) {
+function helperDispatchEvaluateGoals(pong:Entity, goal:Entity ) {
 
   const goalComponent = getComponent(goal,GoalComponent)
   if(!goalComponent || !goalComponent.plate || !goalComponent.paddle) return 0
@@ -291,15 +284,13 @@ function helperDispatchEvaluateGoals(pong : Entity, goal : Entity ) {
 
   for (let [child, collision] of collidants) {
 
-    // is a ball incident with the plate?
+    // is the plate incident with a ball? reset the ball and may end game
     if(getComponent(child,BallComponent)) {
 
-      // reset the ball
       const entityUUID = getComponent(child, UUIDComponent) as EntityUUID
       const visibility = 456
       dispatchAction(PongAction.pongMove({entityUUID,visibility}))
-      
-      // if the game is active then decrease plate health and possibly dispatch end the game
+
       if(pongComponent.playing) {
         console.log("*** pong: playing, and a ball hit a goal ",child,goal)
         const health = goalComponent.health - 1
@@ -310,48 +301,43 @@ function helperDispatchEvaluateGoals(pong : Entity, goal : Entity ) {
           dispatchAction(PongAction.pongStop({uuid:pongUUID}))
         }
       }
-      continue
     }
 
-    // is a paddle incident with the plate?
-    const paddleComponent = getComponent(child,BallComponent)
-    if(paddleComponent) {
-      // if a paddle component hits the plate then skip around this; leaving only avatars
-      continue
+    // is the plate incident with a paddle? do nothing
+    else if(getComponent(child,PaddleComponent)) {
     }
 
-    // is an avatar incident with the plate?
-    // @todo may wish to improve avatar detection
-    {
+    // is an avatar incident with the plate? @todo improve avatar detector
+    else {
       numAvatars++
       helperDispatchMovePaddle(child,goal)
     }
   }
+
   return numAvatars
 }
 
-function helperDispatchVolleyBalls(pong) {
+function helperDispatchVolleyBalls(pong:Entity) {
 
-  const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
   const pongComponent = getComponent(pong, PongComponent)
   const pongMutable = getMutableComponent(pong, PongComponent)
   const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongComponent || !pongNode || !pongNode.children || !pongNode.children.length) return
+  const pongTransform = getComponent(pong,TransformComponent)
+  if(!pongComponent || !pongTransform || !pongNode || !pongNode.children || !pongNode.children.length) return
 
-  // every few seconds consider volleying a ball
+  // every few seconds consider volleying a ball -> @todo could a timer be used instead?
 
   const seconds = getState(EngineState).elapsedSeconds
   if(seconds > pongComponent.timer ) {
     pongMutable.timer.set( seconds + 5.0 )
     console.log("*** pong: may launch a ball",seconds,pongComponent.timer)
 
-    // are there any balls that can be recycled?
+    // recycle the oldest ball
     let ball = 0 as Entity
     let ballComponent : any = null
     for(const candidate of pongNode.children) {
       const candidateComponent = getComponent(candidate,BallComponent)
-      if(!candidateComponent) continue
-      if(!ballComponent || candidateComponent.elapsedSeconds < ballComponent.elapsedSeconds) {
+      if(candidateComponent && (!ball || candidateComponent.elapsedSeconds > ballComponent.elapsedSeconds)) {
         ball = candidate
         ballComponent = candidateComponent
       }
@@ -366,7 +352,17 @@ function helperDispatchVolleyBalls(pong) {
       const position = new Vector3(0,5,0)
       const impulse = new Vector3(0.5,0,0)
 
-      // @todo calculate impulse
+      // @todo calculate impulse vector; kind of a hack
+
+      for(const child of pongNode.children) {
+        if(getComponent(child,GoalComponent)) {
+          const transform = getComponent(child,TransformComponent)
+          if(!transform) continue
+          impulse.x = (transform.position.x - pongTransform.position.x)/10.0
+          impulse.y = 0
+          impulse.z = (transform.position.z - pongTransform.position.z)/10.0
+        }
+      }
 
       dispatchAction(PongAction.pongMove({
         entityUUID,
@@ -386,7 +382,15 @@ const helperPong = (pong: Entity) => {
   if(!pongComponent || !pongNode || !pongNode.children || !pongNode.children.length) return
 
   //
-  // A pong game consists of two or more goals; find those goals and evaluate 
+  // rebind each goal to its plate and a paddle - @todo don't call this over and over
+  //
+
+  pongNode.children.forEach( goal => {
+    helperBindParts(goal)
+  })
+
+  //
+  // visit each goal and evaluate that goal
   //
 
   let numAvatars = 0
@@ -396,12 +400,12 @@ const helperPong = (pong: Entity) => {
   })
 
   //
-  // if no players then stop game, otherwise may start game
+  // modally stop or start game; this is arranged to leave the score up and balls active after game ends
   //
 
   if(!numAvatars) {
     if(pongComponent.playing == true) {
-      pongMutable.playing.set(false)
+      pongMutable.playing.set(false) // @todo maybe remove this
       dispatchAction(PongAction.pongStop({ uuid: pongUUID }))
     }
     return
@@ -409,6 +413,7 @@ const helperPong = (pong: Entity) => {
     if(pongComponent.playing == false) {
       helperDispatchResetBalls(pong)
       dispatchAction(PongAction.pongStart({ uuid: pongUUID }))
+      pongMutable.playing.set(true) // @todo maybe remove this
     }
   }
 
