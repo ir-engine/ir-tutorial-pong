@@ -328,49 +328,45 @@ function helperDispatchVolleyBalls(pong:Entity) {
   // every few seconds consider volleying a ball -> @todo could a timer be used instead?
 
   const seconds = getState(EngineState).elapsedSeconds
-  if(seconds > pongComponent.timer ) {
-    pongMutable.timer.set( seconds + 5.0 )
-    console.log("*** pong: may launch a ball",seconds,pongComponent.timer)
+  if(seconds < pongComponent.timer ) return
 
-    // recycle the oldest ball
-    let ball = 0 as Entity
-    let ballComponent : any = null
-    for(const candidate of pongNode.children) {
-      const candidateComponent = getComponent(candidate,BallComponent)
-      if(candidateComponent && (!ball || candidateComponent.elapsedSeconds > ballComponent.elapsedSeconds)) {
-        ball = candidate
-        ballComponent = candidateComponent
-      }
+  pongMutable.timer.set( seconds + 5.0 )
+  console.log("*** pong: may launch a ball",seconds,pongComponent.timer)
+
+  // recycle the oldest ball
+  let ball = 0 as Entity
+  let ballComponent : any = null
+  for(const candidate of pongNode.children) {
+    const candidateComponent = getComponent(candidate,BallComponent)
+    if(candidateComponent && (!ball || candidateComponent.elapsedSeconds > ballComponent.elapsedSeconds)) {
+      ball = candidate
+      ballComponent = candidateComponent
+    }
+  }
+
+  // if a ball can be recycled then do so
+  if(ball) {
+    const ballMutable = getMutableComponent(ball,BallComponent)
+    const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
+    ballMutable.elapsedSeconds.set(seconds)
+
+    const position = new Vector3(0,5,0)
+    const impulse = new Vector3(0.5,0,0)
+
+    // calculate impulse vector @todo what if the whole thing is rotated?
+    // @todo i'd prefer to volley either randomly or to last party hit
+
+    for(const child of pongNode.children) {
+      if(!getComponent(child,GoalComponent)) continue
+      const transform = getComponent(child,TransformComponent)
+      if(!transform) continue
+      impulse.x = (transform.position.x - pongTransform.position.x)/10.0
+      impulse.y = 0
+      impulse.z = (transform.position.z - pongTransform.position.z)/10.0
     }
 
-    // if a ball can be recycled then do so
-    if(ball) {
-      const ballMutable = getMutableComponent(ball,BallComponent)
-      const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
-      ballMutable.elapsedSeconds.set(seconds)
-
-      const position = new Vector3(0,5,0)
-      const impulse = new Vector3(0.5,0,0)
-
-      // @todo calculate impulse vector; kind of a hack
-
-      for(const child of pongNode.children) {
-        if(getComponent(child,GoalComponent)) {
-          const transform = getComponent(child,TransformComponent)
-          if(!transform) continue
-          impulse.x = (transform.position.x - pongTransform.position.x)/10.0
-          impulse.y = 0
-          impulse.z = (transform.position.z - pongTransform.position.z)/10.0
-        }
-      }
-
-      dispatchAction(PongAction.pongMove({
-        entityUUID,
-        position,
-        impulse,
-      }))  
-    }
-
+    dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
+  }
 }
 
 const helperPong = (pong: Entity) => {
