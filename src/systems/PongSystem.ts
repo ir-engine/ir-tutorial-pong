@@ -5,9 +5,8 @@ import {
   defineQuery,
   getComponent,
   getMutableComponent,
-  useQuery
 } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
-import { isClient } from '@etherealengine/engine/src/common/functions/getEnvironment'
+
 import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFunctions'
 import { CollisionComponent } from '@etherealengine/engine/src/physics/components/CollisionComponent'
 import { RigidBodyComponent } from '@etherealengine/engine/src/physics/components/RigidBodyComponent'
@@ -15,24 +14,23 @@ import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDC
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 import { PhysicsSystem } from '@etherealengine/engine/src/physics/systems/PhysicsSystem'
 
-import { matches, matchesEntityUUID, matchesNetworkId, matchesQuaternion, matchesVector3, matchesWithDefault } from '@etherealengine/engine/src/common/functions/MatchesUtils'
+import { matches, matchesEntityUUID, matchesQuaternion, matchesVector3, matchesWithDefault } from '@etherealengine/engine/src/common/functions/MatchesUtils'
 import { NetworkTopics } from '@etherealengine/engine/src/networking/classes/Network'
-import { defineAction, defineActionQueue, dispatchAction, getState, useHookstate } from '@etherealengine/hyperflux'
-import { AvatarControllerComponent } from '@etherealengine/engine/src/avatar/components/AvatarControllerComponent'
-import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
+import { defineAction, defineActionQueue, dispatchAction, getState } from '@etherealengine/hyperflux'
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { BallComponent } from '../components/BallComponent'
-import { NetworkObjectComponent } from '@etherealengine/engine/src/networking/components/NetworkObjectComponent'
 import { EntityTreeComponent } from '@etherealengine/engine/src/ecs/functions/EntityTree'
-import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
 
-import { PongComponent } from '../components/PongComponent'
+import { isClient } from '@etherealengine/engine/src/common/functions/getEnvironment'
+
+import { PongComponent, PongMode } from '../components/PongComponent'
 import { GoalComponent } from '../components/GoalComponent'
 import { TextComponent } from '../components/TextComponent'
 import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
 import { PlateComponent } from '../components/PlateComponent'
 import { PaddleComponent } from '../components/PaddleComponent'
-import { on } from 'primus'
+import { AvatarRigComponent } from '@etherealengine/engine/src/avatar/components/AvatarAnimationComponent'
+import { AvatarIKTargetComponent } from '@etherealengine/engine/src/avatar/components/AvatarIKComponents'
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -40,15 +38,10 @@ import { on } from 'primus'
 
 class PongAction {
 
-  static pongStart = defineAction({
-    type: 'pong.start',
+  static pongPong = defineAction({
+    type: 'pong.pong',
     uuid: matchesEntityUUID,
-    $topic: NetworkTopics.world
-  })
-
-  static pongStop = defineAction({
-    type: 'pong.stop',
-    uuid: matchesEntityUUID,
+    mode: matches.string,
     $topic: NetworkTopics.world
   })
 
@@ -62,7 +55,8 @@ class PongAction {
   static pongMove = defineAction({
     type: 'pong.move',
     entityUUID: matchesEntityUUID,
-    visibility: matches.number.optional(), // 123 = visible, 456 = not visible @todo improve
+    kinematicPosition: matchesVector3.optional(),
+    kinematicRotation: matchesQuaternion.optional(),
     position: matchesVector3.optional(),
     rotation: matchesQuaternion.optional(),
     impulse: matchesVector3.optional(),
@@ -75,41 +69,31 @@ class PongAction {
 //
 // action handling
 
-const pongStart = (action: ReturnType<typeof PongAction.pongStart>) => {
-  // mark the game as started; this doesn't mean a lot on the client side
+const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
   const pong = UUIDComponent.entitiesByUUID[action.uuid]
   if(!pong) return
   const pongMutable = getMutableComponent(pong,PongComponent)
-  pongMutable.playing.set(true)
-  console.log("*** pong: restarted game")
-}
-
-const pongStop = (action: ReturnType<typeof PongAction.pongStop>) => {
-  // mark the game as stopped; this doesn't mean a lot on the client side
-  const pong = UUIDComponent.entitiesByUUID[action.uuid]
-  if(!pong) return
-  const pongMutable = getMutableComponent(pong,PongComponent)
-  pongMutable.playing.set(false)
-  console.log("*** pong: stopped game")
+  switch(action.mode) {
+    default:
+    case 'stopped': pongMutable.mode.set( PongMode.stopped ); break
+    case 'playing': pongMutable.mode.set( PongMode.playing ); break
+    case 'completed': pongMutable.mode.set( PongMode.completed ); break
+  }
+  console.log("*** pong: mode change =",action.mode)
 }
 
 const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
-  // update the goal health and also the text goal object(s) of a goal if any
   const goal = UUIDComponent.entitiesByUUID[action.entityUUID]
   if(!goal) return
   const goalComponent = getMutableComponent(goal,GoalComponent)
   if(!goalComponent) return
-  // set health
   goalComponent.health.set( action.health )
-  // find and update text score nodes @todo could memoize
-  const goalNode = getComponent(goal,EntityTreeComponent)
-  if(!goalNode.children || !goalNode.children.length) return
-  goalNode.children.forEach( (child) => {
-    const textComponent = getMutableComponent(child,TextComponent)
+  if(goalComponent.text) {
+    const textComponent = getMutableComponent(goalComponent.text.value,TextComponent)
     if(textComponent) {
       textComponent.text.set(`${action.health}`)
     }
-  })
+  }
   console.log("*** pong: set goal in game =",action.health,goal)
 }
 
@@ -121,15 +105,18 @@ const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
   if(!transform) return
   const rigid = getComponent(entity,RigidBodyComponent)
 
-  // make the item not visible - @improve this later
-  if( action.visibility && action.visibility == 456) {
-    transform.position.set(9999,9999,9999)
-    if(rigid) rigid.position.set(9999,9999,9999)
-    return
-  }
-
   if(rigid) {
     rigid.body.resetForces(true)
+  }
+
+  if(rigid && action.kinematicPosition) {
+    rigid.targetKinematicPosition.copy(action.kinematicPosition)
+    transform.position.copy(action.kinematicPosition)
+  }
+
+  if(rigid && action.kinematicRotation) {
+    rigid.targetKinematicRotation.copy(action.kinematicRotation)
+    transform.rotation.copy(action.kinematicRotation)
   }
 
   if( action.position ) {
@@ -156,16 +143,14 @@ const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
-// action receptor queues
+// action queues
 
 function PongActionQueueReceptorContext() {
-  const pongStartQueue = defineActionQueue(PongAction.pongStart.matches)
-  const pongStopQueue = defineActionQueue(PongAction.pongStop.matches)
+  const pongPongQueue = defineActionQueue(PongAction.pongPong.matches)
   const pongGoalQueue = defineActionQueue(PongAction.pongGoal.matches)
   const pongMoveQueue = defineActionQueue(PongAction.pongMove.matches)
   const exhaustActionQueues = () => {
-    for (const action of pongStartQueue()) pongStart(action)
-    for (const action of pongStopQueue()) pongStop(action)
+    for (const action of pongPongQueue()) pongPong(action)
     for (const action of pongGoalQueue()) pongGoal(action)
     for (const action of pongMoveQueue()) pongMove(action)
   }
@@ -175,251 +160,245 @@ function PongActionQueueReceptorContext() {
 const PongActionReceptor = PongActionQueueReceptorContext()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-//
-// helper functions
 
-function helperBindParts(goal:Entity) {
-  // bind goal paddle, collider and text widget
-  const goalMutable = getMutableComponent(goal,GoalComponent)
-  if(!goalMutable || goalMutable.paddle.value) return
-  const goalNode = getComponent(goal,EntityTreeComponent)
-  goalNode?.children.forEach((child)=> {
-    if(getComponent(child,TextComponent)) {
-      goalMutable.text.set(child)
-    }
-    else if(getComponent(child,PlateComponent)) {
-      goalMutable.plate.set(child)
-    }
-    else if(getComponent(child,PaddleComponent)) {
-      goalMutable.paddle.set(child)
-    }
-  })
-}
+///
+/// helper function to find relationships between goals and goal text, plate, paddle
+/// @todo ideally this would be called once only at startup
+///
 
-function helperDispatchResetGoals(pong:Entity) {
+function helperBindPongParts(pong:Entity) {
+  const pongMutable = getMutableComponent(pong,PongComponent)
+  if(!pongMutable) return
   const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongNode || !pongNode.children || !pongNode.children.length) return
-  pongNode.children.forEach( (child) => {
-    const goalComponent = getComponent(child,GoalComponent)
-    if(goalComponent) {
-      const entityUUID = getComponent(child, UUIDComponent) as EntityUUID
-      const health = goalComponent.startingHealth || 9
-      dispatchAction(PongAction.pongGoal({ entityUUID, health }))
-    }
-  })
-}
-
-function helperDispatchResetBalls(pong:Entity) {
-  const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongNode || !pongNode.children || !pongNode.children.length) return
-  pongNode.children.forEach( (child) => {
-    const ballComponent = getComponent(child,BallComponent)
-    if(ballComponent) {
-      const entityUUID = getComponent(child, UUIDComponent) as EntityUUID
-      const visibility = 0
-      dispatchAction(PongAction.pongMove({ entityUUID, visibility }))
-    }
-  })
-}
-
-function helperDispatchMovePaddle(avatar:Entity,paddle:Entity) {
-  const transformPaddle = getMutableComponent(paddle, TransformComponent)
-  if(!transformPaddle) return
-  const rigidPaddle = getComponent(paddle, RigidBodyComponent)
-  if(!rigidPaddle) return
-  const transformAvatar = getComponent(avatar, TransformComponent)
-  if(!transformAvatar) return
-
-  /*
-  // this is one way to get an input - maybe use later
-  const preferredInputSource = XRState.getPreferredInputSource()
-  if (preferredInputSource) {
-    const xrFrame = getState(XRState).xrFrame
-    const pose = xrFrame!.getPose(
-      preferredInputSource.gripSpace ?? preferredInputSource.targetRaySpace,
-      ReferenceSpace.origin!
-    )
-    if (pose) {
-      //paddle1.targetKinematicPosition.copy(pose.transform.position as any as Vector3)
-      //paddle1.targetKinematicRotation.copy(pose.transform.orientation as any as Quaternion)
-    }
-  }
-  */
-
-  // find local avatar from engine
-  //const rig = getOptionalComponent(Engine.instance.localClientEntity, AvatarRigComponent)
-  //if (rig) {
-  //const handPose = rig.rig.rightHand.node
-  //handPose.getWorldPosition(body.targetKinematicPosition)
-  //handPose.getWorldQuaternion(body.targetKinematicRotation)
-  //return
-  //}
-  // paddle1.position.set(0, -1000, 0)
-  // paddle1.targetKinematicPosition.copy(body.position)
-  // paddle1.body.setTranslation(body.position, true)
-
-  const position = new Vector3(
-    transformAvatar.position.x,
-    transformAvatar.position.y + 2.0,
-    transformAvatar.position.z
-  )
-  const entityUUID = getComponent(paddle, UUIDComponent) as EntityUUID
-  dispatchAction(PongAction.pongMove({entityUUID,position}))
-}
-
-function helperDispatchEvaluateGoals(pong:Entity, goal:Entity ) {
-
-  const goalComponent = getComponent(goal,GoalComponent)
-  if(!goalComponent || !goalComponent.plate || !goalComponent.paddle) return 0
-
-  // look at all the things that are in collision with the plate right now
-  // @todo use trigger callbacks of countingn collidants?
-
-  const collidants = getComponent(goalComponent.plate, CollisionComponent)
-  if (!collidants || !collidants.size) return 0
-  const pongComponent = getComponent(pong, PongComponent)
-  const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
-
-  let numAvatars = 0
-
-  for (let [child, collision] of collidants) {
-
-    // is the plate incident with a ball? reset the ball and may end game
+  const goals : Array<Entity> = []
+  const balls : Array<Entity> = []
+  pongNode?.children?.forEach( child => {
     if(getComponent(child,BallComponent)) {
+      balls.push(child)
+      return
+    }
+    const goalMutable = getMutableComponent(child,GoalComponent)
+    if(!goalMutable) return
+    goals.push(child)
+    if(goalMutable.text.value || goalMutable.plate.value || goalMutable.paddle.value) return
+    const goalNode = getComponent(child,EntityTreeComponent)
+    goalNode?.children.forEach((child)=> {
+      if(getComponent(child,TextComponent)) {
+        goalMutable.text.set(child)
+      }
+      else if(getComponent(child,PlateComponent)) {
+        goalMutable.plate.set(child)
+      }
+      else if(getComponent(child,PaddleComponent)) {
+        goalMutable.paddle.set(child)
+      }
+    })
+  })
+  pongMutable.balls.set(balls)
+  pongMutable.goals.set(goals)
+}
 
-      const entityUUID = getComponent(child, UUIDComponent) as EntityUUID
-      const visibility = 456
-      dispatchAction(PongAction.pongMove({entityUUID,visibility}))
+///
+/// helper function to build relationship between goal and first avatar on goal
+/// @todo it may make sense to allow players to step out of a goal briefly using a timeout
+/// @todo it may make sense to watch collision transitions rather than busy poll this
+/// @todo hack; use proximity for now because collision capsule on avatar is above ground
+//
 
-      if(pongComponent.playing) {
-        console.log("*** pong: playing, and a ball hit a goal ",child,goal)
-        const health = goalComponent.health - 1
-        if(health >= 0) {
-          const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
-          dispatchAction(PongAction.pongGoal({ entityUUID, health }))
-        } else {
-          dispatchAction(PongAction.pongStop({uuid:pongUUID}))
-        }
+const avatars = defineQuery([AvatarRigComponent])
+
+function helperBindPongGoalsAvatar(pong:Entity) {
+  let numAvatars = 0
+  const pongComponent = getComponent(pong,PongComponent)
+  pongComponent.goals.forEach( goal => {
+    const goalMutable = getMutableComponent(goal,GoalComponent)
+    const transformPlate = getComponent(goalMutable.plate.value,TransformComponent)
+    if(!transformPlate) return
+    avatars().forEach(avatar=>{
+      const dist = getComponent(avatar,TransformComponent).position.distanceToSquared(transformPlate.position)
+      if(dist < transformPlate.scale.lengthSq()) {
+        goalMutable.avatar.set(avatar)
+        numAvatars++
+      }
+    })
+  })
+  return numAvatars
+}
+
+function orig_helperBindPongGoalsAvatar(pong:Entity) {
+  let numAvatars = 0
+  const pongComponent = getComponent(pong,PongComponent)
+  pongComponent.goals.forEach( goal => {
+    const goalMutable = getMutableComponent(goal,GoalComponent)
+    const collidants = getComponent(goalMutable.plate?.value, CollisionComponent)
+    if (!collidants || !collidants.size) return 0
+    for (let [avatar, collision] of collidants) {
+      if(getComponent(avatar,AvatarRigComponent)) {
+        goalMutable.avatar.set(avatar)
+        numAvatars++
       }
     }
-
-    // is the plate incident with a paddle? do nothing
-    else if(getComponent(child,PaddleComponent)) {
-    }
-
-    // is an avatar incident with the plate? @todo improve avatar detector
-    else {
-      numAvatars++
-      helperDispatchMovePaddle(child,goal)
-    }
-  }
-
+  })
   return numAvatars
+}
+
+function helperDispatchUpdateGoalAvatar(goal:Entity) {
+  const goalComponent = getComponent(goal,GoalComponent)
+  if(!goalComponent || !goalComponent.avatar || !goalComponent.paddle) return
+  const rig = getComponent(goalComponent.avatar, AvatarRigComponent)
+  if (!rig) return
+  
+  // @todo could use local player for locally authoritative lower latency
+  //const rig = getOptionalComponent(Engine.instance.localClientEntity, AvatarRigComponent)
+
+  const handPose = rig?.rig?.rightHand?.node
+  if(!handPose) return
+  const kinematicPosition = new Vector3()
+  const kinematicRotation = new Quaternion()
+  handPose.getWorldPosition(kinematicPosition)
+  handPose.getWorldQuaternion(kinematicRotation)
+
+  const entityUUID = getComponent(goalComponent.paddle, UUIDComponent) as EntityUUID
+  dispatchAction(PongAction.pongMove({entityUUID,kinematicPosition,kinematicRotation}))
+}
+
+function helperDispatchEvaluateGoals(goal:Entity ) {
+  const goalComponent = getComponent(goal,GoalComponent)
+  if(!goalComponent || !goalComponent.plate) return false
+  const collidants = getComponent(goalComponent.plate, CollisionComponent)
+  if (!collidants || !collidants.size) return false
+  for (let [ball, collision] of collidants) {
+    if(!getComponent(ball,BallComponent)) continue
+    const health = goalComponent.health - 1
+    const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
+    dispatchAction(PongAction.pongGoal({ entityUUID, health }))
+    console.log("*** pong: playing, and a ball hit a goal ",ball,goal,health)
+    if(health <= 0) {
+      return true // game over
+    }
+    // dispatch hide/reset ball by just moving far away for now
+    const position = new Vector3(-1000,-1000,-1000)
+    dispatchAction(PongAction.pongMove({entityUUID,position}))
+    // also move it now asap to prevent collisions from racking up locally
+    const ballTransform = getComponent(ball,TransformComponent)
+    ballTransform.position.copy(position)
+  }
+  return false
 }
 
 function helperDispatchVolleyBalls(pong:Entity) {
 
-  const pongComponent = getComponent(pong, PongComponent)
-  const pongMutable = getMutableComponent(pong, PongComponent)
-  const pongNode = getComponent(pong,EntityTreeComponent)
-  const pongTransform = getComponent(pong,TransformComponent)
-  if(!pongComponent || !pongTransform || !pongNode || !pongNode.children || !pongNode.children.length) return
+  // every few seconds consider volleying a ball; this could be improved
+  // @todo could a timer be used instead? also or could temporal events be reactive?
 
-  // every few seconds consider volleying a ball -> @todo could a timer be used instead?
+  const pongComponent = getComponent(pong, PongComponent)
+  if(!pongComponent.balls.length || !pongComponent.goals.length) return
 
   const seconds = getState(EngineState).elapsedSeconds
-  if(seconds < pongComponent.timer ) return
+  if(seconds < pongComponent.elapsedSeconds ) return
 
-  pongMutable.timer.set( seconds + 5.0 )
-  console.log("*** pong: may launch a ball",seconds,pongComponent.timer)
+  const pongMutable = getMutableComponent(pong, PongComponent)
+  pongMutable.elapsedSeconds.set( seconds + 5.0 )
 
-  // recycle the oldest ball
+  // recycle the ball with the smallest elapsedSeconds
   let ball = 0 as Entity
   let ballComponent : any = null
-  for(const candidate of pongNode.children) {
+  for(const candidate of pongComponent.balls) {
     const candidateComponent = getComponent(candidate,BallComponent)
-    if(candidateComponent && (!ball || candidateComponent.elapsedSeconds > ballComponent.elapsedSeconds)) {
+    if(!ball || candidateComponent.elapsedSeconds < ballComponent.elapsedSeconds) {
       ball = candidate
       ballComponent = candidateComponent
     }
   }
 
   // if a ball can be recycled then do so
-  if(ball) {
-    const ballMutable = getMutableComponent(ball,BallComponent)
-    const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
-    ballMutable.elapsedSeconds.set(seconds)
+  if(!ball) return
 
-    const position = new Vector3(0,5,0)
-    const impulse = new Vector3(0.5,0,0)
+  // update ball time last spawned locally on server
+  const ballMutable = getMutableComponent(ball,BallComponent)
+  const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
+  ballMutable.elapsedSeconds.set(seconds)
 
-    // calculate impulse vector @todo what if the whole thing is rotated?
-    // @todo i'd prefer to volley either randomly or to last party hit
-
-    for(const child of pongNode.children) {
-      if(!getComponent(child,GoalComponent)) continue
-      const transform = getComponent(child,TransformComponent)
-      if(!transform) continue
-      impulse.x = (transform.position.x - pongTransform.position.x)/10.0
-      impulse.y = 0
-      impulse.z = (transform.position.z - pongTransform.position.z)/10.0
-    }
-
-    dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
-  }
+  // volley the ball via dispatch
+  const goal = pongComponent.goals[Math.floor(pongComponent.goals.length * Math.random())]
+  const goalTransform = getComponent(goal,TransformComponent)
+  const pongTransform = getComponent(pong,TransformComponent)
+  const impulse = goalTransform.position.clone()
+  impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() * 0.1 + 0.1)
+  const position = new Vector3(0,5,0)
+  dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
 }
 
 const helperPong = (pong: Entity) => {
 
-  const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
+  // the following is server only
+  // if(!isClient) return
+
   const pongComponent = getComponent(pong, PongComponent)
-  const pongMutable = getMutableComponent(pong, PongComponent)
-  const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongComponent || !pongNode || !pongNode.children || !pongNode.children.length) return
+  const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
 
-  //
-  // rebind each goal to its plate and a paddle - @todo don't call this over and over
-  //
+  helperBindPongParts(pong)
+  const numAvatars = helperBindPongGoalsAvatar(pong)
 
-  pongNode.children.forEach( goal => {
-    helperBindParts(goal)
-  })
+  switch(pongComponent.mode) {
 
-  //
-  // visit each goal and evaluate that goal
-  //
+    default:
+    case PongMode.completed:
+      // stay in completed state till players all leave then go to stopped state
+      if(!numAvatars) {
+        console.log("*** pong: stopping")
+        dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.stopped }))
+      }
+      break
 
-  let numAvatars = 0
-  pongNode.children.forEach( goal => {
-    helperBindParts(goal)
-    numAvatars += helperDispatchEvaluateGoals(pong,goal)
-  })
+    case PongMode.stopped:
+      // stay in stopped state till players show up
+      if(!numAvatars) {
+        break
+      }
 
-  //
-  // modally stop or start game; this is arranged to leave the score up and balls active after game ends
-  //
+      // reset goals for a new game
+      pongComponent.goals.forEach(goal=>{
+        const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
+        const health = getComponent(goal,GoalComponent)?.startingHealth || 9
+        dispatchAction(PongAction.pongGoal({ entityUUID, health }))
+      })
 
-  if(!numAvatars) {
-    if(pongComponent.playing == true) {
-      pongMutable.playing.set(false) // @todo maybe remove this
-      dispatchAction(PongAction.pongStop({ uuid: pongUUID }))
+      // reset balls for a new game
+      pongComponent.balls.forEach(ball=>{
+        const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
+        const position = new Vector3(-1000,-1000,-1000)
+        dispatchAction(PongAction.pongMove({ entityUUID, position }))
+      })
+
+      // start new game
+      dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.playing }))
+      console.log("*** pong: starting")
+
+    case PongMode.playing:
+
+      // stop playing if players leave
+      if(!numAvatars) {
+        dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.stopped }))
+        break
+      }
+
+      // volley balls periodically
+      helperDispatchVolleyBalls(pong)
+
+      // update paddles
+      pongComponent.goals.forEach( helperDispatchUpdateGoalAvatar )
+
+      // update goal collisions
+      pongComponent.goals.forEach(goal=>{
+          if(helperDispatchEvaluateGoals(goal)) {
+            dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.completed }))
+          }
+      })
+
+      break
+
     }
-    return
-  } else {
-    if(pongComponent.playing == false) {
-      helperDispatchResetBalls(pong)
-      dispatchAction(PongAction.pongStart({ uuid: pongUUID }))
-      pongMutable.playing.set(true) // @todo maybe remove this
-    }
-  }
-
-  //
-  // volley balls periodically while playing; allows multiple balls at once
-  //
-
-  if(pongComponent.playing) {
-    helperDispatchVolleyBalls(pong)
-  }
 
 }
 

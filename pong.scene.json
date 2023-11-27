@@ -601,7 +601,7 @@
           "props": {
             "position": {
               "x": 0,
-              "y": 2,
+              "y": 0,
               "z": 6
             },
             "rotation": {
@@ -637,7 +637,7 @@
           "props": {
             "position": {
               "x": 0,
-              "y": 2,
+              "y": 0,
               "z": -6
             },
             "rotation": {
@@ -683,9 +683,9 @@
               "w": 1
             },
             "scale": {
-              "x": 0.5,
-              "y": 0.5,
-              "z": 0.5
+              "x": 0.1,
+              "y": 0.1,
+              "z": 0.1
             }
           }
         },
@@ -752,9 +752,9 @@
               "w": 1
             },
             "scale": {
-              "x": 0.5,
-              "y": 0.5,
-              "z": 0.5
+              "x": 0.1,
+              "y": 0.1,
+              "z": 0.1
             }
           }
         },
@@ -782,7 +782,7 @@
       "index": 0
     },
     "e1b552de-c601-488f-8725-a0d28ef5249a": {
-      "name": "score1",
+      "name": "text1",
       "components": [
         {
           "name": "text-geometry",
@@ -799,7 +799,7 @@
           "props": {
             "position": {
               "x": 0,
-              "y": 2,
+              "y": 4,
               "z": 0
             },
             "rotation": {
@@ -820,7 +820,7 @@
       "index": 1
     },
     "c5723371-2332-4b04-a08c-ba253eadb0be": {
-      "name": "score2",
+      "name": "text2",
       "components": [
         {
           "name": "text-geometry",
@@ -837,7 +837,7 @@
           "props": {
             "position": {
               "x": 0,
-              "y": 2,
+              "y": 4,
               "z": 0
             },
             "rotation": {
@@ -858,7 +858,7 @@
       "index": 1
     },
     "36e9c2e1-a74a-4e49-87b8-288bf1df283b": {
-      "name": "plate11",
+      "name": "plate1",
       "components": [
         {
           "name": "pong.plate",
@@ -869,7 +869,7 @@
           "props": {
             "bodyType": 1,
             "shapeType": 1,
-            "isTrigger": true,
+            "isTrigger": false,
             "removeMesh": false,
             "collisionLayer": 1,
             "collisionMask": 7,
@@ -903,7 +903,7 @@
             },
             "scale": {
               "x": 2,
-              "y": 2,
+              "y": 0.1,
               "z": 2
             }
           }
@@ -924,7 +924,7 @@
           "props": {
             "bodyType": 1,
             "shapeType": 1,
-            "isTrigger": true,
+            "isTrigger": false,
             "removeMesh": false,
             "collisionLayer": 1,
             "collisionMask": 7,
@@ -958,7 +958,7 @@
             },
             "scale": {
               "x": 2,
-              "y": 2,
+              "y": 0.1,
               "z": 2
             }
           }
