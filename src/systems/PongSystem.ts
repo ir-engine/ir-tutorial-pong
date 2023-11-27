@@ -332,7 +332,7 @@ function helperDispatchVolleyBalls(pong:Entity) {
 const helperPong = (pong: Entity) => {
 
   // the following is server only
-  // if(!isClient) return
+  if(!isClient) return
 
   const pongComponent = getComponent(pong, PongComponent)
   const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
