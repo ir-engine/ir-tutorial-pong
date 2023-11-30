@@ -20,7 +20,7 @@ import { GoalComponentEditor } from './editors/GoalComponentEditor'
 import { PongComponent } from './components/PongComponent'
 import { PongComponentEditor } from './editors/PongComponentEditor'
 
-import { PongSystem } from './systems/PongSystem'
+import './systems/PongSystem'
 import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
 import { getState } from '@etherealengine/hyperflux'
 
@@ -41,5 +41,3 @@ export default async function worldInjection() {
     ComponentShelfCategories.Misc.push(PongComponent)
   }
 }
-
-export { PongSystem }

@@ -73,6 +73,7 @@ const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
   const pong = UUIDComponent.entitiesByUUID[action.uuid]
   if(!pong) return
   const pongMutable = getMutableComponent(pong,PongComponent)
+  if(!pongMutable) return
   switch(action.mode) {
     default:
     case 'stopped': pongMutable.mode.set( PongMode.stopped ); break
@@ -85,13 +86,13 @@ const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
 const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
   const goal = UUIDComponent.entitiesByUUID[action.entityUUID]
   if(!goal) return
-  const goalComponent = getMutableComponent(goal,GoalComponent)
-  if(!goalComponent) return
-  goalComponent.health.set( action.health )
-  if(goalComponent.text) {
-    const textComponent = getMutableComponent(goalComponent.text.value,TextComponent)
-    if(textComponent) {
-      textComponent.text.set(`${action.health}`)
+  const goalMutable = getMutableComponent(goal,GoalComponent)
+  if(!goalMutable) return
+  goalMutable.health.set( action.health )
+  if(goalMutable.text.value) {
+    const textMutable = getMutableComponent(goalMutable.text.value,TextComponent)
+    if(textMutable) {
+      textMutable.text.set(`${action.health}`)
     }
   }
   console.log("*** pong: set goal in game =",action.health,goal)
@@ -170,6 +171,7 @@ function helperBindPongParts(pong:Entity) {
   const pongMutable = getMutableComponent(pong,PongComponent)
   if(!pongMutable) return
   const pongNode = getComponent(pong,EntityTreeComponent)
+  if(!pongNode) return
   const goals : Array<Entity> = []
   const balls : Array<Entity> = []
   pongNode?.children?.forEach( child => {
@@ -210,8 +212,10 @@ const avatars = defineQuery([AvatarRigComponent])
 function helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
   const pongComponent = getComponent(pong,PongComponent)
+  if(!pongComponent) return
   pongComponent.goals.forEach( goal => {
     const goalMutable = getMutableComponent(goal,GoalComponent)
+    if(!goalMutable) return
     const transformPlate = getComponent(goalMutable.plate.value,TransformComponent)
     if(!transformPlate) return
     avatars().forEach(avatar=>{
@@ -228,8 +232,10 @@ function helperBindPongGoalsAvatar(pong:Entity) {
 function orig_helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
   const pongComponent = getComponent(pong,PongComponent)
+  if(!pongComponent) return
   pongComponent.goals.forEach( goal => {
     const goalMutable = getMutableComponent(goal,GoalComponent)
+    if(!goalMutable) return
     const collidants = getComponent(goalMutable.plate?.value, CollisionComponent)
     if (!collidants || !collidants.size) return 0
     for (let [avatar, collision] of collidants) {
@@ -292,12 +298,13 @@ function helperDispatchVolleyBalls(pong:Entity) {
   // @todo could a timer be used instead? also or could temporal events be reactive?
 
   const pongComponent = getComponent(pong, PongComponent)
-  if(!pongComponent.balls.length || !pongComponent.goals.length) return
+  if(!pongComponent || !pongComponent.balls.length || !pongComponent.goals.length) return
 
   const seconds = getState(EngineState).elapsedSeconds
   if(seconds < pongComponent.elapsedSeconds ) return
 
   const pongMutable = getMutableComponent(pong, PongComponent)
+  if(!pongMutable) return
   pongMutable.elapsedSeconds.set( seconds + 5.0 )
 
   // recycle the ball with the smallest elapsedSeconds
@@ -331,10 +338,8 @@ function helperDispatchVolleyBalls(pong:Entity) {
 
 const helperPong = (pong: Entity) => {
 
-  // the following is server only
-  //if(isClient) return
-
   const pongComponent = getComponent(pong, PongComponent)
+  if(!pongComponent) return
   const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
 
   helperBindPongParts(pong)
@@ -406,6 +411,7 @@ const pongQuery = defineQuery([PongComponent])
 
 function execute() {
   PongActionReceptor()
+  if(isClient) return
   const pongEntities = pongQuery()
   for (const pong of pongEntities) {
     helperPong(pong)
