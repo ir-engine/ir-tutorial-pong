@@ -32,6 +32,7 @@ import { PaddleComponent } from '../components/PaddleComponent'
 import { AvatarRigComponent } from '@etherealengine/engine/src/avatar/components/AvatarAnimationComponent'
 import { AvatarIKTargetComponent } from '@etherealengine/engine/src/avatar/components/AvatarIKComponents'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
+import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -383,39 +384,48 @@ const helperPong = (pong: Entity) => {
       break
 
     case PongMode.stopped:
-      // stay in stopped state till players show up
+      // stay in stopped state till players show up - right now i let any instance start the game
       if(!numAvatars) {
         break
       }
 
-      // reset goals for a new game
-      pongComponent.goals.forEach(goal=>{
-        const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
-        const health = getComponent(goal,GoalComponent)?.startingHealth || 9
-        dispatchAction(PongAction.pongGoal({ entityUUID, health }))
-      })
-
-      // reset balls for a new game
-      pongComponent.balls.forEach(ball=>{
-        const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
-        const position = new Vector3(-1000,-1000,-1000)
-        dispatchAction(PongAction.pongMove({ entityUUID, position }))
-      })
-
       // start new game
-      dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.playing }))
+      dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.starting }))
       console.log("*** pong: starting")
       const log = `Pong starting game}`
       dispatchAction(PongAction.pongLog({log}))
 
+    case PongMode.starting:
     case PongMode.playing:
 
-      // stop playing if players leave
+      // stop playing if players leave - right now i let any instance stop the game
       if(!numAvatars) {
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.stopped }))
         const log = `Pong game ended`
         dispatchAction(PongAction.pongLog({log}))
         break
+      }
+
+      // I'm letting any player start or stop the game but only the server can volley and evaluate
+      if(isClient) return
+
+      if(PongMode.starting) {
+
+          // reset goals for a new game
+        pongComponent.goals.forEach(goal=>{
+          const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
+          const health = getComponent(goal,GoalComponent)?.startingHealth || 9
+          dispatchAction(PongAction.pongGoal({ entityUUID, health }))
+        })
+
+        // reset balls for a new game
+        pongComponent.balls.forEach(ball=>{
+          const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
+          const position = new Vector3(-1000,-1000,-1000)
+          dispatchAction(PongAction.pongMove({ entityUUID, position }))
+        })
+
+        dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.playing }))
       }
 
       // volley balls periodically
@@ -441,9 +451,18 @@ const helperPong = (pong: Entity) => {
 
 const pongQuery = defineQuery([PongComponent])
 
+let counter = 0
+
 function execute() {
+
+  counter++
+  if(counter > 5*60) {
+    const userid = Engine.instance.userID
+    dispatchAction(PongAction.pongLog({ log: `5 seconds passed for ${userid}` }))
+    counter = 0
+  }
+
   PongActionReceptor()
-  if(isClient) return
   const pongEntities = pongQuery()
   for (const pong of pongEntities) {
     helperPong(pong)

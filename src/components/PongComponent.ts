@@ -6,6 +6,7 @@ import { Vector3 } from 'three'
 
 export enum PongMode {
   'stopped' = 'stopped',
+  'starting' = 'starting',
   'playing' = 'playing',
   'completed' = 'completed'
 }
