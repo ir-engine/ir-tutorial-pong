@@ -476,7 +476,6 @@ let counter = 0
 function execute() {
 
   PongActionReceptor()
-  const pongEntities = pongQuery()
 
   counter++
   if(counter > 5*60) {
@@ -486,9 +485,11 @@ function execute() {
     counter = 0
   }
 
-  for (const pong of pongEntities) {
-    helperPong(pong)
-  }
+//  const pongEntities = pongQuery()
+//  for (const pong of pongEntities) {
+//    helperPong(pong)
+//  }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
