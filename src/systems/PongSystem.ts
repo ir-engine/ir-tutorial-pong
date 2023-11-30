@@ -89,6 +89,7 @@ const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
   switch(action.mode) {
     default:
     case 'stopped': pongMutable.mode.set( PongMode.stopped ); break
+    case 'starting': pongMutable.mode.set( PongMode.starting ); break
     case 'playing': pongMutable.mode.set( PongMode.playing ); break
     case 'completed': pongMutable.mode.set( PongMode.completed ); break
   }
@@ -184,7 +185,8 @@ const PongActionReceptor = PongActionQueueReceptorContext()
 function helperBindPongParts(pong:Entity) {
   const pongComponent = getMutableComponent(pong,PongComponent)
   if(!pongComponent) return
-  if(pongComponent.goals.length > 0 && pongComponent.balls.length > 0) return
+  // not everything shows up at once
+  //if(pongComponent.goals.length > 0 && pongComponent.balls.length > 0) return
   const pongMutable = getMutableComponent(pong,PongComponent)
   if(!pongMutable) return
   const pongNode = getComponent(pong,EntityTreeComponent)
@@ -199,24 +201,30 @@ function helperBindPongParts(pong:Entity) {
     const goalMutable = getMutableComponent(child,GoalComponent)
     if(!goalMutable) return
     goals.push(child)
-    if(goalMutable.text.value || goalMutable.plate.value || goalMutable.paddle.value) return
+    if(goalMutable.text.value && goalMutable.plate.value && goalMutable.paddle.value) {
+      return
+    }
+    console.log("*** pong trying to bind parts")
     const goalNode = getComponent(child,EntityTreeComponent)
-    goalNode?.children.forEach((child)=> {
-      if(getComponent(child,TextComponent)) {
-        goalMutable.text.set(child)
+    goalNode?.children.forEach((child2)=> {
+      if(getComponent(child2,TextComponent)) {
+        console.log("*** pong goal set text",child,child2)
+        goalMutable.text.set(child2)
       }
-      else if(getComponent(child,PlateComponent)) {
-        goalMutable.plate.set(child)
+      else if(getComponent(child2,PlateComponent)) {
+        console.log("*** pong goal set plate",child,child2)
+        goalMutable.plate.set(child2)
       }
-      else if(getComponent(child,PaddleComponent)) {
-        goalMutable.paddle.set(child)
+      else if(getComponent(child2,PaddleComponent)) {
+        console.log("*** pong goal set paddle",child,child2)
+        goalMutable.paddle.set(child2)
       }
     })
   })
   pongMutable.balls.set(balls)
   pongMutable.goals.set(goals)
-  const log = `Pong bound some parts ${balls.length} ${goals.length}`
-  dispatchAction(PongAction.pongLog({log}))
+  //const log = `Pong bound some parts ${balls.length} ${goals.length}`
+  //dispatchAction(PongAction.pongLog({log}))
 }
 
 ///
@@ -231,11 +239,11 @@ const avatars = defineQuery([AvatarComponent])
 function helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
   const pongComponent = getComponent(pong,PongComponent)
-  if(!pongComponent) return
+  if(!pongComponent) return 0
   pongComponent.goals.forEach( goal => {
     const goalMutable = getMutableComponent(goal,GoalComponent)
-    if(!goalMutable) return
     const transformPlate = getComponent(goalMutable.plate.value,TransformComponent)
+    if(!goalMutable) return
     if(!transformPlate) return
     avatars().forEach(avatar=>{
       const dist = getComponent(avatar,TransformComponent).position.distanceToSquared(transformPlate.position)
@@ -364,7 +372,8 @@ function helperDispatchVolleyBalls(pong:Entity) {
 const helperPong = (pong: Entity) => {
 
   const pongComponent = getComponent(pong, PongComponent)
-  if(!pongComponent) return
+  const pongMutable = getMutableComponent(pong,PongComponent)
+  if(!pongComponent || !pongMutable) return
   const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
 
   helperBindPongParts(pong)
@@ -376,7 +385,8 @@ const helperPong = (pong: Entity) => {
     case PongMode.completed:
       // stay in completed state till players all leave then go to stopped state
       if(!numAvatars) {
-        console.log("*** pong: stopping")
+        console.log("*** pong: completed -> stopping")
+        pongMutable.mode.set(PongMode.stopped) // ?? @todo improve
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.stopped }))
         const log = `Pong stopping game}`
         dispatchAction(PongAction.pongLog({log}))
@@ -391,25 +401,33 @@ const helperPong = (pong: Entity) => {
 
       // start new game
       dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.starting }))
-      console.log("*** pong: starting")
-      const log = `Pong starting game}`
+      console.log("*** pong: stopped -> starting")
+      const log = `Pong starting game`
       dispatchAction(PongAction.pongLog({log}))
+      pongMutable.mode.set(PongMode.starting) // ?? @todo improve
+      break
 
     case PongMode.starting:
     case PongMode.playing:
 
       // stop playing if players leave - right now i let any instance stop the game
       if(!numAvatars) {
+        console.log("*** pong starting/playing -> stopping game")
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.stopped }))
         const log = `Pong game ended`
         dispatchAction(PongAction.pongLog({log}))
+        pongMutable.mode.set(PongMode.stopped) // ?? @todo improve
         break
       }
 
-      // I'm letting any player start or stop the game but only the server can volley and evaluate
-      if(isClient) return
+      // If there is only one player then play the whole experience - else volleying is up to server
 
-      if(PongMode.starting) {
+      const totalAvatars = avatars()
+      if(totalAvatars.length > 1 && isClient) return
+
+      // transitioning into play- reset the balls and scores
+
+      if(pongComponent.mode == PongMode.starting) {
 
           // reset goals for a new game
         pongComponent.goals.forEach(goal=>{
@@ -426,6 +444,7 @@ const helperPong = (pong: Entity) => {
         })
 
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.playing }))
+        pongMutable.mode.set(PongMode.playing) // ?? @todo improve
       }
 
       // volley balls periodically
@@ -440,6 +459,7 @@ const helperPong = (pong: Entity) => {
             dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.completed }))
             const log = `Pong ended a game}`
             dispatchAction(PongAction.pongLog({log}))
+            pongMutable.mode.set(PongMode.completed) // ?? @todo improve
           }
       })
 
@@ -455,15 +475,16 @@ let counter = 0
 
 function execute() {
 
+  PongActionReceptor()
+  const pongEntities = pongQuery()
+
   counter++
   if(counter > 5*60) {
     const userid = Engine.instance.userID
-    dispatchAction(PongAction.pongLog({ log: `5 seconds passed for ${userid}` }))
+    dispatchAction(PongAction.pongLog({ log: `5 seconds passed for ${userid} ${pongEntities.length}` }))
     counter = 0
   }
 
-  PongActionReceptor()
-  const pongEntities = pongQuery()
   for (const pong of pongEntities) {
     helperPong(pong)
   }
