@@ -480,8 +480,9 @@ function execute() {
 
   counter++
   if(counter > 5*60) {
+    console.log("**** pong sending myself a message")
     const userid = Engine.instance.userID
-    dispatchAction(PongAction.pongLog({ log: `5 seconds passed for ${userid} ${pongEntities.length}` }))
+    dispatchAction(PongAction.pongLog({ log: `**** pong 5 seconds passed for ${userid} ${pongEntities.length}` }))
     counter = 0
   }
 
