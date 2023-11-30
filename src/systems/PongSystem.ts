@@ -486,9 +486,9 @@ function execute() {
     counter = 0
   }
 
-//  for (const pong of pongEntities) {
-//    helperPong(pong)
-//  }
+  for (const pong of pongEntities) {
+    helperPong(pong)
+  }
 
 }
 
