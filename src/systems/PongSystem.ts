@@ -413,6 +413,8 @@ const helperPong = (pong: Entity) => {
       // stop playing if players leave
       if(!numAvatars) {
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.stopped }))
+        const log = `Pong game ended`
+        dispatchAction(PongAction.pongLog({log}))
         break
       }
 
