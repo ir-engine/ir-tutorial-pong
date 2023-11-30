@@ -31,12 +31,19 @@ import { PlateComponent } from '../components/PlateComponent'
 import { PaddleComponent } from '../components/PaddleComponent'
 import { AvatarRigComponent } from '@etherealengine/engine/src/avatar/components/AvatarAnimationComponent'
 import { AvatarIKTargetComponent } from '@etherealengine/engine/src/avatar/components/AvatarIKComponents'
+import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
 // action schemas
 
 class PongAction {
+
+  static pongLog = defineAction({
+    type: 'pong.log',
+    log: matches.string,
+    $topic: NetworkTopics.world
+  })
 
   static pongPong = defineAction({
     type: 'pong.pong',
@@ -68,6 +75,10 @@ class PongAction {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //
 // action handling
+
+const pongLog = (action: ReturnType<typeof PongAction.pongLog>) => {
+  console.log("*** pong log:",action.log)
+}
 
 const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
   const pong = UUIDComponent.entitiesByUUID[action.uuid]
@@ -147,10 +158,12 @@ const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
 // action queues
 
 function PongActionQueueReceptorContext() {
+  const pongLogQueue = defineActionQueue(PongAction.pongLog.matches)
   const pongPongQueue = defineActionQueue(PongAction.pongPong.matches)
   const pongGoalQueue = defineActionQueue(PongAction.pongGoal.matches)
   const pongMoveQueue = defineActionQueue(PongAction.pongMove.matches)
   const exhaustActionQueues = () => {
+    for (const action of pongLogQueue()) pongLog(action)
     for (const action of pongPongQueue()) pongPong(action)
     for (const action of pongGoalQueue()) pongGoal(action)
     for (const action of pongMoveQueue()) pongMove(action)
@@ -168,6 +181,9 @@ const PongActionReceptor = PongActionQueueReceptorContext()
 ///
 
 function helperBindPongParts(pong:Entity) {
+  const pongComponent = getMutableComponent(pong,PongComponent)
+  if(!pongComponent) return
+  if(pongComponent.goals.length > 0 && pongComponent.balls.length > 0) return
   const pongMutable = getMutableComponent(pong,PongComponent)
   if(!pongMutable) return
   const pongNode = getComponent(pong,EntityTreeComponent)
@@ -198,6 +214,8 @@ function helperBindPongParts(pong:Entity) {
   })
   pongMutable.balls.set(balls)
   pongMutable.goals.set(goals)
+  const log = `Pong bound some parts ${balls.length} ${goals.length}`
+  dispatchAction(PongAction.pongLog({log}))
 }
 
 ///
@@ -207,7 +225,7 @@ function helperBindPongParts(pong:Entity) {
 /// @todo hack; use proximity for now because collision capsule on avatar is above ground
 //
 
-const avatars = defineQuery([AvatarRigComponent])
+const avatars = defineQuery([AvatarComponent])
 
 function helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
@@ -288,6 +306,8 @@ function helperDispatchEvaluateGoals(goal:Entity ) {
     // also move it now asap to prevent collisions from racking up locally
     const ballTransform = getComponent(ball,TransformComponent)
     ballTransform.position.copy(position)
+    const log = `Pong reset a ball ${entityUUID}`
+    dispatchAction(PongAction.pongLog({log}))
   }
   return false
 }
@@ -334,6 +354,10 @@ function helperDispatchVolleyBalls(pong:Entity) {
   impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() * 0.1 + 0.1)
   const position = new Vector3(0,5,0)
   dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
+
+  const log = `Pong volleyed a ball ${entityUUID}`
+  dispatchAction(PongAction.pongLog({log}))
+
 }
 
 const helperPong = (pong: Entity) => {
@@ -353,6 +377,8 @@ const helperPong = (pong: Entity) => {
       if(!numAvatars) {
         console.log("*** pong: stopping")
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.stopped }))
+        const log = `Pong stopping game}`
+        dispatchAction(PongAction.pongLog({log}))
       }
       break
 
@@ -379,6 +405,8 @@ const helperPong = (pong: Entity) => {
       // start new game
       dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.playing }))
       console.log("*** pong: starting")
+      const log = `Pong starting game}`
+      dispatchAction(PongAction.pongLog({log}))
 
     case PongMode.playing:
 
@@ -398,6 +426,8 @@ const helperPong = (pong: Entity) => {
       pongComponent.goals.forEach(goal=>{
           if(helperDispatchEvaluateGoals(goal)) {
             dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.completed }))
+            const log = `Pong ended a game}`
+            dispatchAction(PongAction.pongLog({log}))
           }
       })
 
