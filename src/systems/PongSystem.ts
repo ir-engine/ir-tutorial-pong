@@ -375,6 +375,9 @@ function once(str:any) {
   dispatchAction(PongAction.pongLog({log:str}))
 }
 
+
+let counter = 0
+
 const helperPong = (pong: Entity) => {
 
   const pongComponent = getComponent(pong, PongComponent)
@@ -479,31 +482,27 @@ const helperPong = (pong: Entity) => {
 
       break
 
-    }
-
-}
-
-const pongQuery = defineQuery([PongComponent])
-
-let counter = 0
-
-function execute() {
-
-  PongActionReceptor()
-  const pongEntities = pongQuery()
+  }
 
   counter++
   if(counter > 5*60) {
-    console.log("**** pong sending myself a message")
+    const pongEntities = pongQuery()
+    console.log("**** pong sending myself a message dec 1 5pm ")
     const userid = Engine.instance.userID
     dispatchAction(PongAction.pongLog({ log: `**** pong 5 seconds passed for ${userid} ${pongEntities.length} ${isClient}` }))
     counter = 0
   }
 
+}
+
+const pongQuery = defineQuery([PongComponent])
+
+function execute() {
+  PongActionReceptor()
+  const pongEntities = pongQuery()
   for (const pong of pongEntities) {
     helperPong(pong)
   }
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
