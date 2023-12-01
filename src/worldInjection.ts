@@ -25,8 +25,8 @@ import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
 import { getState } from '@etherealengine/hyperflux'
 
 export default async function worldInjection() {
-  console.log("*** pong world injection built at Thu Nov 30 01:06 am")
-  if (isClient && getState(EngineState).isEditing) {
+  console.log("*** pong world injection built at Fri Nov 30 01:06 am")
+  //if (isClient && getState(EngineState).isEditing) {
     EntityNodeEditor.set(TextComponent, TextComponentEditor)
     ComponentShelfCategories.Misc.push(TextComponent)
     EntityNodeEditor.set(BallComponent, BallComponentEditor)
@@ -39,5 +39,5 @@ export default async function worldInjection() {
     ComponentShelfCategories.Misc.push(GoalComponent)
     EntityNodeEditor.set(PongComponent, PongComponentEditor)
     ComponentShelfCategories.Misc.push(PongComponent)
-  }
+  //}
 }
