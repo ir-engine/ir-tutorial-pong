@@ -369,11 +369,20 @@ function helperDispatchVolleyBalls(pong:Entity) {
 
 }
 
+const previous = ""
+function once(str:any) {
+  if(str == previous) return
+  dispatchAction(PongAction.pongLog({log:str})
+}
+
 const helperPong = (pong: Entity) => {
 
   const pongComponent = getComponent(pong, PongComponent)
   const pongMutable = getMutableComponent(pong,PongComponent)
-  if(!pongComponent || !pongMutable) return
+  if(!pongComponent || !pongMutable) {
+    once("*** pong cannot find parts!")
+    return
+  }
   const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
 
   helperBindPongParts(pong)
@@ -384,7 +393,9 @@ const helperPong = (pong: Entity) => {
     default:
     case PongMode.completed:
       // stay in completed state till players all leave then go to stopped state
+      once("*** pong is completed")
       if(!numAvatars) {
+        once("*** pong is complete and notices no avatars")
         console.log("*** pong: completed -> stopping")
         pongMutable.mode.set(PongMode.stopped) // ?? @todo improve
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.stopped }))
@@ -396,8 +407,10 @@ const helperPong = (pong: Entity) => {
     case PongMode.stopped:
       // stay in stopped state till players show up - right now i let any instance start the game
       if(!numAvatars) {
+        once("*** pong is stopped")
         break
       }
+      once("*** pong is stopped but is starting")
 
       // start new game
       dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.starting }))
@@ -423,7 +436,8 @@ const helperPong = (pong: Entity) => {
       // If there is only one player then play the whole experience - else volleying is up to server
 
       const totalAvatars = avatars()
-      if(totalAvatars.length > 1 && isClient) return
+      if(isClient) return
+      once("*** pong is playing on server")
 
       // transitioning into play- reset the balls and scores
 
@@ -482,7 +496,7 @@ function execute() {
   if(counter > 5*60) {
     console.log("**** pong sending myself a message")
     const userid = Engine.instance.userID
-    dispatchAction(PongAction.pongLog({ log: `**** pong 5 seconds passed for ${userid} ${pongEntities.length}` }))
+    dispatchAction(PongAction.pongLog({ log: `**** pong 5 seconds passed for ${userid} ${pongEntities.length} ${isClient}` }))
     counter = 0
   }
 
