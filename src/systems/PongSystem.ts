@@ -489,7 +489,7 @@ const helperPong = (pong: Entity) => {
     const pongEntities = pongQuery()
     console.log("**** pong sending myself a message dec 1 5pm ")
     const userid = Engine.instance.userID
-    dispatchAction(PongAction.pongLog({ log: `**** pong 5 seconds passed for ${userid} ${pongEntities.length} ${isClient}` }))
+    dispatchAction(PongAction.pongLog({ log: `**** pong dec 1 5pm - 5 seconds passed for ${userid} ${pongEntities.length} ${isClient}` }))
     counter = 0
   }
 
