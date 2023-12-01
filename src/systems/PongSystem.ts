@@ -372,7 +372,7 @@ function helperDispatchVolleyBalls(pong:Entity) {
 const previous = ""
 function once(str:any) {
   if(str == previous) return
-  dispatchAction(PongAction.pongLog({log:str})
+  dispatchAction(PongAction.pongLog({log:str}))
 }
 
 const helperPong = (pong: Entity) => {
