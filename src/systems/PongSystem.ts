@@ -369,9 +369,12 @@ function helperDispatchVolleyBalls(pong:Entity) {
 
 }
 
+let slowly = 0
 const previous = ""
 function once(str:any) {
-  if(str == previous) return
+  slowly++
+  if(slowly<5*60) return
+  slowly = 0
   dispatchAction(PongAction.pongLog({log:str}))
 }
 
@@ -396,9 +399,7 @@ const helperPong = (pong: Entity) => {
     default:
     case PongMode.completed:
       // stay in completed state till players all leave then go to stopped state
-      once("*** pong is completed")
       if(!numAvatars) {
-        once("*** pong is complete and notices no avatars")
         console.log("*** pong: completed -> stopping")
         pongMutable.mode.set(PongMode.stopped) // ?? @todo improve
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.stopped }))
@@ -413,7 +414,6 @@ const helperPong = (pong: Entity) => {
         once("*** pong is stopped")
         break
       }
-      once("*** pong is stopped but is starting")
 
       // start new game
       dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.starting }))
