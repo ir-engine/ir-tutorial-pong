@@ -84,7 +84,7 @@ const pongLog = (action: ReturnType<typeof PongAction.pongLog>) => {
 
 function netlog(msg) {
   const userid = Engine.instance.userID
-  const log = `*** pong v=1001 userid=${userid} isClient=${isClient} : ${msg}`
+  const log = `*** pong v=1002 userid=${userid} isClient=${isClient} : ${msg}`
   console.log(log)
   dispatchAction(PongAction.pongLog({log}))
 }
