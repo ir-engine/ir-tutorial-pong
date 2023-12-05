@@ -227,7 +227,7 @@ function helperBindPongParts(pong:Entity) {
     }
     const goalMutable = getMutableComponent(child,GoalComponent)
     if(!goalMutable) {
-      netlog("error child is not a goal and not a ball child=" + child)
+      //netlog("error child is not a goal and not a ball child=" + child)
       return
     }
     goals.push(child)
