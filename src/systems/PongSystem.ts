@@ -82,6 +82,10 @@ const pongLog = (action: ReturnType<typeof PongAction.pongLog>) => {
   console.log("*** pong remote log:",action.log)
 }
 
+function entity2UUID(entity: Entity) {
+  return getComponent(entity, UUIDComponent) as EntityUUID
+}
+
 function netlog(msg) {
   const userid = Engine.instance.userID
   const log = `*** pong v=1002 userid=${userid} isClient=${isClient} : ${msg}`
@@ -101,7 +105,7 @@ const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
     case 'playing': pongMutable.mode.set( PongMode.playing ); break
     case 'completed': pongMutable.mode.set( PongMode.completed ); break
   }
-  console.log("*** pong: mode change =",action.mode)
+  //netlog("*** pong: mode change ="+action.mode)
 }
 
 const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
@@ -116,7 +120,7 @@ const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
       textMutable.text.set(`${action.health}`)
     }
   }
-  console.log("*** pong: set goal in game =",action.health,goal)
+  //netlog("*** pong: set goal in game ="+action.health+" goal="+entity2UUID(goal))
 }
 
 const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
@@ -196,7 +200,7 @@ function helperBindPongParts(pong:Entity) {
     netlog('error there is no pong component')
     return
   }
-  // not everything shows up at once
+  // not everything shows up at once - so we cannot do this @todo can this be improved?
   //if(pongComponent.goals.length > 0 && pongComponent.balls.length > 0) return
   const pongMutable = getMutableComponent(pong,PongComponent)
   if(!pongMutable) {
@@ -205,9 +209,10 @@ function helperBindPongParts(pong:Entity) {
   }
   const pongNode = getComponent(pong,EntityTreeComponent)
   if(!pongNode || !pongNode.children || !pongNode.children.length) {
-    console.log(pongNode)
-    let count = pongNode && pongNode.children ? pongNode.children.length : 0
-    netlog("error there is no filled tree for pong="+pong+" count="+count+" item="+pongNode)
+    // this error occurs often - there some kind of bug that wipes the tree relationships
+    //console.log(pongNode)
+    //let count = pongNode && pongNode.children ? pongNode.children.length : 0
+    // netlog("error there is no filled tree for pong="+entity2UUID(pong)+" count="+count+" item="+pongNode)
     return
   }
   const goals : Array<Entity> = []
@@ -230,30 +235,32 @@ function helperBindPongParts(pong:Entity) {
     const goalNode = getComponent(child,EntityTreeComponent)
     goalNode?.children.forEach((child2)=> {
       if(getComponent(child2,TextComponent)) {
-        netlog("*** pong goal set text a="+child+" b="+child2)
+        netlog("*** pong goal set text a="+entity2UUID(child)+" b="+entity2UUID(child2))
         goalMutable.text.set(child2)
       }
       else if(getComponent(child2,PlateComponent)) {
-        netlog("*** pong goal set plate a="+child+" b="+child2)
+        netlog("*** pong goal set plate a="+entity2UUID(child)+" b="+entity2UUID(child2))
         goalMutable.plate.set(child2)
       }
       else if(getComponent(child2,PaddleComponent)) {
-        netlog("*** pong goal set paddle a="+child+" b="+child2)
+        netlog("*** pong goal set paddle a="+entity2UUID(child)+" b="+entity2UUID(child2))
         goalMutable.paddle.set(child2)
       }
     })
   })
 
-  if(!balls.length) {
-    netlog("binding balls not found")
+  // there's a weird bug with EntityTreeComponent where relationships are damaged - hack around it
+  // @todo fix
+
+  if(balls.length > 0 && pongComponent.balls.length == 0) {
+    netlog("*** pong balls set "+entity2UUID(pong))
+    pongMutable.balls.set(balls)
   }
 
-  if(!goals.length) {
-    netlog("binding goals not found")
+  if(goals.length > 0 && pongComponent.goals.length == 0) {
+    netlog("*** pong goals set "+entity2UUID(pong))
+    pongMutable.goals.set(goals)
   }
-
-  pongMutable.balls.set(balls)
-  pongMutable.goals.set(goals)
 }
 
 ///
@@ -278,7 +285,7 @@ function helperBindPongGoalsAvatar(pong:Entity) {
   if(!pongComponent || !pongComponent.goals || !pongComponent.goals.length) {
     let count = 0
     if(pongComponent && pongComponent.goals) count = pongComponent.goals.length
-    netlog("no goals registered??? error pong="+pong + " component=" + pongComponent + " goals="+count)
+    netlog("no goals registered??? error pong="+entity2UUID(pong) + " component=" + pongComponent + " goals="+count)
     return
   }
 
@@ -327,7 +334,7 @@ function helperDispatchUpdateGoalAvatar(goal:Entity) {
   if(!goalComponent || !goalComponent.avatar || !goalComponent.paddle) return
   const rig = getComponent(goalComponent.avatar, AvatarRigComponent)
   if (!rig) {
-    netlog("avatar has no rig")
+    netlog("avatar has no rig"+goalComponent.avatar)
     return
   }
   
@@ -355,7 +362,7 @@ function helperDispatchEvaluateGoals(goal:Entity ) {
     const health = goalComponent.health - 1
     const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
     dispatchAction(PongAction.pongGoal({ entityUUID, health }))
-    netlog("*** pong: playing, and a ball hit a goal ball=" + ball + " goal="+goal + " health="+health)
+    netlog("*** pong: playing, and a ball hit a goal ball=" + entity2UUID(ball) + " goal="+entity2UUID(goal) + " health="+health)
     if(health <= 0) {
       return true // game over
     }
