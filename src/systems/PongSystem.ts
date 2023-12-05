@@ -79,13 +79,12 @@ class PongAction {
 // action handling
 
 const pongLog = (action: ReturnType<typeof PongAction.pongLog>) => {
-  const lastbuilt = `*** pong date=dec52023 isclient=${isClient}`
-  console.log("*** pong log:",action.log)
+  console.log("*** pong remote log:",action.log)
 }
 
 function netlog(msg) {
   const userid = Engine.instance.userID
-  const log = `*** pong date=dec52023 userid=${userid} isClient=${isClient} : ${msg}`
+  const log = `*** pong v=1001 userid=${userid} isClient=${isClient} : ${msg}`
   console.log(log)
   dispatchAction(PongAction.pongLog({log}))
 }
@@ -263,8 +262,6 @@ function helperBindPongParts(pong:Entity) {
 
   pongMutable.balls.set(balls)
   pongMutable.goals.set(goals)
-  //const log = `Pong bound some parts ${balls.length} ${goals.length}`
-  //dispatchAction(PongAction.pongLog({log}))
 }
 
 ///
