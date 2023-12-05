@@ -191,7 +191,7 @@ const PongActionReceptor = PongActionQueueReceptorContext()
 
 ///
 /// helper function to find relationships between goals and goal text, plate, paddle
-/// @todo ideally this would be called once only at startup
+/// @todo ideally this would be called once only at startup; but scene appears partially built bug
 ///
 
 function helperBindPongParts(pong:Entity) {
@@ -306,7 +306,8 @@ function helperBindPongGoalsAvatar(pong:Entity) {
   return numAvatars
 }
 
-/*
+/* a collision based approach that fails due to collision capsule not touching 
+
 function orig_helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
   const pongComponent = getComponent(pong,PongComponent)
@@ -329,17 +330,20 @@ function orig_helperBindPongGoalsAvatar(pong:Entity) {
 }
 */
 
-function helperDispatchUpdateGoalAvatar(goal:Entity) {
+function helperDispatchUpdatePaddleAvatar(goal:Entity) {
   const goalComponent = getComponent(goal,GoalComponent)
   if(!goalComponent || !goalComponent.avatar || !goalComponent.paddle) return
+
+  // for now only update self - basically throw away other participants
+  if(!Engine.instance.localClientEntity) return
+  if(Engine.instance.localClientEntity != goalComponent.avatar) return
+
   const rig = getComponent(goalComponent.avatar, AvatarRigComponent)
   if (!rig) {
-    netlog("avatar has no rig"+goalComponent.avatar)
+    // @todo issue server has no rig
+    //netlog("avatar has no rig"+goalComponent.avatar)
     return
   }
-  
-  // @todo could use local player for locally authoritative lower latency
-  //const rig = getOptionalComponent(Engine.instance.localClientEntity, AvatarRigComponent)
 
   const handPose = rig?.rig?.rightHand?.node
   if(!handPose) return
@@ -439,6 +443,12 @@ const helperPong = (pong: Entity) => {
   helperBindPongParts(pong)
   const numAvatars = helperBindPongGoalsAvatar(pong)
 
+  // update paddles for everybody
+  pongComponent.goals.forEach( helperDispatchUpdatePaddleAvatar )
+
+  // for now just drive the experience largely on the server
+  if(isClient) return
+
   switch(pongComponent.mode) {
 
     default:
@@ -476,11 +486,6 @@ const helperPong = (pong: Entity) => {
         break
       }
 
-      // If there is only one player then play the whole experience - else volleying is up to server
-
-      const totalAvatars = avatars()
-      if(isClient) return
-
       // transitioning into play- reset the balls and scores
 
       if(pongComponent.mode == PongMode.starting) {
@@ -506,9 +511,6 @@ const helperPong = (pong: Entity) => {
 
       // volley balls periodically
       helperDispatchVolleyBalls(pong)
-
-      // update paddles
-      pongComponent.goals.forEach( helperDispatchUpdateGoalAvatar )
 
       // update goal collisions
       pongComponent.goals.forEach(goal=>{
