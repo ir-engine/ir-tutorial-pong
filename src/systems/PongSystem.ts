@@ -202,22 +202,35 @@ const PongActionReceptor = PongActionQueueReceptorContext()
 
 function helperBindPongParts(pong:Entity) {
   const pongComponent = getMutableComponent(pong,PongComponent)
-  if(!pongComponent) return
+  if(!pongComponent) {
+    netlog('error there is no pong component')
+    return
+  }
   // not everything shows up at once
   //if(pongComponent.goals.length > 0 && pongComponent.balls.length > 0) return
   const pongMutable = getMutableComponent(pong,PongComponent)
-  if(!pongMutable) return
+  if(!pongMutable) {
+    netlog("error there is no mutable component for pong")
+    return
+  }
   const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongNode) return
+  if(!pongNode || !pongNode.children || !pongNode.children.length) {
+    console.log(pongNode)
+    netlog("error there is no filled tree for pong")
+    return
+  }
   const goals : Array<Entity> = []
   const balls : Array<Entity> = []
-  pongNode?.children?.forEach( child => {
+  pongNode.children.forEach( child => {
     if(getComponent(child,BallComponent)) {
       balls.push(child)
       return
     }
     const goalMutable = getMutableComponent(child,GoalComponent)
-    if(!goalMutable) return
+    if(!goalMutable) {
+      netlog("error child is not a goal and not a ball child=" + child)
+      return
+    }
     goals.push(child)
     if(goalMutable.text.value && goalMutable.plate.value && goalMutable.paddle.value) {
       return
@@ -239,6 +252,15 @@ function helperBindPongParts(pong:Entity) {
       }
     })
   })
+
+  if(!balls.length) {
+    netlog("binding balls not found")
+  }
+
+  if(!goals.length) {
+    netlog("binding goals not found")
+  }
+
   pongMutable.balls.set(balls)
   pongMutable.goals.set(goals)
   //const log = `Pong bound some parts ${balls.length} ${goals.length}`
@@ -265,7 +287,7 @@ function helperBindPongGoalsAvatar(pong:Entity) {
 
   const pongComponent = getComponent(pong,PongComponent)
   if(!pongComponent || !pongComponent.goals || !pongComponent.goals.length) {
-    netlog("something is seriously wrong")
+    //netlog("something is seriously wrong ")
     return
   }
 
