@@ -1,3 +1,4 @@
+
 import { Quaternion, Vector3 } from 'three'
 
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
@@ -78,7 +79,24 @@ class PongAction {
 // action handling
 
 const pongLog = (action: ReturnType<typeof PongAction.pongLog>) => {
+  const lastbuilt = `*** pong date=dec52023 isclient=${isClient}`
   console.log("*** pong log:",action.log)
+}
+
+function netlog(msg) {
+  const userid = Engine.instance.userID
+  const log = `*** pong date=dec52023 userid=${userid} isClient=${isClient} : ${msg}`
+  console.log(log)
+  dispatchAction(PongAction.pongLog({log}))
+}
+
+let slowly = 0
+const previous = ""
+function once(str:any) {
+  slowly++
+  if(slowly<5*60) return
+  slowly = 0
+  netlog(str)
 }
 
 const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
@@ -208,15 +226,15 @@ function helperBindPongParts(pong:Entity) {
     const goalNode = getComponent(child,EntityTreeComponent)
     goalNode?.children.forEach((child2)=> {
       if(getComponent(child2,TextComponent)) {
-        console.log("*** pong goal set text",child,child2)
+        netlog("*** pong goal set text a="+child+" b="+child2)
         goalMutable.text.set(child2)
       }
       else if(getComponent(child2,PlateComponent)) {
-        console.log("*** pong goal set plate",child,child2)
+        netlog("*** pong goal set plate a="+child+" b="+child2)
         goalMutable.plate.set(child2)
       }
       else if(getComponent(child2,PaddleComponent)) {
-        console.log("*** pong goal set paddle",child,child2)
+        netlog("*** pong goal set paddle a="+child+" b="+child2)
         goalMutable.paddle.set(child2)
       }
     })
@@ -238,14 +256,25 @@ const avatars = defineQuery([AvatarComponent])
 
 function helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
+
+  const a = avatars()
+  if(!a || !a.length) {
+    netlog("there are no avatars error")
+    return
+  }
+
   const pongComponent = getComponent(pong,PongComponent)
-  if(!pongComponent) return 0
+  if(!pongComponent || !pongComponent.goals || !pongComponent.goals.length) {
+    netlog("something is seriously wrong")
+    return
+  }
+
   pongComponent.goals.forEach( goal => {
     const goalMutable = getMutableComponent(goal,GoalComponent)
     const transformPlate = getComponent(goalMutable.plate.value,TransformComponent)
     if(!goalMutable) return
     if(!transformPlate) return
-    avatars().forEach(avatar=>{
+    a.forEach(avatar=>{
       const dist = getComponent(avatar,TransformComponent).position.distanceToSquared(transformPlate.position)
       if(dist < transformPlate.scale.lengthSq()) {
         goalMutable.avatar.set(avatar)
@@ -253,20 +282,24 @@ function helperBindPongGoalsAvatar(pong:Entity) {
       }
     })
   })
+
   return numAvatars
 }
 
+/*
 function orig_helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
   const pongComponent = getComponent(pong,PongComponent)
-  if(!pongComponent) return
+  if(!pongComponent) {
+    netlog(`no component error`)
+  }
   pongComponent.goals.forEach( goal => {
     const goalMutable = getMutableComponent(goal,GoalComponent)
     if(!goalMutable) return
     const collidants = getComponent(goalMutable.plate?.value, CollisionComponent)
     if (!collidants || !collidants.size) return 0
     for (let [avatar, collision] of collidants) {
-      if(getComponent(avatar,AvatarRigComponent)) {
+      if(getComponent(avatar,AvatarComponent)) {
         goalMutable.avatar.set(avatar)
         numAvatars++
       }
@@ -274,12 +307,16 @@ function orig_helperBindPongGoalsAvatar(pong:Entity) {
   })
   return numAvatars
 }
+*/
 
 function helperDispatchUpdateGoalAvatar(goal:Entity) {
   const goalComponent = getComponent(goal,GoalComponent)
   if(!goalComponent || !goalComponent.avatar || !goalComponent.paddle) return
   const rig = getComponent(goalComponent.avatar, AvatarRigComponent)
-  if (!rig) return
+  if (!rig) {
+    once("avatar has no rig")
+    return
+  }
   
   // @todo could use local player for locally authoritative lower latency
   //const rig = getOptionalComponent(Engine.instance.localClientEntity, AvatarRigComponent)
@@ -305,7 +342,7 @@ function helperDispatchEvaluateGoals(goal:Entity ) {
     const health = goalComponent.health - 1
     const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
     dispatchAction(PongAction.pongGoal({ entityUUID, health }))
-    console.log("*** pong: playing, and a ball hit a goal ",ball,goal,health)
+    netlog("*** pong: playing, and a ball hit a goal ball=" + ball + " goal="+goal + " health="+health)
     if(health <= 0) {
       return true // game over
     }
@@ -315,8 +352,7 @@ function helperDispatchEvaluateGoals(goal:Entity ) {
     // also move it now asap to prevent collisions from racking up locally
     const ballTransform = getComponent(ball,TransformComponent)
     ballTransform.position.copy(position)
-    const log = `Pong reset a ball ${entityUUID}`
-    dispatchAction(PongAction.pongLog({log}))
+    netlog(`Pong reset a ball ball=${entityUUID}`)
   }
   return false
 }
@@ -364,20 +400,9 @@ function helperDispatchVolleyBalls(pong:Entity) {
   const position = new Vector3(0,5,0)
   dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
 
-  const log = `Pong volleyed a ball ${entityUUID}`
-  dispatchAction(PongAction.pongLog({log}))
+  netlog(`Pong volleyed a ball ball=${entityUUID}`)
 
 }
-
-let slowly = 0
-const previous = ""
-function once(str:any) {
-  slowly++
-  if(slowly<5*60) return
-  slowly = 0
-  dispatchAction(PongAction.pongLog({log:str}))
-}
-
 
 let counter = 0
 
@@ -403,8 +428,7 @@ const helperPong = (pong: Entity) => {
         console.log("*** pong: completed -> stopping")
         pongMutable.mode.set(PongMode.stopped) // ?? @todo improve
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.stopped }))
-        const log = `Pong stopping game}`
-        dispatchAction(PongAction.pongLog({log}))
+        netlog("Pong stopping game transition")
       }
       break
 
@@ -417,9 +441,7 @@ const helperPong = (pong: Entity) => {
 
       // start new game
       dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.starting }))
-      console.log("*** pong: stopped -> starting")
-      const log = `Pong starting game`
-      dispatchAction(PongAction.pongLog({log}))
+      netlog("Pong starting game transition")
       pongMutable.mode.set(PongMode.starting) // ?? @todo improve
       break
 
@@ -428,10 +450,8 @@ const helperPong = (pong: Entity) => {
 
       // stop playing if players leave - right now i let any instance stop the game
       if(!numAvatars) {
-        console.log("*** pong starting/playing -> stopping game")
+        netlog("ending a game")
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.stopped }))
-        const log = `Pong game ended`
-        dispatchAction(PongAction.pongLog({log}))
         pongMutable.mode.set(PongMode.stopped) // ?? @todo improve
         break
       }
@@ -440,11 +460,11 @@ const helperPong = (pong: Entity) => {
 
       const totalAvatars = avatars()
       if(isClient) return
-      once("*** pong is playing on server")
 
       // transitioning into play- reset the balls and scores
 
       if(pongComponent.mode == PongMode.starting) {
+        netlog("starting a game")
 
           // reset goals for a new game
         pongComponent.goals.forEach(goal=>{
@@ -474,8 +494,7 @@ const helperPong = (pong: Entity) => {
       pongComponent.goals.forEach(goal=>{
           if(helperDispatchEvaluateGoals(goal)) {
             dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.completed }))
-            const log = `Pong ended a game}`
-            dispatchAction(PongAction.pongLog({log}))
+            netlog("Pong ended a game")
             pongMutable.mode.set(PongMode.completed) // ?? @todo improve
           }
       })
@@ -487,9 +506,7 @@ const helperPong = (pong: Entity) => {
   counter++
   if(counter > 5*60) {
     const pongEntities = pongQuery()
-    console.log("**** pong sending myself a message dec 1 5pm ")
-    const userid = Engine.instance.userID
-    dispatchAction(PongAction.pongLog({ log: `**** pong dec 1 5pm - 5 seconds passed for ${userid} ${pongEntities.length} ${isClient}` }))
+    netlog("5 seconds passed numentities="+pongEntities.length)
     counter = 0
   }
 
