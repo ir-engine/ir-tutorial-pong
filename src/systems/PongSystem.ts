@@ -89,15 +89,6 @@ function netlog(msg) {
   dispatchAction(PongAction.pongLog({log}))
 }
 
-let slowly = 0
-const previous = ""
-function once(str:any) {
-  slowly++
-  if(slowly<5*60) return
-  slowly = 0
-  netlog(str)
-}
-
 const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
   const pong = UUIDComponent.entitiesByUUID[action.uuid]
   if(!pong) return
@@ -215,7 +206,8 @@ function helperBindPongParts(pong:Entity) {
   const pongNode = getComponent(pong,EntityTreeComponent)
   if(!pongNode || !pongNode.children || !pongNode.children.length) {
     console.log(pongNode)
-    netlog("error there is no filled tree for pong")
+    let count = pongNode && pongNode.children ? pongNode.children.length : 0
+    netlog("error there is no filled tree for pong="+pong+" count="+count+" item="+pongNode)
     return
   }
   const goals : Array<Entity> = []
@@ -335,7 +327,7 @@ function helperDispatchUpdateGoalAvatar(goal:Entity) {
   if(!goalComponent || !goalComponent.avatar || !goalComponent.paddle) return
   const rig = getComponent(goalComponent.avatar, AvatarRigComponent)
   if (!rig) {
-    once("avatar has no rig")
+    netlog("avatar has no rig")
     return
   }
   
@@ -432,7 +424,7 @@ const helperPong = (pong: Entity) => {
   const pongComponent = getComponent(pong, PongComponent)
   const pongMutable = getMutableComponent(pong,PongComponent)
   if(!pongComponent || !pongMutable) {
-    once("*** pong cannot find parts!")
+    netlog("*** pong cannot find parts!")
     return
   }
   const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
@@ -456,7 +448,7 @@ const helperPong = (pong: Entity) => {
     case PongMode.stopped:
       // stay in stopped state till players show up - right now i let any instance start the game
       if(!numAvatars) {
-        once("*** pong is stopped")
+        netlog("*** pong is stopped")
         break
       }
 
