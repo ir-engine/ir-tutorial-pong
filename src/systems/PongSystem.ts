@@ -284,7 +284,9 @@ function helperBindPongGoalsAvatar(pong:Entity) {
 
   const pongComponent = getComponent(pong,PongComponent)
   if(!pongComponent || !pongComponent.goals || !pongComponent.goals.length) {
-    //netlog("something is seriously wrong ")
+    let count = 0
+    if(pongComponent && pongComponent.goals) count = pongComponent.goals.length
+    netlog("no goals registered??? error pong="+pong + " component=" + pongComponent + " goals="+count)
     return
   }
 
