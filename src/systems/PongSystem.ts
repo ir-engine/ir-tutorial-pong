@@ -88,7 +88,7 @@ function entity2UUID(entity: Entity) {
 
 function netlog(msg) {
   const userid = Engine.instance.userID
-  const log = `*** pong v=1002 userid=${userid} isClient=${isClient} : ${msg}`
+  const log = `*** pong v=1003 userid=${userid} isClient=${isClient} : ${msg}`
   console.log(log)
   dispatchAction(PongAction.pongLog({log}))
 }
@@ -189,12 +189,103 @@ const PongActionReceptor = PongActionQueueReceptorContext()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+
+const queryBalls = defineQuery([BallComponent])
+const queryGoals = defineQuery([GoalComponent])
+const queryPaddles = defineQuery([PaddleComponent])
+const queryTexts = defineQuery([TextComponent])
+const queryPlates = defineQuery([PlateComponent])
+
+function isnear(a,b,c) {
+  const ta = getComponent(a,TransformComponent)
+  const tb = getComponent(b,TransformComponent)
+  const dist = ta.position.distanceToSquared(tb.position)
+  if(dist < 3*3) {
+    return true
+  }
+  return false
+}
+
+function helperBindPongParts(pong:Entity) {
+
+  const pongComponent = getMutableComponent(pong,PongComponent)
+  if(!pongComponent) {
+    netlog('error there is no pong component')
+    return
+  }
+  const pongMutable = getMutableComponent(pong,PongComponent)
+  if(!pongMutable) {
+    netlog("error there is no mutable component for pong")
+    return
+  }
+
+  // not everything shows up at once - so we cannot do this @todo can this be improved?
+  //if(pongComponent.goals.length > 0 && pongComponent.balls.length > 0) return
+
+  // keep track of all the goals and balls in a stupid way for now; breaks having multiple games at once
+  const goals = queryGoals()
+  if(!pongComponent.goals.length) {
+    pongMutable.goals.set(goals)
+    netlog("bound goals for pong=" + entity2UUID(pong) )
+  }
+
+  const balls = queryBalls()
+  if(!pongComponent.balls.length) {
+    pongMutable.balls.set(balls)
+    netlog("bound balls for pong=" + entity2UUID(pong) )
+  }
+
+  const paddles = queryPaddles()
+  const texts = queryTexts()
+  const plates = queryPlates()
+
+  // keep trying to associate goal parts with goals; these parts don't show up at the start weirdly
+  goals.forEach(goal=>{
+
+    const goalMutable = getMutableComponent(goal,GoalComponent)
+    if(!goalMutable) {
+      netlog("terrible things are happening")
+      return
+    }
+
+    if(!goalMutable.paddle.value) {
+      paddles.forEach(paddle=>{
+        if( isnear(goal,paddle,goalMutable.paddle.value)) {
+          goalMutable.paddle.set(paddle)
+          netlog("bound a paddle =" + entity2UUID(paddle) + " goal=" + entity2UUID(goal) )
+        }
+      })
+    }
+
+    if(!goalMutable.text.value) {
+      texts.forEach(text=>{
+        if( isnear(goal,text,goalMutable.paddle.value)) {
+          goalMutable.text.set(text)
+          netlog("bound a text =" + entity2UUID(text) + " goal=" + entity2UUID(goal) )
+        }
+      })
+    }
+
+    if(!goalMutable.plate.value) {
+      plates.forEach(plate=>{
+        if( isnear(goal,plate,goalMutable.paddle.value)) {
+          goalMutable.plate.set(plate)
+          netlog("bound a plate =" + entity2UUID(plate) + " goal=" + entity2UUID(goal) )
+        }
+      })
+    }
+
+  })
+
+}
+
+/*
 ///
 /// helper function to find relationships between goals and goal text, plate, paddle
 /// @todo ideally this would be called once only at startup; but scene appears partially built bug
 ///
 
-function helperBindPongParts(pong:Entity) {
+function old_helperBindPongParts(pong:Entity) {
   const pongComponent = getMutableComponent(pong,PongComponent)
   if(!pongComponent) {
     netlog('error there is no pong component')
@@ -207,14 +298,16 @@ function helperBindPongParts(pong:Entity) {
     netlog("error there is no mutable component for pong")
     return
   }
-  const pongNode = getComponent(pong,EntityTreeComponent)
-  if(!pongNode || !pongNode.children || !pongNode.children.length) {
+
+  //const pongNode = getComponent(pong,EntityTreeComponent)
+  //if(!pongNode || !pongNode.children || !pongNode.children.length) {
     // this error occurs often - there some kind of bug that wipes the tree relationships
     //console.log(pongNode)
     //let count = pongNode && pongNode.children ? pongNode.children.length : 0
     // netlog("error there is no filled tree for pong="+entity2UUID(pong)+" count="+count+" item="+pongNode)
     return
-  }
+  //}
+
   const goals : Array<Entity> = []
   const balls : Array<Entity> = []
   pongNode.children.forEach( child => {
@@ -262,6 +355,7 @@ function helperBindPongParts(pong:Entity) {
     pongMutable.goals.set(goals)
   }
 }
+*/
 
 ///
 /// helper function to build relationship between goal and first avatar on goal
