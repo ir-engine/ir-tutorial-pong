@@ -690,13 +690,6 @@
           }
         },
         {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 1,
-            "geometryParams": null
-          }
-        },
-        {
           "name": "collider",
           "props": {
             "bodyType": 2,
@@ -714,6 +707,22 @@
               }
             ]
           }
+        },
+        {
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "gltf-model",
+          "props": {
+            "src": "https://github.com/EtherealEngine/ee-tutorial-pong/raw/main/assets/strange.glb",
+            "generateBVH": true,
+            "avoidCameraOcclusion": false
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
         }
       ],
       "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
@@ -814,6 +823,10 @@
               "z": 0.03
             }
           }
+        },
+        {
+          "name": "visible",
+          "props": true
         }
       ],
       "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
