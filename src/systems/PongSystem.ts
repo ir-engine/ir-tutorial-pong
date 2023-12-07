@@ -88,7 +88,7 @@ function entity2UUID(entity: Entity) {
 
 function netlog(msg) {
   const userid = Engine.instance.userID
-  const log = `*** pong v=1003 userid=${userid} isClient=${isClient} : ${msg}`
+  const log = `*** pong v=1006 userid=${userid} isClient=${isClient} : ${msg}`
   console.log(log)
   dispatchAction(PongAction.pongLog({log}))
 }
@@ -199,7 +199,8 @@ const queryPlates = defineQuery([PlateComponent])
 function isnear(a,b,c) {
   const ta = getComponent(a,TransformComponent)
   const tb = getComponent(b,TransformComponent)
-  const dist = ta.position.distanceToSquared(tb.position)
+  const dist = (ta.position.x-tb.position.x)*(ta.position.x-tb.position.x) +
+               (ta.position.z-tb.position.z)*(ta.position.z-tb.position.z)
   if(dist < 3*3) {
     return true
   }
@@ -219,20 +220,17 @@ function helperBindPongParts(pong:Entity) {
     return
   }
 
-  // not everything shows up at once - so we cannot do this @todo can this be improved?
-  //if(pongComponent.goals.length > 0 && pongComponent.balls.length > 0) return
-
-  // keep track of all the goals and balls in a stupid way for now; breaks having multiple games at once
+  // keep track of all the goals and balls in a lazy way for now; breaks having multiple games at once
   const goals = queryGoals()
-  if(!pongComponent.goals.length) {
-    pongMutable.goals.set(goals)
-    netlog("bound goals for pong=" + entity2UUID(pong) )
+  if(goals && goals.length && !pongComponent.goals.length) {
+    pongMutable.goals.set(goals.slice())
+    netlog("bound goals for pong=" + entity2UUID(pong) + " length=" + goals.length + " " + pongComponent.goals.length )
   }
 
   const balls = queryBalls()
-  if(!pongComponent.balls.length) {
-    pongMutable.balls.set(balls)
-    netlog("bound balls for pong=" + entity2UUID(pong) )
+  if(balls && balls.length && !pongComponent.balls.length) {
+    pongMutable.balls.set(balls.slice())
+    netlog("bound balls for pong=" + entity2UUID(pong) + " length=" + balls.length + " " + pongComponent.balls.length )
   }
 
   const paddles = queryPaddles()
@@ -259,7 +257,7 @@ function helperBindPongParts(pong:Entity) {
 
     if(!goalMutable.text.value) {
       texts.forEach(text=>{
-        if( isnear(goal,text,goalMutable.paddle.value)) {
+        if( isnear(goal,text,goalMutable.text.value)) {
           goalMutable.text.set(text)
           netlog("bound a text =" + entity2UUID(text) + " goal=" + entity2UUID(goal) )
         }
@@ -526,6 +524,12 @@ let counter = 0
 
 const helperPong = (pong: Entity) => {
 
+  counter++
+  if(counter > 5*60) {
+    netlog("5 seconds passed")
+    counter = 0
+  }
+
   const pongComponent = getComponent(pong, PongComponent)
   const pongMutable = getMutableComponent(pong,PongComponent)
   if(!pongComponent || !pongMutable) {
@@ -585,7 +589,7 @@ const helperPong = (pong: Entity) => {
       if(pongComponent.mode == PongMode.starting) {
         netlog("starting a game")
 
-          // reset goals for a new game
+        // reset goals for a new game
         pongComponent.goals.forEach(goal=>{
           const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
           const health = getComponent(goal,GoalComponent)?.startingHealth || 9
@@ -619,12 +623,6 @@ const helperPong = (pong: Entity) => {
 
   }
 
-  counter++
-  if(counter > 5*60) {
-    const pongEntities = pongQuery()
-    netlog("5 seconds passed numentities="+pongEntities.length)
-    counter = 0
-  }
 
 }
 
@@ -672,3 +670,5 @@ export const PongSystem = defineSystem({
   insert: { after: PhysicsSystem }
 })
 
+// - client must own paddle; use network authority
+// - no heartbeats from server?
