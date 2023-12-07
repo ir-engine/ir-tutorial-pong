@@ -88,7 +88,7 @@ function entity2UUID(entity: Entity) {
 
 function netlog(msg) {
   const userid = Engine.instance.userID
-  const log = `*** pong v=1006 userid=${userid} isClient=${isClient} : ${msg}`
+  const log = `*** pong v=1023 userid=${userid} isClient=${isClient} : ${msg}`
   console.log(log)
   dispatchAction(PongAction.pongLog({log}))
 }
@@ -362,13 +362,13 @@ function old_helperBindPongParts(pong:Entity) {
 /// @todo hack; use proximity for now because collision capsule on avatar is above ground
 //
 
-const avatars = defineQuery([AvatarComponent])
+const avatarQuery = defineQuery([AvatarComponent])
 
 function helperBindPongGoalsAvatar(pong:Entity) {
   let numAvatars = 0
 
-  const a = avatars()
-  if(!a || !a.length) {
+  const avatars = avatarQuery()
+  if(!avatars || !avatars.length) {
     netlog("there are no avatars error")
     return
   }
@@ -383,12 +383,13 @@ function helperBindPongGoalsAvatar(pong:Entity) {
 
   pongComponent.goals.forEach( goal => {
     const goalMutable = getMutableComponent(goal,GoalComponent)
-    const transformPlate = getComponent(goalMutable.plate.value,TransformComponent)
-    if(!goalMutable) return
-    if(!transformPlate) return
-    a.forEach(avatar=>{
-      const dist = getComponent(avatar,TransformComponent).position.distanceToSquared(transformPlate.position)
-      if(dist < transformPlate.scale.lengthSq()) {
+    if(!goalMutable.plate.value) return
+    const b = getComponent(goalMutable.plate.value,TransformComponent).position
+    const size = getComponent(goalMutable.plate.value,TransformComponent).scale.x
+    avatars.forEach(avatar=>{
+      const a = getComponent(avatar,TransformComponent).position
+      const dist = (a.x-b.x)*(a.x-b.x)+(a.z-b.z)*(a.z-b.z)
+      if(dist < size*size) {
         goalMutable.avatar.set(avatar)
         numAvatars++
       }
@@ -453,24 +454,34 @@ function helperDispatchEvaluateGoals(goal:Entity ) {
   if(!goalComponent || !goalComponent.plate) return false
   const collidants = getComponent(goalComponent.plate, CollisionComponent)
   if (!collidants || !collidants.size) return false
+  let gameover = false
   for (let [ball, collision] of collidants) {
     if(!getComponent(ball,BallComponent)) continue
     const health = goalComponent.health - 1
-    const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
-    dispatchAction(PongAction.pongGoal({ entityUUID, health }))
-    netlog("*** pong: playing, and a ball hit a goal ball=" + entity2UUID(ball) + " goal="+entity2UUID(goal) + " health="+health)
-    if(health <= 0) {
-      return true // game over
+    if(health <= 0) gameover = true
+
+    // dispatch update goal score
+    {
+      const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
+      dispatchAction(PongAction.pongGoal({ entityUUID, health }))
+      //netlog("*** pong: playing, and a ball hit a goal ball=" + entity2UUID(ball) + " goal="+entity2UUID(goal) + " health="+health)
     }
-    // dispatch hide/reset ball by just moving far away for now
+
+    // move it now asap to prevent collisions from racking up locally
+    // @todo server authoritity should implicitly reflect this on client but it is not working
     const position = new Vector3(-1000,-1000,-1000)
-    dispatchAction(PongAction.pongMove({entityUUID,position}))
-    // also move it now asap to prevent collisions from racking up locally
     const ballTransform = getComponent(ball,TransformComponent)
     ballTransform.position.copy(position)
-    netlog(`Pong reset a ball ball=${entityUUID}`)
+
+    // manually dispatch hide/reset ball by moving it far away
+    // @todo client side probably won't apply this correctly due to server authority
+    {
+      const entityUUID = getComponent(ball, UUIDComponent) as EntityUUID
+      dispatchAction(PongAction.pongMove({entityUUID,position}))
+    }
+
   }
-  return false
+  return gameover
 }
 
 function helperDispatchVolleyBalls(pong:Entity) {
@@ -511,8 +522,10 @@ function helperDispatchVolleyBalls(pong:Entity) {
   const goal = pongComponent.goals[Math.floor(pongComponent.goals.length * Math.random())]
   const goalTransform = getComponent(goal,TransformComponent)
   const pongTransform = getComponent(pong,TransformComponent)
+  const ballTransform = getComponent(ball,TransformComponent)
   const impulse = goalTransform.position.clone()
-  impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() * 0.1 + 0.1)
+  //const mass = 4/3*3.14*(ballTransform.scale.x + 1.0)
+  impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() * 0.1 + 0.2)
   const position = new Vector3(0,5,0)
   dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
 
@@ -563,7 +576,7 @@ const helperPong = (pong: Entity) => {
     case PongMode.stopped:
       // stay in stopped state till players show up - right now i let any instance start the game
       if(!numAvatars) {
-        netlog("*** pong is stopped")
+        //netlog("*** pong is stopped")
         break
       }
 
