@@ -57,7 +57,7 @@ class PongAction {
   static pongGoal = defineAction({
     type: 'pong.goal',
     entityUUID: matchesEntityUUID,
-    health: matches.number,
+    damage: matches.number,
     $topic: NetworkTopics.world
   })
 
@@ -88,7 +88,7 @@ function entity2UUID(entity: Entity) {
 
 function netlog(msg) {
   const userid = Engine.instance.userID
-  const log = `*** pong v=1023 userid=${userid} isClient=${isClient} : ${msg}`
+  const log = `*** pong v=1024 userid=${userid} isClient=${isClient} : ${msg}`
   console.log(log)
   dispatchAction(PongAction.pongLog({log}))
 }
@@ -113,14 +113,14 @@ const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
   if(!goal) return
   const goalMutable = getMutableComponent(goal,GoalComponent)
   if(!goalMutable) return
-  goalMutable.health.set( action.health )
+  goalMutable.damage.set( action.damage )
   if(goalMutable.text.value) {
     const textMutable = getMutableComponent(goalMutable.text.value,TextComponent)
     if(textMutable) {
-      textMutable.text.set(`${action.health}`)
+      textMutable.text.set(`${action.damage}`)
     }
   }
-  //netlog("*** pong: set goal in game ="+action.health+" goal="+entity2UUID(goal))
+  //netlog("*** pong: set goal in game ="+action.damage+" goal="+entity2UUID(goal))
 }
 
 const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
@@ -190,8 +190,8 @@ const PongActionReceptor = PongActionQueueReceptorContext()
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 
-const queryBalls = defineQuery([BallComponent])
 const queryGoals = defineQuery([GoalComponent])
+const queryBalls = defineQuery([BallComponent])
 const queryPaddles = defineQuery([PaddleComponent])
 const queryTexts = defineQuery([TextComponent])
 const queryPlates = defineQuery([PlateComponent])
@@ -209,18 +209,12 @@ function isnear(a,b,c) {
 
 function helperBindPongParts(pong:Entity) {
 
-  const pongComponent = getMutableComponent(pong,PongComponent)
-  if(!pongComponent) {
-    netlog('error there is no pong component')
-    return
-  }
-  const pongMutable = getMutableComponent(pong,PongComponent)
-  if(!pongMutable) {
-    netlog("error there is no mutable component for pong")
-    return
-  }
+  // @todo this is probably too gross to continue existing - fix
 
-  // keep track of all the goals and balls in a lazy way for now; breaks having multiple games at once
+  const pongComponent = getMutableComponent(pong,PongComponent)
+  const pongMutable = getMutableComponent(pong,PongComponent)
+
+  // keep track of all the goals and balls in a lazy way for now; breaks having multiple games at once @todo fix this please
   const goals = queryGoals()
   if(goals && goals.length && !pongComponent.goals.length) {
     pongMutable.goals.set(goals.slice())
@@ -237,7 +231,7 @@ function helperBindPongParts(pong:Entity) {
   const texts = queryTexts()
   const plates = queryPlates()
 
-  // keep trying to associate goal parts with goals; these parts don't show up at the start weirdly
+  // keep trying to associate goal parts with goals; these parts don't show up at the start weirdly @todo fix this more deeply
   goals.forEach(goal=>{
 
     const goalMutable = getMutableComponent(goal,GoalComponent)
@@ -373,13 +367,9 @@ function helperBindPongGoalsAvatar(pong:Entity) {
     return
   }
 
+  // @todo i would prefer to look for contact with the trigger plate but this is not working
+
   const pongComponent = getComponent(pong,PongComponent)
-  if(!pongComponent || !pongComponent.goals || !pongComponent.goals.length) {
-    let count = 0
-    if(pongComponent && pongComponent.goals) count = pongComponent.goals.length
-    netlog("no goals registered??? error pong="+entity2UUID(pong) + " component=" + pongComponent + " goals="+count)
-    return
-  }
 
   pongComponent.goals.forEach( goal => {
     const goalMutable = getMutableComponent(goal,GoalComponent)
@@ -423,7 +413,7 @@ function orig_helperBindPongGoalsAvatar(pong:Entity) {
 }
 */
 
-function helperDispatchUpdatePaddleAvatar(goal:Entity) {
+function updateAvatarPaddle(goal:Entity) {
   const goalComponent = getComponent(goal,GoalComponent)
   if(!goalComponent || !goalComponent.avatar || !goalComponent.paddle) return
 
@@ -449,22 +439,26 @@ function helperDispatchUpdatePaddleAvatar(goal:Entity) {
   dispatchAction(PongAction.pongMove({entityUUID,kinematicPosition,kinematicRotation}))
 }
 
-function helperDispatchEvaluateGoals(goal:Entity ) {
+function handlePlateCollisionsAndUpdateScore(goal:Entity ) {
+  // @todo this could be rewritten using triggers on the plates - this would avoid the busy polling
   const goalComponent = getComponent(goal,GoalComponent)
   if(!goalComponent || !goalComponent.plate) return false
   const collidants = getComponent(goalComponent.plate, CollisionComponent)
   if (!collidants || !collidants.size) return false
   let gameover = false
-  for (let [ball, collision] of collidants) {
-    if(!getComponent(ball,BallComponent)) continue
-    const health = goalComponent.health - 1
-    if(health <= 0) gameover = true
+  for (let pair of collidants) {
+    const entity : Entity = pair[0]
+    const collision = pair[1]
+    if(!getComponent(entity,BallComponent)) continue
+    const ball = entity
+    const damage = goalComponent.damage + 1
+    if(damage >= goalComponent.startingHealth) gameover = true
 
     // dispatch update goal score
     {
       const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
-      dispatchAction(PongAction.pongGoal({ entityUUID, health }))
-      //netlog("*** pong: playing, and a ball hit a goal ball=" + entity2UUID(ball) + " goal="+entity2UUID(goal) + " health="+health)
+      dispatchAction(PongAction.pongGoal({ entityUUID, damage }))
+      //netlog("*** pong: playing, and a ball hit a goal ball=" + entity2UUID(ball) + " goal="+entity2UUID(goal) + " damage="+damage)
     }
 
     // move it now asap to prevent collisions from racking up locally
@@ -484,7 +478,7 @@ function helperDispatchEvaluateGoals(goal:Entity ) {
   return gameover
 }
 
-function helperDispatchVolleyBalls(pong:Entity) {
+function volleyBalls(pong:Entity) {
 
   // every few seconds consider volleying a ball; this could be improved
   // @todo could a timer be used instead? also or could temporal events be reactive?
@@ -535,27 +529,23 @@ function helperDispatchVolleyBalls(pong:Entity) {
 
 let counter = 0
 
-const helperPong = (pong: Entity) => {
+const update = (pong: Entity) => {
 
   counter++
   if(counter > 5*60) {
-    netlog("5 seconds passed")
+    netlog("5 seconds passed heartbeat")
     counter = 0
   }
 
   const pongComponent = getComponent(pong, PongComponent)
   const pongMutable = getMutableComponent(pong,PongComponent)
-  if(!pongComponent || !pongMutable) {
-    netlog("*** pong cannot find parts!")
-    return
-  }
   const pongUUID = getComponent(pong, UUIDComponent) as EntityUUID
 
   helperBindPongParts(pong)
   const numAvatars = helperBindPongGoalsAvatar(pong)
 
   // update paddles for everybody
-  pongComponent.goals.forEach( helperDispatchUpdatePaddleAvatar )
+  pongComponent.goals.forEach( updateAvatarPaddle )
 
   // for now just drive the experience largely on the server
   if(isClient) return
@@ -605,8 +595,8 @@ const helperPong = (pong: Entity) => {
         // reset goals for a new game
         pongComponent.goals.forEach(goal=>{
           const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
-          const health = getComponent(goal,GoalComponent)?.startingHealth || 9
-          dispatchAction(PongAction.pongGoal({ entityUUID, health }))
+          const damage = 0
+          dispatchAction(PongAction.pongGoal({ entityUUID, damage }))
         })
 
         // reset balls for a new game
@@ -621,11 +611,12 @@ const helperPong = (pong: Entity) => {
       }
 
       // volley balls periodically
-      helperDispatchVolleyBalls(pong)
+      volleyBalls(pong)
 
       // update goal collisions
       pongComponent.goals.forEach(goal=>{
-          if(helperDispatchEvaluateGoals(goal)) {
+          const gameover = handlePlateCollisionsAndUpdateScore(goal)
+          if(gameover) {
             dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.completed }))
             netlog("Pong ended a game")
             pongMutable.mode.set(PongMode.completed) // ?? @todo improve
@@ -645,7 +636,7 @@ function execute() {
   PongActionReceptor()
   const pongEntities = pongQuery()
   for (const pong of pongEntities) {
-    helperPong(pong)
+    update(pong)
   }
 }
 

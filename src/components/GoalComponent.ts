@@ -10,7 +10,7 @@ export const GoalComponent = defineComponent({
       paddle: 0 as Entity,
       text: 0 as Entity,
       avatar: 0 as Entity,
-      health: 9,
+      damage: 0,
       startingHealth: 9,
     }
   },
