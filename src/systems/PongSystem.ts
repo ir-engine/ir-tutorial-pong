@@ -34,6 +34,8 @@ import { AvatarRigComponent } from '@etherealengine/engine/src/avatar/components
 import { AvatarIKTargetComponent } from '@etherealengine/engine/src/avatar/components/AvatarIKComponents'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
+import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
+import { AvatarCollisionMask } from '@etherealengine/engine/src/physics/enums/CollisionGroups'
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -245,6 +247,8 @@ function helperBindPongParts(pong:Entity) {
         if( isnear(goal,paddle,goalMutable.paddle.value)) {
           goalMutable.paddle.set(paddle)
           netlog("bound a paddle =" + entity2UUID(paddle) + " goal=" + entity2UUID(goal) )
+          const collider = getMutableComponent(paddle,ColliderComponent)
+          collider.collisionMask.set( AvatarCollisionMask )
         }
       })
     }
