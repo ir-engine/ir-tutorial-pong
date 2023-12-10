@@ -6,6 +6,7 @@ import {
   defineQuery,
   getComponent,
   getMutableComponent,
+  setComponent,
 } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
 
 import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFunctions'
@@ -36,6 +37,8 @@ import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/Av
 import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
 import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
 import { AvatarCollisionMask } from '@etherealengine/engine/src/physics/enums/CollisionGroups'
+import { NetworkObjectAuthorityTag, NetworkObjectComponent } from '@etherealengine/engine/src/networking/components/NetworkObjectComponent'
+import { WorldNetworkAction } from '@etherealengine/engine/src/networking/functions/WorldNetworkAction'
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -247,8 +250,12 @@ function helperBindPongParts(pong:Entity) {
         if( isnear(goal,paddle,goalMutable.paddle.value)) {
           goalMutable.paddle.set(paddle)
           netlog("bound a paddle =" + entity2UUID(paddle) + " goal=" + entity2UUID(goal) )
+
+          // on all instances make sure the paddle does not collide with avatar
+          // @todo does this get state get echoed to the client?
           const collider = getMutableComponent(paddle,ColliderComponent)
           collider.collisionMask.set( AvatarCollisionMask )
+
         }
       })
     }
@@ -418,29 +425,69 @@ function orig_helperBindPongGoalsAvatar(pong:Entity) {
 */
 
 function updateAvatarPaddle(goal:Entity) {
+
+  // @todo may want to throttle this routine overall?
+
+  // this routine has been modified to make the client locally authoritative for their own paddle
+  if(!isClient) return
+
+  // fetch goal and paddle
   const goalComponent = getComponent(goal,GoalComponent)
   if(!goalComponent || !goalComponent.avatar || !goalComponent.paddle) return
+  const paddle = goalComponent.paddle
+  const avatar = goalComponent.avatar
 
-  // for now only update self - basically throw away other participants
+  // hack: for now only update self - basically throw away other participants
   if(!Engine.instance.localClientEntity) return
   if(Engine.instance.localClientEntity != goalComponent.avatar) return
 
-  const rig = getComponent(goalComponent.avatar, AvatarRigComponent)
+  // this part of the code only runs on the client anyway... server side has no AvatarRigComponent
+  const rig = getComponent(avatar, AvatarRigComponent)
   if (!rig) {
-    // @todo issue server has no rig
     //netlog("avatar has no rig"+goalComponent.avatar)
     return
   }
 
+  // on all instances, ask for the client to be authoritative
+  const networkObject = getComponent(paddle, NetworkObjectComponent)
+  if(!networkObject) {
+    netlog("error paddle has no network")
+    return
+  }
+  if(networkObject.authorityPeerID != Engine.instance.store.peerID) {
+    netlog("asking for paddle authority " + Engine.instance.store.peerID)
+    dispatchAction(
+      WorldNetworkAction.transferAuthorityOfObject({
+        ownerId: networkObject.ownerId,
+        networkId: networkObject.networkId,
+        newAuthority: Engine.instance.store.peerID
+      })
+    )
+    // no idea what this is for -> setComponent(paddle, NetworkObjectAuthorityTag)
+  }
+
+  // get the hand pose
   const handPose = rig?.rig?.rightHand?.node
   if(!handPose) return
-  const kinematicPosition = new Vector3()
-  const kinematicRotation = new Quaternion()
-  handPose.getWorldPosition(kinematicPosition)
-  handPose.getWorldQuaternion(kinematicRotation)
+  const position = new Vector3()
+  const rotation = new Quaternion()
+  handPose.getWorldPosition(position)
+  handPose.getWorldQuaternion(rotation)
 
-  const entityUUID = getComponent(goalComponent.paddle, UUIDComponent) as EntityUUID
-  dispatchAction(PongAction.pongMove({entityUUID,kinematicPosition,kinematicRotation}))
+  // set physics target
+  // @todo I am unsure if this is the right way to network the target pose implicitly?
+  const rigid = getComponent(paddle,RigidBodyComponent)
+  rigid.targetKinematicPosition.copy(position)
+  rigid.targetKinematicRotation.copy(rotation)
+
+  // @todo this might be needed? are physics targets networked?
+  //const transform = getComponent(paddle,TransformComponent)
+  //transform.position.copy(position)
+  //transform.rotation.copy(rotation)
+
+  // this is the brute force way i was networking position before - and it should be removed
+  //const entityUUID = getComponent(goalComponent.paddle, UUIDComponent) as EntityUUID
+  //dispatchAction(PongAction.pongMove({entityUUID,kinematicPosition,kinematicRotation}))
 }
 
 function handlePlateCollisionsAndUpdateScore(goal:Entity ) {
