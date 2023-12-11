@@ -361,6 +361,51 @@ function old_helperBindPongParts(pong:Entity) {
 */
 
 ///
+/// When I associate a player and a goal I also want to let that player operate the paddle
+///
+
+function setNetworkAuthority(paddle,avatar) {
+
+  const networkPaddle = getComponent(paddle, NetworkObjectComponent)
+  if(!networkPaddle) {
+    netlog("error paddle has no network")
+    return
+  }
+
+  const networkAvatar = getComponent(avatar, NetworkObjectComponent)
+  if(!networkAvatar) {
+    netlog("error avatar has no network")
+    return
+  }
+
+  if(networkPaddle.authorityPeerID == networkAvatar.authorityPeerID) {
+    return
+  }
+
+  if(isClient) {
+    // make server do the work
+    //dispatchAction(
+    //  WorldNetworkAction.requestAuthorityOverObject({
+    //    ownerId: networkPaddle.ownerId,
+    //    networkId: networkPaddle.networkId,
+    //    newAuthority: networkAvatar.authorityPeerID
+    //  })
+    //)
+    //Engine.instance.store.peerID
+    return
+  } else {
+    dispatchAction(
+      WorldNetworkAction.transferAuthorityOfObject({
+        ownerId: networkPaddle.ownerId,
+        networkId: networkPaddle.networkId,
+        newAuthority: networkAvatar.authorityPeerID
+      })
+    )
+  }
+}
+
+
+///
 /// helper function to build relationship between goal and first avatar on goal
 /// @todo it may make sense to allow players to step out of a goal briefly using a timeout
 /// @todo it may make sense to watch collision transitions rather than busy poll this
@@ -392,6 +437,7 @@ function helperBindPongGoalsAvatar(pong:Entity) {
       const dist = (a.x-b.x)*(a.x-b.x)+(a.z-b.z)*(a.z-b.z)
       if(dist < size*size) {
         goalMutable.avatar.set(avatar)
+        setNetworkAuthority(goalMutable.paddle.value,avatar)
         numAvatars++
       }
     })
@@ -446,24 +492,6 @@ function updateAvatarPaddle(goal:Entity) {
   if (!rig) {
     //netlog("avatar has no rig"+goalComponent.avatar)
     return
-  }
-
-  // on all instances, ask for the client to be authoritative
-  const networkObject = getComponent(paddle, NetworkObjectComponent)
-  if(!networkObject) {
-    netlog("error paddle has no network")
-    return
-  }
-  if(networkObject.authorityPeerID != Engine.instance.store.peerID) {
-    netlog("asking for paddle authority " + Engine.instance.store.peerID)
-    dispatchAction(
-      WorldNetworkAction.requestAuthorityOverObject({
-        ownerId: networkObject.ownerId,
-        networkId: networkObject.networkId,
-        newAuthority: Engine.instance.store.peerID
-      })
-    )
-    // no idea what this is for -> setComponent(paddle, NetworkObjectAuthorityTag)
   }
 
   // get the hand pose
