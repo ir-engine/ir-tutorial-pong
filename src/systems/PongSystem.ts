@@ -457,7 +457,7 @@ function updateAvatarPaddle(goal:Entity) {
   if(networkObject.authorityPeerID != Engine.instance.store.peerID) {
     netlog("asking for paddle authority " + Engine.instance.store.peerID)
     dispatchAction(
-      WorldNetworkAction.transferAuthorityOfObject({
+      WorldNetworkAction.requestAuthorityOverObject({
         ownerId: networkObject.ownerId,
         networkId: networkObject.networkId,
         newAuthority: Engine.instance.store.peerID
