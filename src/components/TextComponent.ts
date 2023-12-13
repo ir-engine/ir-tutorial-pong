@@ -23,271 +23,39 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { Euler, Mesh, MeshLambertMaterial } from 'three'
-import { Geometry } from '@etherealengine/engine/src/assets/constants/Geometry'
+import { useEffect } from 'react'
+import { useState } from '@etherealengine/hyperflux'
+
 import { defineComponent, useComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
 import { useEntityContext } from '@etherealengine/engine/src/ecs/functions/EntityFunctions'
 import { addObjectToGroup, removeObjectFromGroup } from '@etherealengine/engine/src/scene/components/GroupComponent'
 import { ObjectLayers } from '@etherealengine/engine/src/scene/constants/ObjectLayers'
 import { setObjectLayers } from '@etherealengine/engine/src/scene/functions/setObjectLayers'
-import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
-import { useEffect } from 'react'
 
-
+import { Mesh, MeshLambertMaterial, ExtrudeGeometry } from 'three'
 import { Font, FontLoader } from '@etherealengine/engine/src/assets/font/FontLoader'
+import { Geometry } from '@etherealengine/engine/src/assets/constants/Geometry'
 
-/**
- * Text = 3D Text
- *
- * parameters = {
- *  font: <THREE.Font>, // font
- *
- *  size: <float>, // size of the text
- *  height: <float>, // thickness to extrude text
- *  curveSegments: <int>, // number of points on the curves
- *
- *  bevelEnabled: <bool>, // turn on bevel
- *  bevelThickness: <float>, // how deep into text bevel goes
- *  bevelSize: <float>, // how far from text outline (including bevelOffset) is bevel
- *  bevelOffset: <float> // how far from text outline does bevel start
- * }
- */
-
-import {
-	ExtrudeGeometry
-} from 'three';
-import { useState } from '@etherealengine/hyperflux'
-
+// @todo remove this completely in favor of one from threejs extensions once vite added
 class TextGeometry extends ExtrudeGeometry {
-
   type = 'TextGeometry'
-
 	constructor( text, parameters : any ) {
-
 		const font = parameters.font;
-
 		if ( font === undefined ) {
-
 			super(); // generate default extrude geometry
-
 		} else {
-
 			const shapes = font.generateShapes( text, parameters.size );
-
-			// translate parameters to ExtrudeGeometry API
-
 			parameters.depth = parameters.height !== undefined ? parameters.height : 50;
-
-			// defaults
-
 			if ( parameters.bevelThickness === undefined ) parameters.bevelThickness = 10;
 			if ( parameters.bevelSize === undefined ) parameters.bevelSize = 8;
 			if ( parameters.bevelEnabled === undefined ) parameters.bevelEnabled = false;
-
 			super( shapes, parameters );
-
 		}
-
 		this.type = 'TextGeometry';
-
 	}
-
 }
 
-/*
-
-import {
-	FileLoader,
-	Loader,
-	ShapePath
-} from 'three';
-
-class FontLoader extends Loader {
-
-	constructor() {
-
-		super();
-
-	}
-
-	load( url, onLoad ) {
-
-		const scope = this;
-
-		const loader = new FileLoader( this.manager );
-		loader.setPath( this.path );
-		loader.setRequestHeader( this.requestHeader );
-		loader.setWithCredentials( this.withCredentials );
-		loader.load( url, function ( text : string ) {
-
-			const font = scope.parse( JSON.parse( text ) );
-
-			if ( onLoad ) onLoad( font );
-
-		});
-
-	}
-
-	parse( json ) {
-
-		return new Font( json );
-
-	}
-
-}
-
-
-function createPaths( text, size, data ) {
-
-	const chars = Array.from( text );
-	const scale = size / data.resolution;
-	const line_height = ( data.boundingBox.yMax - data.boundingBox.yMin + data.underlineThickness ) * scale;
-
-	let paths : Array<any> = [];
-
-	let offsetX = 0, offsetY = 0;
-
-	for ( let i = 0; i < chars.length; i ++ ) {
-
-		const char = chars[ i ];
-
-		if ( char === '\n' ) {
-
-			offsetX = 0;
-			offsetY -= line_height;
-
-		} else {
-
-			const ret : any = createPath( char, scale, offsetX, offsetY, data );
-      offsetX += ret.offsetX;
-      paths.push( ret.path );
-
-		}
-
-	}
-
-	return paths;
-
-}
-
-function createPath( char, scale, offsetX, offsetY, data ) {
-
-	const glyph = data.glyphs[ char ] || data.glyphs[ '?' ];
-
-	if ( ! glyph ) {
-
-		console.error( 'THREE.Font: character "' + char + '" does not exists in font family ' + data.familyName + '.' );
-
-		return;
-
-	}
-
-	const path = new ShapePath();
-
-	let x, y, cpx, cpy, cpx1, cpy1, cpx2, cpy2;
-
-	if ( glyph.o ) {
-
-		const outline = glyph._cachedOutline || ( glyph._cachedOutline = glyph.o.split( ' ' ) );
-
-		for ( let i = 0, l = outline.length; i < l; ) {
-
-			const action = outline[ i ++ ];
-
-			switch ( action ) {
-
-				case 'm': // moveTo
-
-					x = outline[ i ++ ] * scale + offsetX;
-					y = outline[ i ++ ] * scale + offsetY;
-
-					path.moveTo( x, y );
-
-					break;
-
-				case 'l': // lineTo
-
-					x = outline[ i ++ ] * scale + offsetX;
-					y = outline[ i ++ ] * scale + offsetY;
-
-					path.lineTo( x, y );
-
-					break;
-
-				case 'q': // quadraticCurveTo
-
-					cpx = outline[ i ++ ] * scale + offsetX;
-					cpy = outline[ i ++ ] * scale + offsetY;
-					cpx1 = outline[ i ++ ] * scale + offsetX;
-					cpy1 = outline[ i ++ ] * scale + offsetY;
-
-					path.quadraticCurveTo( cpx1, cpy1, cpx, cpy );
-
-					break;
-
-				case 'b': // bezierCurveTo
-
-					cpx = outline[ i ++ ] * scale + offsetX;
-					cpy = outline[ i ++ ] * scale + offsetY;
-					cpx1 = outline[ i ++ ] * scale + offsetX;
-					cpy1 = outline[ i ++ ] * scale + offsetY;
-					cpx2 = outline[ i ++ ] * scale + offsetX;
-					cpy2 = outline[ i ++ ] * scale + offsetY;
-
-					path.bezierCurveTo( cpx1, cpy1, cpx2, cpy2, cpx, cpy );
-
-					break;
-
-			}
-
-		}
-
-	}
-
-	return { offsetX: glyph.ha * scale, path: path };
-
-}
-
-
-//
-
-class Font {
-
-	constructor( data ) {
-
-    let thus : any = this
-
-		thus.isFont = true;
-
-		thus.type = 'Font';
-
-		thus.data = data;
-
-	}
-
-	generateShapes( text, size = 100 ) {
-
-		const shapes : Array<any> = [];
-    let thus : any = this
-		const paths = createPaths( text, size, thus.data );
-
-		for ( let p = 0, pl = paths.length; p < pl; p ++ ) {
-
-      let items = paths[p].toShapes()
-
-			shapes.push( ...items );
-
-		}
-
-		return shapes;
-
-	}
-
-}
-
-*/
-
-
+// @todo move this out of pong into ethereal engine as a whole as a aresource
 export const TextComponent = defineComponent({
   name: 'TextComponent',
   jsonID: 'text-geometry',
@@ -331,11 +99,10 @@ function TextReactor() {
     loader.load(url, function (font:Font) {
 			fontState.set(font)
     })
-	})
+	},[])
 
   useEffect(() => {
 		if (!fontState.value) return
-
 		const text = textComponent.text.value
 		const geometry = new TextGeometry(text, {
 			font: fontState.value,
