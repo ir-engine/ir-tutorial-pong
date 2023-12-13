@@ -34,7 +34,7 @@ import { TransformComponent } from '@etherealengine/engine/src/transform/compone
 import { useEffect } from 'react'
 
 
-import { FontLoader } from '@etherealengine/engine/src/assets/font/FontLoader'
+import { Font, FontLoader } from '@etherealengine/engine/src/assets/font/FontLoader'
 
 /**
  * Text = 3D Text
@@ -56,6 +56,7 @@ import { FontLoader } from '@etherealengine/engine/src/assets/font/FontLoader'
 import {
 	ExtrudeGeometry
 } from 'three';
+import { useState } from '@etherealengine/hyperflux'
 
 class TextGeometry extends ExtrudeGeometry {
 
@@ -322,66 +323,49 @@ export const TextComponent = defineComponent({
 function TextReactor() {
   const entity = useEntityContext()
   const textComponent = useComponent(entity, TextComponent)
-  const transform = useComponent(entity, TransformComponent)
+	const fontState = useState(null! as Font)
 
-  const material = new MeshLambertMaterial()
-
-  const helper = (text = 'hello') => {
-    const loader = new FontLoader()
+	useEffect(() => {
+		const loader = new FontLoader()
     let url = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/helvetiker_regular.typeface.json'
-    loader.load(url, function (font) {
-      if (textComponent.geometry.value) {
-        textComponent.geometry.value.dispose()
-      }
-      if (textComponent.mesh && textComponent.mesh.value && textComponent.mesh.value.geometry) {
-        textComponent.mesh.value.geometry.dispose()
-        removeObjectFromGroup(entity, textComponent.mesh.value)
-      }
-      const geometry = new TextGeometry(text, {
-        font: font,
-        size: 80,
-        height: 5,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 10,
-        bevelSize: 8,
-        bevelOffset: 0,
-        bevelSegments: 5
-      })
-      textComponent.mesh.set(new Mesh(geometry, material))
-      textComponent.mesh.value.name = `${entity}-text-geometry`
-      textComponent.mesh.value.visible = true
-      textComponent.mesh.value.updateMatrixWorld(true)
-      setObjectLayers(textComponent.mesh.value, ObjectLayers.Scene)
-      addObjectToGroup(entity, textComponent.mesh.value)
-      textComponent.geometry.set(geometry)
+    loader.load(url, function (font:Font) {
+			fontState.set(font)
     })
-  }
+	})
 
   useEffect(() => {
-    helper(textComponent.text.value)
-    return () => {
-      if (!textComponent.mesh.value) return
-      removeObjectFromGroup(entity, textComponent.mesh.value)
+		if (!fontState.value) return
+
+		const text = textComponent.text.value
+		const geometry = new TextGeometry(text, {
+			font: fontState.value,
+			size: 80,
+			height: 5,
+			curveSegments: 12,
+			bevelEnabled: true,
+			bevelThickness: 10,
+			bevelSize: 8,
+			bevelOffset: 0,
+			bevelSegments: 5
+		})
+		const material = new MeshLambertMaterial()
+		
+		const mesh = new Mesh(geometry, material)
+		mesh.name = `${entity}-text-geometry`
+		mesh.visible = true
+		mesh.updateMatrixWorld(true)
+		textComponent.mesh.set(mesh)
+		textComponent.geometry.set(geometry)
+		setObjectLayers(mesh, ObjectLayers.Scene)
+		addObjectToGroup(entity, mesh)
+
+		return () => {
+			material.dispose()
+			geometry.dispose()
+      removeObjectFromGroup(entity, mesh)
     }
-  }, [])
 
-  // sync geometry with transform
-  useEffect(() => {
-    if (!textComponent.mesh.value) return
-    textComponent.mesh.position.value.copy(transform.position.value)
-    textComponent.mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
-    textComponent.mesh.scale.value.copy(transform.scale.value)
-  }, [textComponent.geometry])
-
-  // if text changes
-  useEffect(() => {
-    helper(textComponent.text.value)
-    if (!textComponent.mesh.value) return
-    textComponent.mesh.position.value.copy(transform.position.value)
-    textComponent.mesh.rotation.value.copy(new Euler().setFromQuaternion(transform.rotation.value))
-    textComponent.mesh.scale.value.copy(transform.scale.value)
-  }, [textComponent.text])
+  }, [textComponent.text, fontState])
 
   return null
 }
