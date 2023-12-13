@@ -13,7 +13,8 @@ import './components/PongComponent'
 import './systems/PongSystem'
 
 export default async function worldInjection() {
-  if (isClient && getState(EngineState).isEditing) {
+  console.log("********************** pong doing world injection ******************** ")
+  if (isClient && getState(EngineState).isEditor) {
     await import("./clientInjection.js")
   }
 }

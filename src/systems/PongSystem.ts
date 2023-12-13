@@ -94,7 +94,6 @@ function entity2UUID(entity: Entity) {
 function netlog(msg) {
   const userid = Engine.instance.userID
   const log = `*** pong v=1024 userid=${userid} isClient=${isClient} : ${msg}`
-  console.log(log)
   dispatchAction(PongAction.pongLog({log}))
 }
 
@@ -383,17 +382,17 @@ function setNetworkAuthority(paddle,avatar) {
   }
 
   if(isClient) {
-    // make server do the work
-    //dispatchAction(
-    //  WorldNetworkAction.requestAuthorityOverObject({
-    //    ownerId: networkPaddle.ownerId,
-    //    networkId: networkPaddle.networkId,
-    //    newAuthority: networkAvatar.authorityPeerID
-    //  })
-    //)
-    //Engine.instance.store.peerID
-    return
+    // @todo remove this is test code
+    netlog("client transfer paddle auth " + Engine.instance.store.peerID)
+    dispatchAction(
+      WorldNetworkAction.requestAuthorityOverObject({
+        ownerId: networkPaddle.ownerId,
+        networkId: networkPaddle.networkId,
+        newAuthority: Engine.instance.store.peerID
+      })
+    )
   } else {
+    netlog("server transfer paddle auth " + networkAvatar.authorityPeerID)
     dispatchAction(
       WorldNetworkAction.transferAuthorityOfObject({
         ownerId: networkPaddle.ownerId,
@@ -494,13 +493,19 @@ function updateAvatarPaddle(goal:Entity) {
     return
   }
 
-  // get the hand pose
-  const handPose = rig?.rig?.rightHand?.node
-  if(!handPose) return
   const position = new Vector3()
   const rotation = new Quaternion()
-  handPose.getWorldPosition(position)
-  handPose.getWorldQuaternion(rotation)
+
+  // get the hand pose
+  const handPose = rig?.rawRig?.rightHand?.node
+  if(handPose) {
+    handPose.getWorldPosition(position)
+    handPose.getWorldQuaternion(rotation)
+  } else {
+    const center = getComponent(avatar,TransformComponent)
+    position.copy(center.position)
+    rotation.copy(center.rotation)
+  }
 
   // set physics target
   // @todo I am unsure if this is the right way to network the target pose implicitly?
@@ -613,6 +618,7 @@ const update = (pong: Entity) => {
   counter++
   if(counter > 5*60) {
     netlog("5 seconds passed heartbeat")
+    console.log("pong sending heartbeat")
     counter = 0
   }
 
