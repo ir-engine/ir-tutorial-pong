@@ -4,8 +4,8 @@
 
 1) When one or more players enters a goal then play is started
 2) When all players leave all goals then play stops
-3) Players extend their arms to volley a ball towards another player
-4) If a ball hits a player goal then that player takes damage; at maximum damage the game ends
+3) If a ball hits a player goal then that player takes damage; at maximum damage the game ends
+4) volleying is automatic
 
 # Code
 
@@ -17,23 +17,16 @@
 
 # Todo
 
-- write ball volley logic and also delete balls that are inactive
+- volley balls on client by spawning
+- or figure out how to volley balls on server and have them networked
 
-## Valuable to improve
 
-- use player mocap if avail; or use xrstate
-- merge in a separate commit that extends collision support slightly in ee
+## Minor / Later
 
-## Minor
-
-- perhaps time out exit from game rather than strictly stopping game on stepping off plate?
+- rotate text 90'
 - perhaps some win effect?
 - optionally a robot player?
 - optionally improve scoreboard art to be not arabic numerals but rather just dots
-- it is hard to see the game state from a first person view -> could capture the player camera?
-
-## Future
-
 - different shaped volumes
 - multiball
 - obstacles

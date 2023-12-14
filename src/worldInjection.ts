@@ -10,11 +10,10 @@ import './components/PlateComponent'
 import './components/GoalComponent'
 import './components/PongComponent'
 
-import './systems/PongSystem'
+import './PongSystem'
 
 export default async function worldInjection() {
-  console.log("********************** pong doing world injection ******************** ")
-  if (isClient && getState(EngineState).isEditor) {
+  if (isClient && getState(EngineState).isEditing) {
     await import("./clientInjection.js")
   }
 }

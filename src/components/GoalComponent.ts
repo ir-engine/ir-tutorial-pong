@@ -7,9 +7,11 @@ export const GoalComponent = defineComponent({
   onInit: (entity) => {
     return {
       plate: 0 as Entity,
-      paddle: 0 as Entity,
+      paddle1: 0 as Entity,
+      paddle2: 0 as Entity,
       text: 0 as Entity,
       avatar: 0 as Entity,
+      avatarTimer: 0,
       damage: 0,
       startingHealth: 9,
     }
@@ -20,3 +22,4 @@ export const GoalComponent = defineComponent({
     return {}
   }
 })
+

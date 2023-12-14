@@ -1,8 +1,7 @@
-import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
-import { matches } from '@etherealengine/engine/src/common/functions/MatchesUtils'
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
-import { defineComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
-import { Vector3 } from 'three'
+import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
+import { getMutableComponent, defineComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { PongAction } from '../PongActions'
 
 export enum PongMode {
   'stopped' = 'stopped',
@@ -30,3 +29,18 @@ export const PongComponent = defineComponent({
     }
   }
 })
+
+export const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
+  const pong = UUIDComponent.entitiesByUUID[action.uuid]
+  if(!pong) return
+  const pongMutable = getMutableComponent(pong,PongComponent)
+  if(!pongMutable) return
+  switch(action.mode) {
+    default:
+    case 'stopped': pongMutable.mode.set( PongMode.stopped ); break
+    case 'starting': pongMutable.mode.set( PongMode.starting ); break
+    case 'playing': pongMutable.mode.set( PongMode.playing ); break
+    case 'completed': pongMutable.mode.set( PongMode.completed ); break
+  }
+}
+

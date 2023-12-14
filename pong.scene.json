@@ -590,7 +590,7 @@
       "index": 2
     },
     "124e9fa3-f23e-4cdb-ad30-0b0ed62283be": {
-      "name": "goal1",
+      "name": "goalA",
       "components": [
         {
           "name": "pong.goal",
@@ -622,11 +622,11 @@
           }
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
       "index": 1
     },
     "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362": {
-      "name": "goal2",
+      "name": "goalB",
       "components": [
         {
           "name": "pong.goal",
@@ -658,11 +658,11 @@
           }
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
       "index": 1
     },
     "0a3dc842-d789-4ce9-a07a-49db5a44381f": {
-      "name": "paddle1",
+      "name": "paddleA1",
       "components": [
         {
           "name": "pong.paddle",
@@ -676,9 +676,9 @@
           "name": "transform",
           "props": {
             "position": {
-              "x": 0,
-              "y": 0,
-              "z": 6
+              "x": -2,
+              "y": 10,
+              "z": 0
             },
             "rotation": {
               "x": 0,
@@ -687,97 +687,8 @@
               "w": 1
             },
             "scale": {
-              "x": 0.19999999999999996,
-              "y": 0.19999999999999996,
-              "z": 0.10000000000000009
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        }
-      ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
-      "index": 0
-    },
-    "a118a168-6434-46a3-bd21-2e15e5ce41c5": {
-      "name": "paddle2",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 0,
-              "z": -6
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.19999999999999996,
-              "y": 0.19999999999999996,
+              "x": 0.2,
+              "y": 0.2,
               "z": 0.1
             }
           }
@@ -790,7 +701,7 @@
             "isTrigger": false,
             "removeMesh": false,
             "collisionLayer": 1,
-            "collisionMask": 7,
+            "collisionMask": 1,
             "restitution": 0.5,
             "triggers": [
               {
@@ -802,19 +713,200 @@
           }
         },
         {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 0,
+            "geometryParams": null
+          }
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
+      "index": 0
+    },
+    "0a3dc842-d789-4ce9-a07a-49db5a44381e": {
+      "name": "paddleA2",
+      "components": [
+        {
+          "name": "pong.paddle",
+          "props": {}
+        },
+        {
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 2,
+              "y": 10,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.2,
+              "y": 0.2,
+              "z": 0.1
+            }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 2,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 1,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        },
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 0,
+            "geometryParams": null
+          }
+        }
+      ],
+      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
+      "index": 0
+    },
+    "a118a168-6434-46a3-bd21-2e15e5ce41c5": {
+      "name": "paddleB1",
+      "components": [
+        {
+          "name": "pong.paddle",
+          "props": {}
+        },
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 0,
+            "geometryParams": null
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": -2,
+              "y": 10,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.2,
+              "y": 0.2,
+              "z": 0.1
+            }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 2,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 1,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        }
+      ],
+      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
+      "index": 0
+    },
+    "a118a168-6434-46a3-bd21-2e15e5ce41c4": {
+      "name": "paddleB2",
+      "components": [
+        {
+          "name": "pong.paddle",
+          "props": {}
+        },
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 0,
+            "geometryParams": null
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 2,
+              "y": 10,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.2,
+              "y": 0.2,
+              "z": 0.1
+            }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 2,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 1,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        }
+      ],
+      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
       "index": 0
     },
     "e1b552de-c601-488f-8725-a0d28ef5249a": {
@@ -823,7 +915,7 @@
         {
           "name": "text-geometry",
           "props": {
-            "text": "0"
+            "text": "pong"
           }
         },
         {
@@ -834,15 +926,15 @@
           "name": "transform",
           "props": {
             "position": {
-              "x": -0.8,
+              "x": 0,
               "y": 4,
-              "z": 4
+              "z": 0
             },
             "rotation": {
               "x": 0,
-              "y": 0,
+              "y": 0.707,
               "z": 0,
-              "w": 1
+              "w": 0.707
             },
             "scale": {
               "x": 0.03,
@@ -850,41 +942,9 @@
               "z": 0.03
             }
           }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
       "index": 1
     },
     "c5723371-2332-4b04-a08c-ba253eadb0be": {
@@ -893,7 +953,7 @@
         {
           "name": "text-geometry",
           "props": {
-            "text": "0"
+            "text": "ping"
           }
         },
         {
@@ -904,15 +964,15 @@
           "name": "transform",
           "props": {
             "position": {
-              "x": -0.8,
+              "x": 0,
               "y": 4,
-              "z": -4
+              "z": 0
             },
             "rotation": {
               "x": 0,
-              "y": 0,
+              "y": 0.707,
               "z": 0,
-              "w": 1
+              "w": 0.707
             },
             "scale": {
               "x": 0.03,
@@ -920,33 +980,9 @@
               "z": 0.03
             }
           }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
       "index": 1
     },
     "36e9c2e1-a74a-4e49-87b8-288bf1df283b": {
@@ -961,10 +997,10 @@
           "props": {
             "bodyType": 1,
             "shapeType": 1,
-            "isTrigger": false,
+            "isTrigger": true,
             "removeMesh": false,
             "collisionLayer": 1,
-            "collisionMask": 7,
+            "collisionMask": 3,
             "restitution": 0.5,
             "triggers": [
               {
@@ -985,7 +1021,7 @@
             "position": {
               "x": 0,
               "y": 0,
-              "z": 6
+              "z": 0
             },
             "rotation": {
               "x": 0,
@@ -995,21 +1031,13 @@
             },
             "scale": {
               "x": 2,
-              "y": 0.10000000000000009,
+              "y": 0.8,
               "z": 2
             }
           }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
       "index": 2
     },
     "6fe5ac6a-71fe-4aec-97cc-ffaa196a794a": {
@@ -1024,10 +1052,10 @@
           "props": {
             "bodyType": 1,
             "shapeType": 1,
-            "isTrigger": false,
+            "isTrigger": true,
             "removeMesh": false,
             "collisionLayer": 1,
-            "collisionMask": 7,
+            "collisionMask": 3,
             "restitution": 0.5,
             "triggers": [
               {
@@ -1048,7 +1076,7 @@
             "position": {
               "x": 0,
               "y": 0,
-              "z": -6
+              "z": 0
             },
             "rotation": {
               "x": 0,
@@ -1058,21 +1086,13 @@
             },
             "scale": {
               "x": 2,
-              "y": 0.10000000000000009,
+              "y": 0.8,
               "z": 2
             }
           }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "visible",
-          "props": true
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
       "index": 2
     },
     "72c046eb-9cb7-4509-b485-0338bd7d50ee": {
@@ -1106,8 +1126,8 @@
           "props": {
             "position": {
               "x": 0,
-              "y": 5,
-              "z": 0
+              "y": 100,
+              "z": -6
             },
             "rotation": {
               "x": 0,
@@ -1130,7 +1150,7 @@
             "isTrigger": false,
             "removeMesh": false,
             "collisionLayer": 1,
-            "collisionMask": 7,
+            "collisionMask": 15,
             "restitution": 0.5,
             "triggers": [
               {
@@ -1142,7 +1162,7 @@
           }
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
       "index": 3
     },
     "dee76cd1-9388-46b2-bb98-4e3eea7c0bf9": {
@@ -1175,8 +1195,8 @@
           "name": "transform",
           "props": {
             "position": {
-              "x": 5,
-              "y": 4,
+              "x": 0,
+              "y": 5000,
               "z": 0
             },
             "rotation": {
@@ -1200,7 +1220,7 @@
             "isTrigger": false,
             "removeMesh": false,
             "collisionLayer": 1,
-            "collisionMask": 7,
+            "collisionMask": 15,
             "restitution": 0.5,
             "triggers": [
               {
@@ -1212,7 +1232,7 @@
           }
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
       "index": 4
     },
     "af0ab829-e917-48b9-8179-691092632560": {
@@ -1245,9 +1265,9 @@
           "name": "transform",
           "props": {
             "position": {
-              "x": 8,
-              "y": 3,
-              "z": 0
+              "x": 0,
+              "y": 100,
+              "z": 6
             },
             "rotation": {
               "x": 0,
@@ -1270,7 +1290,7 @@
             "isTrigger": false,
             "removeMesh": false,
             "collisionLayer": 1,
-            "collisionMask": 7,
+            "collisionMask": 15,
             "restitution": 0.5,
             "triggers": [
               {
@@ -1282,7 +1302,7 @@
           }
         }
       ],
-      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
       "index": 5
     }
   },
