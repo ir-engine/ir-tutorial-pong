@@ -44,6 +44,7 @@ export class PongAction {
     $topic: NetworkTopics.world
   })
 
+  /*
   static pongMove = defineAction({
     type: 'pong.move',
     entityUUID: matchesEntityUUID,
@@ -54,6 +55,7 @@ export class PongAction {
     impulse: matchesVector3.optional(),
     $topic: NetworkTopics.world,
   })
+  */
 
 }
 
@@ -77,6 +79,8 @@ const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
   }
   //netlog("*** pong: set goal in game ="+action.damage+" goal="+entity2UUID(goal))
 }
+
+/*
 
 const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
 
@@ -128,6 +132,8 @@ const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
   }
 }
 
+*/
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///
 /// action queues
@@ -138,12 +144,12 @@ export function PongActionQueueReceptorContext() {
   const pongLogQueue = defineActionQueue(PongAction.pongLog.matches)
   const pongPongQueue = defineActionQueue(PongAction.pongPong.matches)
   const pongGoalQueue = defineActionQueue(PongAction.pongGoal.matches)
-  const pongMoveQueue = defineActionQueue(PongAction.pongMove.matches)
+  //const pongMoveQueue = defineActionQueue(PongAction.pongMove.matches)
   const exhaustActionQueues = () => {
     for (const action of pongLogQueue()) pongLocalLog(action)
     for (const action of pongPongQueue()) pongPong(action)
     for (const action of pongGoalQueue()) pongGoal(action)
-    for (const action of pongMoveQueue()) pongMove(action)
+    //for (const action of pongMoveQueue()) pongMove(action)
   }
   return exhaustActionQueues
 }
