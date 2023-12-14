@@ -30,7 +30,7 @@ export const PongComponent = defineComponent({
   }
 })
 
-export const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
+export const pongLocalPong = (action: ReturnType<typeof PongAction.pongPong>) => {
   const pong = UUIDComponent.entitiesByUUID[action.uuid]
   if(!pong) return
   const pongMutable = getMutableComponent(pong,PongComponent)

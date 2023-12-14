@@ -20,6 +20,8 @@
 - volley balls on client by spawning
 - or figure out how to volley balls on server and have them networked
 
+- fetch font more directly; rather than from 3js github repo
+- move entire font feature out of pong into etherealengine
 
 ## Minor / Later
 
