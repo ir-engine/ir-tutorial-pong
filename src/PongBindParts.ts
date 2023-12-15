@@ -296,7 +296,7 @@ function platesBindAvatarPaddles(pong:Entity) {
   return numAvatars
 }
 
-export function pongWireParts(pong:Entity) {
+export function pongBindParts(pong:Entity) {
 
   pongBindGoals(pong)
   pongBindBalls(pong)

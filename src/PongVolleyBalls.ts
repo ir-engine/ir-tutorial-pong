@@ -1,39 +1,32 @@
 
-import { Quaternion, Vector3 } from 'three'
+import { Vector3 } from 'three'
 
 import { isClient } from '@etherealengine/engine/src/common/functions/getEnvironment'
 import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
 import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
 
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
+import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 import { CollisionComponent } from '@etherealengine/engine/src/physics/components/CollisionComponent'
 import { RigidBodyComponent } from '@etherealengine/engine/src/physics/components/RigidBodyComponent'
-import { EntityTreeComponent } from '@etherealengine/engine/src/ecs/functions/EntityTree'
-import { AvatarRigComponent } from '@etherealengine/engine/src/avatar/components/AvatarAnimationComponent'
-import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
-import { addComponent, defineQuery, getComponent, getMutableComponent, setComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
-
 import { NetworkObjectComponent } from '@etherealengine/engine/src/networking/components/NetworkObjectComponent'
-import { WorldNetworkAction } from '@etherealengine/engine/src/networking/functions/WorldNetworkAction'
-
-import { defineAction, dispatchAction, getState } from '@etherealengine/hyperflux'
-
-import { PongComponent } from './components/PongComponent'
-import { GoalComponent } from './components/GoalComponent'
-import { TextComponent } from './components/TextComponent'
-import { BallComponent } from './components/BallComponent'
-import { PlateComponent } from './components/PlateComponent'
-import { PaddleComponent } from './components/PaddleComponent'
-import { netlog } from './PongLogging'
-import { createEntity } from '@etherealengine/engine/src/ecs/functions/EntityFunctions'
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
 import { VisibleComponent } from '@etherealengine/engine/src/scene/components/VisibleComponent'
 import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
+
+import { getComponent, getMutableComponent, setComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { dispatchAction, getState } from '@etherealengine/hyperflux'
+import { WorldNetworkAction } from '@etherealengine/engine/src/networking/functions/WorldNetworkAction'
+import { createEntity } from '@etherealengine/engine/src/ecs/functions/EntityFunctions'
+
 import { PongAction } from './PongActions'
-import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
+import { PongComponent } from './components/PongComponent'
+import { GoalComponent } from './components/GoalComponent'
+import { BallComponent } from './components/BallComponent'
+import { netlog } from './PongLogging'
 
 let counter = 0
 
@@ -104,7 +97,7 @@ function spawnBall() {
 /// @todo it is unclear if there is a delay between requesting ownership and getting it
 ///
 
-function moveBall(ball:Entity,position:Vector3,impulse:Vector3) {
+export function moveBall(ball:Entity,position:Vector3,impulse:Vector3) {
 
   // the engine is arranged such that an object must be explicitly requested to be 'owned' in order to be moved
 
@@ -114,6 +107,7 @@ function moveBall(ball:Entity,position:Vector3,impulse:Vector3) {
     return
   }
 
+  // whats the difference between requestAuthority and transferAuthority if you are the server? @todo
   if(net.authorityPeerID != Engine.instance.store.peerID) {
     console.log("***** pong authority is=" + net.authorityPeerID + " local =" + Engine.instance.store.peerID)
     netlog("ball: transferring ownership for ball name = " + getComponent(ball,NameComponent))
@@ -133,23 +127,28 @@ function moveBall(ball:Entity,position:Vector3,impulse:Vector3) {
 
   const rigid = getComponent(ball,RigidBodyComponent)
 
+  // try reset the forces
+  rigid.body.resetForces(true)
+  //const zero = new Vector3(0,0,0)
+  //rigid.body.setLinvel(zero, true)
+  //rigid.body.setAngvel(zero, true)
+
   // strategies to try set the ball position
   {
+    // this is not networked for objects with physics
+    // const ballTransform = getComponent(ball,TransformComponent)
+    // ballTransform.position.copy(position)
+
     // a ball is dynamic - not kinematic so this should not work...
     // rigid.targetKinematicPosition.copy(position)
 
     // this should work but does not? ...
     rigid.position.copy(position)
 
-    // this doesn't network correctly ...
-    rigid.body.setTranslation({ x:0, y:5, z:0 }, true) 
-
-    // uh i dunno at this point
-    // const ballTransform = getComponent(ball,TransformComponent)
-    // ballTransform.position.copy(position)
+    // this may work?
+    rigid.body.setTranslation(position, true) 
   }
 
-  rigid.body.resetForces(true)
   if(impulse && (impulse.x || impulse.y || impulse.z)) {
     rigid.body.applyImpulse(impulse as Vector3,true)    
     // a timeout seemed needed between resetting and applying forces?
@@ -164,6 +163,10 @@ function moveBall(ball:Entity,position:Vector3,impulse:Vector3) {
     },10)
   }
 
+}
+
+export function hideBall(ball) {
+  moveBall(ball,new Vector3(5000+Math.random()*1000,5,5000+Math.random()*1000),new Vector3(0,0,0))
 }
 
 export function pongVolleyBalls(pong:Entity) {
@@ -235,24 +238,15 @@ function goalBallCollisions(goal:Entity ) {
   for (let pair of collidants) {
     const entity : Entity = pair[0]
     const collision = pair[1]
-    //console.log("**** pong collider "+getComponent(entity,NameComponent))
     if(!getComponent(entity,BallComponent)) continue
 
-    const ball = entity
-    const position = new Vector3(0,5000,0)
-    const impulse = new Vector3(0,0,0)
-    moveBall(ball,position,impulse)
+    hideBall(entity)
 
+    // cause damage to goal - this state change will be dispatched to all parties
     const damage = goalComponent.damage + 1
     if(damage >= goalComponent.startingHealth) gameover = true
-
-    // dispatch update goal score to all parties
-    {
-      const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
-      dispatchAction(PongAction.pongGoal({ entityUUID, damage }))
-      //netlog("*** pong: playing, and a ball hit a goal ball=" + entity2UUID(ball) + " goal="+entity2UUID(goal) + " damage="+damage)
-    }
-
+    const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
+    dispatchAction(PongAction.pongGoal({ entityUUID, damage }))
 
   }
   return gameover

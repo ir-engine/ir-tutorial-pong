@@ -1,4 +1,5 @@
 
+import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { defineComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
 
 export const BallComponent = defineComponent({
@@ -6,6 +7,8 @@ export const BallComponent = defineComponent({
   jsonID: 'pong.ball',
   onInit: (entity) => {
     return {
+      pongUUID: "" as EntityUUID,
+      avatarUUID: "" as EntityUUID,
       elapsedSeconds: 0
     }
   },
