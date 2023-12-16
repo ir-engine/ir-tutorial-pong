@@ -39,3 +39,21 @@
 - nicer paddle art
 - nicer table art
 
+# behave graph
+
+* plate exists and is a trigger and is sensitive to onCollision events
+  * successfully collides with avatar
+    - detect 'on enter' and 'on exit' -> i actually could hack that a different way with an exit plate
+    - set game started flag
+
+  * collides with ball? (after manually changing the ball mask to 15)
+    - increment damage
+    - show damage in score
+    - reset ball
+    - may stop game
+
+- ontick ball launcher
+  - ? some kind of bug with trying to set forces on the ball -> looks like broken code in the engine
+  - if game started then periodically launch the ball
+
+

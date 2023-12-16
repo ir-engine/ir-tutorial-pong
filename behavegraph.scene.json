@@ -1,0 +1,1224 @@
+{
+  "version": 0,
+  "entities": {
+    "d32b1c4e-d08e-4fb0-9107-4c88a281ee71": {
+      "components": [
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "envmapbake",
+          "props": {
+            "bakePosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "bakePositionOffset": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "bakeScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "bakeType": "Baked",
+            "resolution": 2048,
+            "refreshMode": "OnAwake",
+            "envMapOrigin": "__$project$__/default-project/default.envmap.ktx2",
+            "boxProjection": true
+          }
+        },
+        {
+          "name": "fog",
+          "props": {
+            "type": "linear",
+            "color": "#FFFFFF",
+            "density": 0.005,
+            "near": 1,
+            "far": 1000,
+            "timeScale": 1,
+            "height": 0.05
+          }
+        },
+        {
+          "name": "camera-settings",
+          "props": {
+            "fov": 50,
+            "cameraNearClip": 0.01,
+            "cameraFarClip": 10000,
+            "projectionType": 1,
+            "minCameraDistance": 1,
+            "maxCameraDistance": 50,
+            "startCameraDistance": 3,
+            "cameraMode": 5,
+            "cameraModeDefault": 2,
+            "minPhi": -70,
+            "maxPhi": 85
+          }
+        },
+        {
+          "name": "postprocessing",
+          "props": {
+            "enabled": false,
+            "effects": {
+              "SSAOEffect": {
+                "isActive": false,
+                "blendFunction": 21,
+                "distanceScaling": true,
+                "depthAwareUpsampling": true,
+                "samples": 16,
+                "rings": 7,
+                "distanceThreshold": 0.125,
+                "distanceFalloff": 0.02,
+                "minRadiusScale": 1,
+                "bias": 0.25,
+                "radius": 0.01,
+                "intensity": 2,
+                "fade": 0.05
+              },
+              "SSREffect": {
+                "isActive": false,
+                "distance": 10,
+                "thickness": 10,
+                "autoThickness": false,
+                "maxRoughness": 1,
+                "blend": 0.9,
+                "denoiseIterations": 1,
+                "denoiseKernel": 2,
+                "denoiseDiffuse": 10,
+                "denoiseSpecular": 10,
+                "depthPhi": 2,
+                "normalPhi": 50,
+                "roughnessPhi": 1,
+                "envBlur": 0.5,
+                "importanceSampling": true,
+                "directLightMultiplier": 1,
+                "steps": 20,
+                "refineSteps": 5,
+                "spp": 1,
+                "resolutionScale": 1,
+                "missedRays": false
+              },
+              "DepthOfFieldEffect": {
+                "isActive": false,
+                "blendFunction": 23,
+                "focusDistance": 0.02,
+                "focalLength": 0.5,
+                "bokehScale": 1
+              },
+              "BloomEffect": {
+                "isActive": true,
+                "blendFunction": 28,
+                "kernelSize": 2,
+                "luminanceThreshold": 1,
+                "luminanceSmoothing": 0.1,
+                "intensity": 0.2
+              },
+              "ToneMappingEffect": {
+                "isActive": false,
+                "blendFunction": 23,
+                "adaptive": true,
+                "resolution": 512,
+                "middleGrey": 0.6,
+                "maxLuminance": 32,
+                "averageLuminance": 1,
+                "adaptationRate": 2
+              },
+              "BrightnessContrastEffect": {
+                "isActive": false,
+                "brightness": 0.05,
+                "contrast": 0.1
+              },
+              "HueSaturationEffect": {
+                "isActive": false,
+                "hue": 0,
+                "saturation": -0.15
+              },
+              "ColorDepthEffect": {
+                "isActive": false,
+                "bits": 16
+              },
+              "LinearTosRGBEffect": {
+                "isActive": false
+              },
+              "SSGIEffect": {
+                "isActive": false,
+                "distance": 10,
+                "thickness": 10,
+                "autoThickness": false,
+                "maxRoughness": 1,
+                "blend": 0.9,
+                "denoiseIterations": 1,
+                "denoiseKernel": 2,
+                "denoiseDiffuse": 10,
+                "denoiseSpecular": 10,
+                "depthPhi": 2,
+                "normalPhi": 50,
+                "roughnessPhi": 1,
+                "envBlur": 0.5,
+                "importanceSampling": true,
+                "directLightMultiplier": 1,
+                "steps": 20,
+                "refineSteps": 5,
+                "spp": 1,
+                "resolutionScale": 1,
+                "missedRays": false
+              },
+              "TRAAEffect": {
+                "isActive": false,
+                "blend": 0.8,
+                "constantBlend": true,
+                "dilation": true,
+                "blockySampling": false,
+                "logTransform": false,
+                "depthDistance": 10,
+                "worldDistance": 5,
+                "neighborhoodClamping": true
+              },
+              "MotionBlurEffect": {
+                "isActive": false,
+                "intensity": 1,
+                "jitter": 1,
+                "samples": 16
+              }
+            }
+          }
+        },
+        {
+          "name": "media-settings",
+          "props": {
+            "immersiveMedia": false,
+            "refDistance": 20,
+            "rolloffFactor": 1,
+            "maxDistance": 10000,
+            "distanceModel": "linear",
+            "coneInnerAngle": 360,
+            "coneOuterAngle": 0,
+            "coneOuterGain": 0
+          }
+        },
+        {
+          "name": "render-settings",
+          "props": {
+            "csm": true,
+            "toneMapping": 1,
+            "toneMappingExposure": 0.8,
+            "shadowMapType": 2
+          }
+        }
+      ],
+      "name": "default"
+    },
+    "bb362197-f14d-4da7-9c3c-1ed834386423": {
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 4,
+              "y": 4.5,
+              "z": 5
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "scene-preview-camera",
+          "props": {}
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 0,
+      "name": "scene preview camera"
+    },
+    "e7d6bfb1-6390-4a8b-b744-da83b059c2d3": {
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "skybox",
+          "props": {
+            "backgroundColor": 0,
+            "equirectangularPath": "",
+            "cubemapPath": "__$project$__/default-project/assets/skyboxsun25deg/",
+            "backgroundType": 1,
+            "skyboxProps": {
+              "turbidity": 10,
+              "rayleigh": 1,
+              "luminance": 1,
+              "mieCoefficient": 0.004999999999999893,
+              "mieDirectionalG": 0.99,
+              "inclination": 0.10471975511965978,
+              "azimuth": 0.16666666666666666
+            }
+          }
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 1,
+      "name": "skybox"
+    },
+    "38793f94-0b92-4ea1-af7b-5ec0e117628d": {
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "ground-plane",
+          "props": {
+            "color": 8311585,
+            "visible": true
+          }
+        },
+        {
+          "name": "shadow",
+          "props": {
+            "cast": false,
+            "receive": true
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 2,
+      "name": "ground plane"
+    },
+    "3e8a430e-9dcf-440e-990c-44ecb8051762": {
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 4,
+              "y": 0,
+              "z": 8
+            },
+            "rotation": {
+              "x": -5.053215498074303e-16,
+              "y": -1,
+              "z": -6.12323399573677e-17,
+              "w": -6.123234262925839e-17
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "spawn-point",
+          "props": {
+            "permissionedUsers": []
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 3,
+      "name": "spawn point"
+    },
+    "f77dc4c6-c9a6-433d-8102-4a9a8e1c0ce9": {
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "hemisphere-light",
+          "props": {
+            "skyColor": 16777215,
+            "groundColor": 16777215,
+            "intensity": 1
+          }
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 4,
+      "name": "hemisphere light"
+    },
+    "cb045cfd-8daf-4a2b-b764-35625be54a11": {
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 10,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0.24690793740359293,
+              "y": 0.28965548016032816,
+              "z": 0.07761295437009141,
+              "w": 0.9214729527089438
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": {}
+        },
+        {
+          "name": "directional-light",
+          "props": {
+            "color": 16777215,
+            "intensity": 1,
+            "cameraFar": 200,
+            "castShadow": true,
+            "shadowBias": -0.00001,
+            "shadowRadius": 1,
+            "useInCSM": true
+          }
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 5,
+      "name": "directional light"
+    },
+    "64d082b5-5279-41c0-b1cc-362d660fb85e": {
+      "name": "BehaveGraph",
+      "components": [
+        {
+          "name": "BehaveGraph",
+          "props": {
+            "domain": "ECS",
+            "graph": {
+              "nodes": [
+                {
+                  "id": "cab3c77b-dfd0-4fd4-a64d-9b7557ed455c",
+                  "type": "math/toVec3/float",
+                  "metadata": {
+                    "positionX": "1974.3741293235366",
+                    "positionY": "-958.4008192247411"
+                  },
+                  "parameters": {
+                    "x": {
+                      "value": "1"
+                    },
+                    "y": {
+                      "value": "1"
+                    },
+                    "z": {
+                      "value": "1"
+                    }
+                  }
+                },
+                {
+                  "id": "5c4e8261-5d9b-427a-9fc1-4ca73a143bb5",
+                  "type": "math/toVec3/float",
+                  "metadata": {
+                    "positionX": "1736.3741293235366",
+                    "positionY": "-1034.400819224741"
+                  },
+                  "parameters": {
+                    "y": {
+                      "value": "4"
+                    }
+                  }
+                },
+                {
+                  "id": "72bdf6d8-af55-4b24-882a-50e77b08821a",
+                  "type": "math/toEuler/float",
+                  "metadata": {
+                    "positionX": "1150.760037278684",
+                    "positionY": "-1008.66821003243"
+                  },
+                  "parameters": {
+                    "x": {
+                      "value": "1"
+                    }
+                  }
+                },
+                {
+                  "id": "2db666f8-917e-4e5a-8da6-711307ed1f92",
+                  "type": "math/toQuat/euler",
+                  "metadata": {
+                    "positionX": "1407.5281349863606",
+                    "positionY": "-1006.6465033686785"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "72bdf6d8-af55-4b24-882a-50e77b08821a",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "12bc5bc3-a4c0-45b3-99b3-b675c513a157",
+                  "type": "math/multiply/quat",
+                  "metadata": {
+                    "positionX": "1585.4539732573871",
+                    "positionY": "-1113.3065172846532"
+                  },
+                  "parameters": {
+                    "b": {
+                      "link": {
+                        "nodeId": "2db666f8-917e-4e5a-8da6-711307ed1f92",
+                        "socket": "result"
+                      }
+                    },
+                    "a": {
+                      "link": {
+                        "nodeId": "e343c900-0ba8-44a9-835d-3fe2ab6d532d",
+                        "socket": "rotation"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "e343c900-0ba8-44a9-835d-3fe2ab6d532d",
+                  "type": "engine/entity/getEntityTransform",
+                  "metadata": {
+                    "positionX": "950.4801601973647",
+                    "positionY": "-1128.453888817703"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "c5efc77e-5d92-40f1-b368-281118b4382e",
+                        "socket": "entity"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "a95b0f72-c4f6-4edc-9ce6-be78affad887",
+                  "type": "engine/entity/setEntityTransform",
+                  "metadata": {
+                    "positionX": "2314.4653907253196",
+                    "positionY": "-1326.067945880062"
+                  },
+                  "parameters": {
+                    "scale": {
+                      "link": {
+                        "nodeId": "cab3c77b-dfd0-4fd4-a64d-9b7557ed455c",
+                        "socket": "result"
+                      }
+                    },
+                    "position": {
+                      "link": {
+                        "nodeId": "5c4e8261-5d9b-427a-9fc1-4ca73a143bb5",
+                        "socket": "result"
+                      }
+                    },
+                    "rotation": {
+                      "link": {
+                        "nodeId": "12bc5bc3-a4c0-45b3-99b3-b675c513a157",
+                        "socket": "result"
+                      }
+                    },
+                    "entity": {
+                      "link": {
+                        "nodeId": "c5efc77e-5d92-40f1-b368-281118b4382e",
+                        "socket": "entity"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "c5efc77e-5d92-40f1-b368-281118b4382e",
+                  "type": "engine/entity/getEntityInScene",
+                  "metadata": {
+                    "positionX": "574.464992253537",
+                    "positionY": "-1110.67134523484"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "value": "550e34e8-0052-40c7-b2b6-4f56c5f3a173"
+                    }
+                  }
+                },
+                {
+                  "id": "a806d1e0-5488-4363-ac23-1b47109edd6d",
+                  "type": "lifecycle/onTick",
+                  "metadata": {
+                    "positionX": "507.4310787437681",
+                    "positionY": "-1312.1605587027914"
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "a95b0f72-c4f6-4edc-9ce6-be78affad887",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "0385ab9d-3418-4084-b53e-c8841712562a",
+                  "type": "engine/entity/setEntityTransform",
+                  "metadata": {
+                    "positionX": "1022.7330579792233",
+                    "positionY": "-723.0860265895229"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "800ed19c-8482-403c-8991-c0c7ba7b4b3e",
+                        "socket": "entity"
+                      }
+                    },
+                    "position": {
+                      "link": {
+                        "nodeId": "30ddb1d0-0f57-49c0-b34d-7291ccc84382",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "a6800488-584c-415f-b475-457c29defaf8",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "a6800488-584c-415f-b475-457c29defaf8",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "1216.602427601929",
+                    "positionY": "-725.8755139222237"
+                  },
+                  "parameters": {
+                    "text": {
+                      "value": "moved ball"
+                    }
+                  }
+                },
+                {
+                  "id": "891f4d21-a64b-4b68-9ce9-783a5ddd02c2",
+                  "type": "math/toVec3/float",
+                  "metadata": {
+                    "positionX": "727.682417524119",
+                    "positionY": "-270.3228130241604"
+                  },
+                  "parameters": {
+                    "y": {
+                      "value": "1"
+                    },
+                    "z": {
+                      "value": "1"
+                    }
+                  }
+                },
+                {
+                  "id": "30ddb1d0-0f57-49c0-b34d-7291ccc84382",
+                  "type": "math/toVec3/float",
+                  "metadata": {
+                    "positionX": "729.682417524119",
+                    "positionY": "-448.3228130241604"
+                  },
+                  "parameters": {
+                    "y": {
+                      "value": "6"
+                    },
+                    "z": {
+                      "value": "0"
+                    }
+                  }
+                },
+                {
+                  "id": "dad095bb-55e5-4085-b094-01b327e5dc1b",
+                  "type": "flow/throttle",
+                  "metadata": {
+                    "positionX": "745.6824175241192",
+                    "positionY": "-726.3228130241604"
+                  },
+                  "parameters": {
+                    "duration": {
+                      "value": "3"
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "0385ab9d-3418-4084-b53e-c8841712562a",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "800ed19c-8482-403c-8991-c0c7ba7b4b3e",
+                  "type": "engine/entity/getEntityInScene",
+                  "metadata": {
+                    "positionX": "631.682417524119",
+                    "positionY": "-550.3228130241604"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "value": "c843091a-a7a4-4cd2-b8fb-3e742a1a02b3"
+                    }
+                  }
+                },
+                {
+                  "id": "859f0636-6b11-4c2b-b55c-cfa64d3c93e7",
+                  "type": "engine/component/getNameComponent",
+                  "metadata": {
+                    "positionX": "744.1840260006392",
+                    "positionY": "236.14618834128277"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "cf172ff5-dc3e-4b55-949c-d7468a97a555",
+                        "socket": "target"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "a37356ca-4eca-4d23-8f2f-c55f670edb70",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "5fcac7f6-dcca-4b07-8aaa-e7de4c5987f7",
+                  "type": "logic/concat/string",
+                  "metadata": {
+                    "positionX": "936.1840260006394",
+                    "positionY": "312.1461883412828"
+                  },
+                  "parameters": {
+                    "a": {
+                      "value": "plate collision with "
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "859f0636-6b11-4c2b-b55c-cfa64d3c93e7",
+                        "socket": "Name"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "a37356ca-4eca-4d23-8f2f-c55f670edb70",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "1228.1840260006393",
+                    "positionY": "230.14618834128277"
+                  },
+                  "parameters": {
+                    "text": {
+                      "link": {
+                        "nodeId": "5fcac7f6-dcca-4b07-8aaa-e7de4c5987f7",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "0a84ff3d-4e8a-403c-b5db-fe344943fb2f",
+                  "type": "engine/entity/getEntityInScene",
+                  "metadata": {
+                    "positionX": "110.2828679217539",
+                    "positionY": "-83.65375440747668"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "value": "42526d35-5dd8-4d0d-95d4-7452df5c4030"
+                    }
+                  }
+                },
+                {
+                  "id": "cf172ff5-dc3e-4b55-949c-d7468a97a555",
+                  "type": "engine/onCollision",
+                  "metadata": {
+                    "positionX": "516.2576095234023",
+                    "positionY": "-83.65375440747667"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "0a84ff3d-4e8a-403c-b5db-fe344943fb2f",
+                        "socket": "entity"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "859f0636-6b11-4c2b-b55c-cfa64d3c93e7",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "4bb99f89-11c4-471e-ba46-f507d86ffc93",
+                  "type": "lifecycle/onTick",
+                  "metadata": {
+                    "positionX": "522.7537000303012",
+                    "positionY": "-726.7364926607547"
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "dad095bb-55e5-4085-b094-01b327e5dc1b",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "0",
+                  "type": "lifecycle/onStart",
+                  "metadata": {
+                    "positionX": "513.8229553912433",
+                    "positionY": "-1569.7325473999172"
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "6",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "6",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "784.625413094036",
+                    "positionY": "-1570.9478267907652"
+                  },
+                  "parameters": {
+                    "text": {
+                      "value": "DEBUG hello"
+                    }
+                  }
+                }
+              ],
+              "variables": [],
+              "customEvents": []
+            },
+            "run": false,
+            "disabled": false
+          }
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 6
+    },
+    "42526d35-5dd8-4d0d-95d4-7452df5c4030": {
+      "name": "plate1",
+      "components": [
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": true,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0.5,
+              "z": 4
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 2,
+              "y": 0.40000000000000013,
+              "z": 1.9
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 7
+    },
+    "bc8e43f4-5e64-467c-98d4-4e8424ddad6a": {
+      "name": "plate2",
+      "components": [
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": true,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0.5,
+              "z": -4
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 2,
+              "y": 0.40000000000000013,
+              "z": 1.9
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 8
+    },
+    "54ff07b7-39fd-43d1-9f34-11094581e67b": {
+      "name": "table",
+      "components": [
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 0,
+            "geometryParams": {
+              "width": 2,
+              "height": 2,
+              "depth": 2,
+              "widthSegments": 1,
+              "heightSegments": 1,
+              "depthSegments": 1
+            }
+          }
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 0.8,
+              "z": 2
+            }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 10
+    },
+    "c843091a-a7a4-4cd2-b8fb-3e742a1a02b3": {
+      "name": "ball",
+      "components": [
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 1,
+            "geometryParams": {
+              "radius": 1,
+              "widthSegments": 32,
+              "heightSegments": 16,
+              "phiStart": 0,
+              "phiLength": 6.283185307179586,
+              "thetaStart": 0,
+              "thetaLength": 3.141592653589793
+            }
+          }
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 6,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 0.10000000000000009,
+              "y": 0.10000000000000009,
+              "z": 0.10000000000000009
+            }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 0,
+            "shapeType": 0,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 15,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 10
+    },
+    "550e34e8-0052-40c7-b2b6-4f56c5f3a173": {
+      "name": "roulette",
+      "components": [
+        {
+          "name": "primitive-geometry",
+          "props": {
+            "geometryType": 0,
+            "geometryParams": null
+          }
+        },
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 4,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0.3420201433256687,
+              "y": 0,
+              "z": 0,
+              "w": 0.9396926207859084
+            },
+            "scale": {
+              "x": 0.9999999999999996,
+              "y": 1,
+              "z": 0.9999999999999996
+            }
+          }
+        },
+        {
+          "name": "collider",
+          "props": {
+            "bodyType": 1,
+            "shapeType": 1,
+            "isTrigger": false,
+            "removeMesh": false,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5,
+            "triggers": [
+              {
+                "onEnter": null,
+                "onExit": null,
+                "target": null
+              }
+            ]
+          }
+        },
+        {
+          "name": "visible",
+          "props": true
+        }
+      ],
+      "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
+      "index": 11
+    }
+  },
+  "root": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71"
+}
