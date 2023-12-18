@@ -9,7 +9,8 @@ export const BallComponent = defineComponent({
     return {
       pongUUID: "" as EntityUUID,
       avatarUUID: "" as EntityUUID,
-      elapsedSeconds: 0
+      elapsedSeconds: 0,
+      resetSeconds: 0,
     }
   },
   onSet: (entity, component, json) => {

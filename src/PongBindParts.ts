@@ -117,7 +117,7 @@ function goalBindParts(goal:Entity) {
   })
 }
 
-function pongBindGoalParts(pong:Entity) {
+export function pongBindGoalParts(pong:Entity) {
   const pongComponent = getComponent(pong, PongComponent)
   pongComponent.goals.forEach(goal => { goalBindParts(goal) } )
 }
@@ -130,7 +130,7 @@ function pongBindGoalParts(pong:Entity) {
 
 const queryGoals = defineQuery([GoalComponent])
 
-function pongBindGoals(pong:Entity) {
+export function pongBindGoals(pong:Entity) {
   const pongComponent = getComponent(pong, PongComponent)
   if(pongComponent.goals.length) return
 
@@ -176,7 +176,7 @@ function pongBindGoals(pong:Entity) {
 
 const queryBalls = defineQuery([BallComponent])
 
-function pongBindBalls(pong:Entity) {
+export function pongBindBalls(pong:Entity) {
   const pongComponent = getComponent(pong, PongComponent)
   if(pongComponent.balls.length) return
 
@@ -224,8 +224,7 @@ function pongBindBalls(pong:Entity) {
 
 const avatarQuery = defineQuery([AvatarComponent])
 
-function platesBindAvatars(pong:Entity) {
-  let numAvatars = 0
+export function platesBindAvatars(pong:Entity) {
   const seconds = getState(EngineState).elapsedSeconds
   const pongComponent = getComponent(pong,PongComponent)
   pongComponent.goals.forEach( goal => {
@@ -234,23 +233,22 @@ function platesBindAvatars(pong:Entity) {
     if(collidants && collidants.size) {
       for (let [avatar, collision] of collidants) {
         if(getComponent(avatar,AvatarComponent)) {
+          // if avatar changed then change ownership
           if(goalMutable.avatar.value != avatar) {
             goalMutable.avatar.set(avatar)
             setNetworkAuthorityPaddleAvatar(goalMutable.paddle1.value,avatar)
             setNetworkAuthorityPaddleAvatar(goalMutable.paddle2.value,avatar)
           }
-          goalMutable.avatarTimer.set(seconds)
+          // in general set a busy poll timer for the future
+          goalMutable.avatarTimer.set(seconds+5)
         }
       }
     }
-    if(goalMutable.avatarTimer.value > seconds - 5 ) {
-      numAvatars++
-      goalMutable.avatarTimer.set( goalMutable.avatarTimer.value - 1)
-    } else if(goalMutable.avatar.value) {
+    // if the timer has expired then clear the plate
+    if(goalMutable.avatar.value && goalMutable.avatarTimer.value < seconds) {
       goalMutable.avatar.set(0 as Entity)
     }
   })
-  return numAvatars
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +258,7 @@ function platesBindAvatars(pong:Entity) {
 ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function platesBindAvatarPaddles(pong:Entity) {
+export function platesBindAvatarPaddles(pong:Entity) {
   if(!isClient) return
   let numAvatars = 0
   const pongComponent = getComponent(pong,PongComponent)
@@ -298,13 +296,3 @@ function platesBindAvatarPaddles(pong:Entity) {
   return numAvatars
 }
 
-export function pongBindParts(pong:Entity) {
-
-  pongBindGoals(pong)
-  pongBindBalls(pong)
-  pongBindGoalParts(pong)
-  const numAvatars = platesBindAvatars(pong)
-  platesBindAvatarPaddles(pong)
-
-  return numAvatars
-}

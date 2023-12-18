@@ -22,7 +22,7 @@ import { BallComponent } from './components/BallComponent'
 import { PlateComponent } from './components/PlateComponent'
 import { GoalComponent } from './components/GoalComponent'
 
-import { pongBindParts } from './PongBindParts'
+import { platesBindAvatars } from './PongBindParts'
 import { PongAction } from './PongActions'
 import { netlog } from './PongLogging'
 import { GroundPlaneComponent } from '@etherealengine/engine/src/scene/components/GroundPlaneComponent'
@@ -168,6 +168,10 @@ export function pongHideNetwork(entity:Entity) {
   pongMoveNetwork(entity,new Vector3(100,-10,100),new Vector3(0,0,0))
 }
 
+export function pongHideHack(entity:Entity) {
+  getComponent(entity,RigidBodyComponent).body.setTranslation(new Vector3(0,0,0), true)
+}
+
 export function ballVolley(pong:Entity) {
 
   const pongComponent = getComponent(pong, PongComponent)
@@ -227,10 +231,11 @@ export function ballCollisions(pong:Entity) {
       // did ball hit a plate?
       const plate = getComponent(entity,PlateComponent)
       if(plate) {
-        // hack - multiple collisions because it is not cleared fast enough - look if ball is hidden for now
-        if(getComponent(ball,TransformComponent).position.x > 50) break
+        console.log("**** ball=",ball," plate=",plate,"pos=",getComponent(ball,TransformComponent).position)
         // hide ball; this should arguably propagate over network
         pongHideNetwork(ball)
+        // hack: force this faster on the server because I do not want collisions here again next frame
+        pongHideHack(ball)
         // this should have been set in the setup; get the plates goal
         const goalComponent = getComponent(plate.goal,GoalComponent)
         if(goalComponent) {
@@ -261,13 +266,11 @@ export function pongReason(pong:Entity) {
   const pongComponent = getComponent(pong,PongComponent)
   const pongUUID = getComponent(pong,UUIDComponent)
 
-  // bind parts once, and on an ongoing basis return number of players in game
-  const numAvatars = pongBindParts(pong)
-
-  // the client doesn't really do much work
-  if(isClient) {
-    return
-  }
+  // are there any players associated with goals?
+  let numAvatars = 0
+  pongComponent.goals.forEach(goal=>{
+    if(getComponent(goal,GoalComponent).avatar) numAvatars++
+  })
 
   // advance game state on the server for simplicity
   switch(pongComponent.mode) {
@@ -331,14 +334,6 @@ export function pongReason(pong:Entity) {
       }
 
       break
-
   }
 
 }
-
-// - too much force
-// - wrong direction
-// - always the same direction
-// - no collisions
-// - should probably not recycle ball unless it is out of play
-// 
