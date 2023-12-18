@@ -109,6 +109,8 @@ function goalBindParts(goal:Entity) {
     }
     if(!goalMutable.plate.value && getComponent(child,PlateComponent)) {
       goalMutable.plate.set(child)
+      const plateMutable = getMutableComponent(child,PlateComponent)
+      plateMutable.goal.set(goal)
       netlog("goal set plate, goal="+getComponent(goal,NameComponent)+" plate="+getComponent(child,NameComponent))
       return
     }

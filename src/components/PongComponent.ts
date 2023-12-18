@@ -30,17 +30,3 @@ export const PongComponent = defineComponent({
   }
 })
 
-export const pongLocalPong = (action: ReturnType<typeof PongAction.pongPong>) => {
-  const pong = UUIDComponent.entitiesByUUID[action.uuid]
-  if(!pong) return
-  const pongMutable = getMutableComponent(pong,PongComponent)
-  if(!pongMutable) return
-  switch(action.mode) {
-    default:
-    case 'stopped': pongMutable.mode.set( PongMode.stopped ); break
-    case 'starting': pongMutable.mode.set( PongMode.starting ); break
-    case 'playing': pongMutable.mode.set( PongMode.playing ); break
-    case 'completed': pongMutable.mode.set( PongMode.completed ); break
-  }
-}
-
