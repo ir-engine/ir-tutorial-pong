@@ -18,7 +18,8 @@ export const PongComponent = defineComponent({
       goals: [] as Array<Entity>,
       balls: [] as Array<Entity>,
       mode: PongMode.stopped,
-      elapsedSeconds: 0
+      elapsedSeconds: 0,
+      direction: 0
     }
   },
   onSet: (entity, pong, json) => {

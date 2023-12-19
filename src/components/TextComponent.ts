@@ -104,6 +104,7 @@ function TextReactor() {
   useEffect(() => {
 		if (!fontState.value) return
 		const text = textComponent.text.value
+		if(!text || !text.length) return
 		const geometry = new TextGeometry(text, {
 			font: fontState.value,
 			size: 80,

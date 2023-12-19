@@ -8,7 +8,7 @@ import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
-import { getComponent, getMutableComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { getComponent, getMutableComponent, removeComponent, setComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
 
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
@@ -29,11 +29,13 @@ import { GroundPlaneComponent } from '@etherealengine/engine/src/scene/component
 import { CollisionEvents } from '@etherealengine/engine/src/physics/types/PhysicsTypes'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 import { PaddleComponent } from './components/PaddleComponent'
+import { VisibleComponent } from '@etherealengine/engine/src/scene/components/VisibleComponent'
+import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
 
 
 const BALL_VOLLEY_CHECK_PERIOD = 5.0
 const BALL_AGE_BEFORE_EXPIRED = 5.0
-const BALL_START_HEIGHT = 5.0
+const BALL_START_HEIGHT = 3.0
 const ZERO = new Vector3(0,0,0)
 const BALL_POSITION_OFF_SCREEN = new Vector3(100,-10,100)
 //const BALL_MAX_DAMAGE = 9
@@ -52,7 +54,21 @@ export const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
   if(goalMutable.text.value) {
     const textMutable = getMutableComponent(goalMutable.text.value,TextComponent)
     if(textMutable) {
-      textMutable.text.set(action.damage)
+      console.log("pong got text to set *** ",val)
+      // let's not use text for now
+      // textMutable.text.set(action.damage)
+      // instead let's scale the component as a power bar
+      if(val && !isNaN(val)) {
+        const scale = (goalMutable.maxDamage.value-val) / goalMutable.maxDamage.value
+        const transform = getComponent(goalMutable.text.value,TransformComponent)
+        transform.scale.set(scale,transform.scale.y,transform.scale.z)
+        console.log("pong scale is ",transform.scale)
+
+        const geometryComponent = getComponent(goalMutable.text.value, PrimitiveGeometryComponent)
+        //const mesh = useState<Mesh>(new Mesh())
+        //if(geometryComponent) geometryComponent.geometry.  //(transform.scale)
+
+      }
     } else {
       console.log("....... pong text bad")
     }
@@ -215,18 +231,34 @@ export function ballVolley(pong:Entity) {
   const ballMutable = getMutableComponent(ball,BallComponent)
   ballMutable.elapsedSeconds.set(seconds)
 
-  // volley the ball towards a goal
-  const which = Math.floor(pongComponent.goals.length * Math.random())
-  const goal = pongComponent.goals[which]
-  const goalTransform = getComponent(goal,TransformComponent)
+  // force ball to be visible
+  setComponent(ball, VisibleComponent, true)
 
-  const pongTransform = getComponent(pong,TransformComponent)
-  const impulse = goalTransform.position.clone()
-  //const mass = 4/3*3.14*(ballTransform.scale.x + 1.0)
-  impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() + 4)
+  // iterate through to the next occupied goal
+  let goal = 0 as Entity
+  for(let i = 0; i < pongComponent.goals.length;i++) {
+    // advance pointer
+    pongMutable.direction.set( pongMutable.direction.value + 1)
+    // peek at this goal and see if there is an avatar there
+    const temp = pongComponent.goals[(pongMutable.direction.value)%pongComponent.goals.length]
+    const goalComponent = getComponent(temp,GoalComponent)
+    if(goalComponent.avatar) {
+      goal = temp
+      break
+    }
+  }
 
-  const position = new Vector3(pongTransform.position.x,BALL_START_HEIGHT,pongTransform.position.z)
-  pongMoveNetwork(ball,position,impulse)
+  // hopefully a goal was found, volley towards it
+  if(goal) {
+    const goalTransform = getComponent(goal,TransformComponent)
+    const pongTransform = getComponent(pong,TransformComponent)
+    const impulse = goalTransform.position.clone()
+    //const mass = 4/3*3.14*(ballTransform.scale.x + 1.0)
+    impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() + 2)
+    const position = new Vector3(pongTransform.position.x,BALL_START_HEIGHT,pongTransform.position.z)
+    pongMoveNetwork(ball,position,impulse)
+    netlog("volleying")
+  }
 }
 
 ///
@@ -245,21 +277,26 @@ export function ballCollisions(pong:Entity) {
       // const collision = pair[1]
       // if(collision.type != CollisionEvents.COLLISION_START) continue // these simply don't occur on triggers - bug
       // did ball hit a plate?
-      const plate = getComponent(entity,PlateComponent)
-      if(plate) {
-        // hide ball; there is some latency on this event
-        pongHideNetwork(ball)
-        // hack: force this faster locally because I do not want collisions here again next frame
-        pongHideHack(ball)
-        // this should have been set in the setup; get the plates goal
-        const goalComponent = getComponent(plate.goal,GoalComponent)
-        if(goalComponent) {
-          // increase damage and publish (server will resolve end game conditions by watching changes)
-          const damage = `${goalComponent.damage + 1}`
-          const entityUUID = getComponent(plate.goal, UUIDComponent) as EntityUUID
-          dispatchAction(PongAction.pongGoal({ entityUUID, damage }))   
-          netlog("increased damage")   
+      const plateComponent = getComponent(entity,PlateComponent)
+      if(plateComponent) {
+        // plates goal should be valid, let's use it to increase damage - only if there is a player there
+        const goalComponent = getComponent(plateComponent.goal,GoalComponent)
+        if(!goalComponent || !goalComponent.avatar) {
+          netlog("hit a plate but no player")
+          break
         }
+        // set not visible flag as a hack to detect if ball is out of play - there is network latency on the below
+        if(!getComponent(ball,VisibleComponent)) {
+          return
+        }
+        removeComponent(ball,VisibleComponent)
+        // hide ball; there is some latency on this event - hence the hack above
+        pongHideNetwork(ball)
+        // increase damage and publish (server will resolve end game conditions by watching changes)
+        const damage = `${goalComponent.damage + 1}`
+        const entityUUID = getComponent(plateComponent.goal, UUIDComponent) as EntityUUID
+        dispatchAction(PongAction.pongGoal({ entityUUID, damage }))   
+        netlog("increased damage")   
         break
       }
       if(getComponent(entity,AvatarComponent)) {
@@ -366,4 +403,3 @@ export function pongReason(pong:Entity) {
   }
 
 }
-
