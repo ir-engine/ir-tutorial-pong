@@ -31,6 +31,7 @@ import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/Av
 import { PaddleComponent } from './components/PaddleComponent'
 import { VisibleComponent } from '@etherealengine/engine/src/scene/components/VisibleComponent'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
+import { GeometryTypeEnum } from '@etherealengine/engine/src/scene/constants/GeometryTypeEnum'
 
 
 const BALL_VOLLEY_CHECK_PERIOD = 5.0
@@ -54,19 +55,25 @@ export const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
   if(goalMutable.text.value) {
     const textMutable = getMutableComponent(goalMutable.text.value,TextComponent)
     if(textMutable) {
-      console.log("pong got text to set *** ",val)
       // let's not use text for now
       // textMutable.text.set(action.damage)
       // instead let's scale the component as a power bar
       if(val && !isNaN(val)) {
-        const scale = (goalMutable.maxDamage.value-val) / goalMutable.maxDamage.value
-        const transform = getComponent(goalMutable.text.value,TransformComponent)
-        transform.scale.set(scale,transform.scale.y,transform.scale.z)
-        console.log("pong scale is ",transform.scale)
+        const x = (goalMutable.maxDamage.value-val) / goalMutable.maxDamage.value
+        const transform = getMutableComponent(goalMutable.text.value,TransformComponent)
+        //transform.scale.set(x,transform.scale.y,transform.scale.z)
+        //transform.scale.setX(x)
+        //transform.scale.x = x
+        transform.scale.set( new Vector3(x,0.1,0.1) )
 
-        const geometryComponent = getComponent(goalMutable.text.value, PrimitiveGeometryComponent)
-        //const mesh = useState<Mesh>(new Mesh())
-        //if(geometryComponent) geometryComponent.geometry.  //(transform.scale)
+        // hack force update
+        const geometryComponent = getMutableComponent(goalMutable.text.value, PrimitiveGeometryComponent)
+        if(geometryComponent) {
+          //if(geometryComponent.geometryType.value == GeometryTypeEnum.BoxGeometry)
+            geometryComponent.geometryType.set( GeometryTypeEnum.CapsuleGeometry )
+          //else
+            geometryComponent.geometryType.set( GeometryTypeEnum.BoxGeometry )
+        }
 
       }
     } else {
