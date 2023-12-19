@@ -27,7 +27,16 @@ import { PongAction } from './PongActions'
 import { netlog } from './PongLogging'
 import { GroundPlaneComponent } from '@etherealengine/engine/src/scene/components/GroundPlaneComponent'
 import { CollisionEvents } from '@etherealengine/engine/src/physics/types/PhysicsTypes'
+import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
+import { PaddleComponent } from './components/PaddleComponent'
 
+
+const BALL_VOLLEY_CHECK_PERIOD = 5.0
+const BALL_AGE_BEFORE_EXPIRED = 5.0
+const BALL_START_HEIGHT = 5.0
+const ZERO = new Vector3(0,0,0)
+const BALL_POSITION_OFF_SCREEN = new Vector3(100,-10,100)
+//const BALL_MAX_DAMAGE = 9
 
 ///
 /// Update the local goal / score
@@ -38,11 +47,12 @@ export const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
   if(!goal) return
   const goalMutable = getMutableComponent(goal,GoalComponent)
   if(!goalMutable) return
-  goalMutable.damage.set( action.damage )
+  const val = parseInt(action.damage)
+  if(!isNaN(val)) goalMutable.damage.set( val )
   if(goalMutable.text.value) {
     const textMutable = getMutableComponent(goalMutable.text.value,TextComponent)
     if(textMutable) {
-      textMutable.text.set(`${action.damage}`)
+      textMutable.text.set(action.damage)
     } else {
       console.log("....... pong text bad")
     }
@@ -85,9 +95,8 @@ export const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
   if(rigid) {
     rigid.body.wakeUp()
     rigid.body.resetForces(true)
-    const zero = new Vector3(0,0,0)
-    rigid.body.setLinvel(zero, true)
-    rigid.body.setAngvel(zero, true)
+    rigid.body.setLinvel(ZERO, true)
+    rigid.body.setAngvel(ZERO, true)
   }
 
   /*
@@ -156,6 +165,9 @@ export function pongMoveNetwork(ball:Entity,position:Vector3,impulse:Vector3) {
   }
   */
 
+  // there's a bug where server issued move events don't work - so this line does not work - instead network it
+  // pongMove(PongAction.pongMove({ entityUUID, position, impulse }))
+
   const entityUUID = getComponent(ball,UUIDComponent)
   dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
 }
@@ -165,11 +177,11 @@ export function pongMoveNetwork(ball:Entity,position:Vector3,impulse:Vector3) {
 ///
 
 export function pongHideNetwork(entity:Entity) {
-  pongMoveNetwork(entity,new Vector3(100,-10,100),new Vector3(0,0,0))
+  pongMoveNetwork(entity,BALL_POSITION_OFF_SCREEN,ZERO)
 }
 
 export function pongHideHack(entity:Entity) {
-  getComponent(entity,RigidBodyComponent).body.setTranslation(new Vector3(0,0,0), true)
+  getComponent(entity,RigidBodyComponent).body.setTranslation(BALL_POSITION_OFF_SCREEN, true)
 }
 
 export function ballVolley(pong:Entity) {
@@ -182,19 +194,22 @@ export function ballVolley(pong:Entity) {
   if(seconds < pongComponent.elapsedSeconds ) return
   const pongMutable = getMutableComponent(pong, PongComponent)
   if(!pongMutable) return
-  pongMutable.elapsedSeconds.set( seconds + 5.0 )
+  pongMutable.elapsedSeconds.set( seconds + BALL_VOLLEY_CHECK_PERIOD )
 
-  // steal the ball with the smallest elapsedSeconds
-  // @todo this strategy could be improved - better orchestration would be nice
+  // recycle oldest acceptable ball if it has not been touched by a player recently
   let ball = 0 as Entity
   let ballComponent : any = null
   for(const candidate of pongComponent.balls) {
     const candidateComponent = getComponent(candidate,BallComponent)
+    if(candidateComponent.elapsedSeconds + BALL_AGE_BEFORE_EXPIRED > seconds) continue
     if(!ball || candidateComponent.elapsedSeconds < ballComponent.elapsedSeconds) {
       ball = candidate
       ballComponent = candidateComponent
     }
   }
+
+  // if no candidate then return
+  if(!ball) return
 
   // update ball time last spawned
   const ballMutable = getMutableComponent(ball,BallComponent)
@@ -210,7 +225,7 @@ export function ballVolley(pong:Entity) {
   //const mass = 4/3*3.14*(ballTransform.scale.x + 1.0)
   impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() + 4)
 
-  const position = new Vector3(pongTransform.position.x,5,pongTransform.position.z)
+  const position = new Vector3(pongTransform.position.x,BALL_START_HEIGHT,pongTransform.position.z)
   pongMoveNetwork(ball,position,impulse)
 }
 
@@ -220,35 +235,47 @@ export function ballVolley(pong:Entity) {
 ///
 
 export function ballCollisions(pong:Entity) {
+  const seconds = getState(EngineState).elapsedSeconds
   const pongComponent = getComponent(pong,PongComponent)
   pongComponent.balls.forEach(ball=>{
     const collidants = getComponent(ball, CollisionComponent)
     if (!collidants || !collidants.size) return false
     for (let pair of collidants) {
       const entity : Entity = pair[0]
-      const collision = pair[1]
+      // const collision = pair[1]
       // if(collision.type != CollisionEvents.COLLISION_START) continue // these simply don't occur on triggers - bug
       // did ball hit a plate?
       const plate = getComponent(entity,PlateComponent)
       if(plate) {
-        console.log("**** ball=",ball," plate=",plate,"pos=",getComponent(ball,TransformComponent).position)
-        // hide ball; this should arguably propagate over network
+        // hide ball; there is some latency on this event
         pongHideNetwork(ball)
-        // hack: force this faster on the server because I do not want collisions here again next frame
+        // hack: force this faster locally because I do not want collisions here again next frame
         pongHideHack(ball)
         // this should have been set in the setup; get the plates goal
         const goalComponent = getComponent(plate.goal,GoalComponent)
         if(goalComponent) {
           // increase damage and publish (server will resolve end game conditions by watching changes)
-          const damage = goalComponent.damage + 1
+          const damage = `${goalComponent.damage + 1}`
           const entityUUID = getComponent(plate.goal, UUIDComponent) as EntityUUID
           dispatchAction(PongAction.pongGoal({ entityUUID, damage }))   
           netlog("increased damage")   
         }
         break
       }
+      if(getComponent(entity,AvatarComponent)) {
+        // reset ball recentness
+        getMutableComponent(ball,BallComponent).elapsedSeconds.set(seconds)
+        netlog("ball hit player")   
+        break
+      }
+      if(getComponent(entity,PaddleComponent)) {
+        // reset ball recentness
+        getMutableComponent(ball,BallComponent).elapsedSeconds.set(seconds)
+        netlog("ball hit paddle")   
+        break
+      }
       if(getComponent(entity,GroundPlaneComponent)) {
-        netlog("ball hit ground ground")
+        netlog("ball hit ground")
         pongHideNetwork(ball)
         break
       }
@@ -289,6 +316,23 @@ export function pongReason(pong:Entity) {
       break
 
     case PongMode.starting:
+
+      // advise goals to reset; i like to keep goals around until new game is active
+      pongComponent.goals.forEach(goal=>{
+        const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
+        const damage = "0"
+        dispatchAction(PongAction.pongGoal({ entityUUID, damage }))
+      })
+
+      // make balls not be around
+      pongComponent.balls.forEach(ball=>{
+        pongHideNetwork(ball)
+      })
+
+      // switch to playing
+      dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.playing }))
+      break
+
     case PongMode.playing:
 
       // stop playing if players leave
@@ -296,44 +340,30 @@ export function pongReason(pong:Entity) {
         dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.stopped }))
         break
       }
-
-      // transitioning into play? reset the balls and scores
-
-      if(pongComponent.mode == PongMode.starting) {
-
-        // advise goals to reset
-        pongComponent.goals.forEach(goal=>{
+    
+      // manually check to see if game has ended by inspecting damage - due to distributed nature of events
+      let gameover = false
+      pongComponent.goals.forEach(goal=>{
+        const goalComponent = getComponent(goal,GoalComponent)
+        if(goalComponent.damage >= goalComponent.maxDamage ) {
           const entityUUID = getComponent(goal, UUIDComponent) as EntityUUID
-          const damage = 0
+          const damage = "lost"
           dispatchAction(PongAction.pongGoal({ entityUUID, damage }))
-        })
+          gameover = true
+        }
+      })
 
-        // make balls not be around
-        pongComponent.balls.forEach(ball=>{
-          pongHideNetwork(ball)
-        })
-
-        // switch to playing
-        dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode:PongMode.playing }))
+      if(gameover) {
+        dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.completed }))
+        break
       }
 
       // evaluate collisions and volley events
       ballCollisions(pong)
       ballVolley(pong)
 
-      // manually check to see if game has ended - a bit of a hack because clients can volley balls
-    
-      let gameover = false
-      pongComponent.goals.forEach(goal=>{
-        const goalComponent = getComponent(goal,GoalComponent)
-        if(goalComponent.damage >=9) gameover = true
-      })
-
-      if(gameover) {
-        dispatchAction(PongAction.pongPong({ uuid: pongUUID, mode: PongMode.completed }))
-      }
-
       break
   }
 
 }
+

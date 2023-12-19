@@ -28,7 +28,7 @@ export class PongAction {
   static pongGoal = defineAction({
     type: 'pong.goal',
     entityUUID: matchesEntityUUID,
-    damage: matches.number,
+    damage: matches.string,
     $topic: NetworkTopics.world
   })
 

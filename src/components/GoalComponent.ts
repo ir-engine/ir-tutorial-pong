@@ -13,7 +13,7 @@ export const GoalComponent = defineComponent({
       avatar: 0 as Entity,
       avatarTimer: 0,
       damage: 0,
-      startingHealth: 9,
+      maxDamage: 9,
     }
   },
   onSet: (entity, component, json) => {
