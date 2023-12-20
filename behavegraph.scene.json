@@ -464,10 +464,6 @@
           }
         },
         {
-          "name": "visible",
-          "props": {}
-        },
-        {
           "name": "directional-light",
           "props": {
             "color": 16777215,
@@ -478,6 +474,10 @@
             "shadowRadius": 1,
             "useInCSM": true
           }
+        },
+        {
+          "name": "visible",
+          "props": true
         }
       ],
       "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
@@ -493,6 +493,823 @@
             "domain": "ECS",
             "graph": {
               "nodes": [
+                {
+                  "id": "3698efec-f157-4f89-9ad5-84f765460413",
+                  "type": "math/greaterThan/integer",
+                  "metadata": {
+                    "positionX": "1385.4281000411174",
+                    "positionY": "1534.9259340623453"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "4bbdbf57-9727-47e9-abdc-462f461690ed",
+                        "socket": "count"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "96653650-ded3-4fd2-8a7a-bf1b62087430",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "1375.4281000411174",
+                    "positionY": "1383.9259340623453"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "3698efec-f157-4f89-9ad5-84f765460413",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "true": {
+                      "nodeId": "9eb08851-d095-4b3a-b155-01a93038bdf2",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "c38f6ac7-0f68-412e-8b9b-dbf9777eb136",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "1875.4281000411174",
+                    "positionY": "1375.9259340623453"
+                  },
+                  "parameters": {
+                    "text": {
+                      "value": "reset game"
+                    }
+                  }
+                },
+                {
+                  "id": "9eb08851-d095-4b3a-b155-01a93038bdf2",
+                  "type": "flow/sequence",
+                  "metadata": {
+                    "positionX": "1647.4281000411174",
+                    "positionY": "1375.9259340623453"
+                  },
+                  "flows": {
+                    "1": {
+                      "nodeId": "c38f6ac7-0f68-412e-8b9b-dbf9777eb136",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "1b3a7268-359a-4486-981b-891cbb296ee4",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "1121.4281000411174",
+                    "positionY": "1381.9259340623453"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "371104a7-26c2-4ec4-a44c-b091317a1109",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "true": {
+                      "nodeId": "96653650-ded3-4fd2-8a7a-bf1b62087430",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "0f4078b5-6037-4916-add3-531ed0cbcaa0",
+                  "type": "engine/component/getNameComponent",
+                  "metadata": {
+                    "positionX": "921.4281000411174",
+                    "positionY": "1385.5259340623452"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "b8bc8609-913e-4150-b678-9f905128e2c3",
+                        "socket": "target"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "1b3a7268-359a-4486-981b-891cbb296ee4",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "371104a7-26c2-4ec4-a44c-b091317a1109",
+                  "type": "logic/includes/string",
+                  "metadata": {
+                    "positionX": "928.4281000411174",
+                    "positionY": "1575.7259340623452"
+                  },
+                  "parameters": {
+                    "b": {
+                      "value": "avatar"
+                    },
+                    "a": {
+                      "link": {
+                        "nodeId": "0f4078b5-6037-4916-add3-531ed0cbcaa0",
+                        "socket": "Name"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "5e1dcdd2-ac51-4700-a2a9-a4946e69f963",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "852.4281000411172",
+                    "positionY": "595.9996949154557"
+                  },
+                  "parameters": {
+                    "text": {
+                      "link": {
+                        "nodeId": "e9812894-597f-4df1-a77f-9f2faaf8509a",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "019b1b9d-305f-45a9-88ae-99cf6fb980b0",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "e9812894-597f-4df1-a77f-9f2faaf8509a",
+                  "type": "logic/concat/string",
+                  "metadata": {
+                    "positionX": "576.4281000411172",
+                    "positionY": "679.9996949154557"
+                  },
+                  "parameters": {
+                    "a": {
+                      "value": "plate 2 hit ="
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "deec0e0e-e1d6-4c83-ad6d-38e2f45c1cf0",
+                        "socket": "Name"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "deec0e0e-e1d6-4c83-ad6d-38e2f45c1cf0",
+                  "type": "engine/component/getNameComponent",
+                  "metadata": {
+                    "positionX": "372.4281000411172",
+                    "positionY": "609.9996949154557"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "b8bc8609-913e-4150-b678-9f905128e2c3",
+                        "socket": "target"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "5e1dcdd2-ac51-4700-a2a9-a4946e69f963",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "8379001c-48ad-426b-9928-4575873f50a0",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "880.4281000411172",
+                    "positionY": "67.9996949154557"
+                  },
+                  "parameters": {
+                    "text": {
+                      "link": {
+                        "nodeId": "d9a0121b-b0ff-45fc-82dc-6aa233aa6122",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "0cad516b-300d-4fd0-9e08-c0ea91894c6b",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "d9a0121b-b0ff-45fc-82dc-6aa233aa6122",
+                  "type": "logic/concat/string",
+                  "metadata": {
+                    "positionX": "604.4281000411172",
+                    "positionY": "121.9996949154557"
+                  },
+                  "parameters": {
+                    "a": {
+                      "value": "plate 1 hit ="
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "177255c4-4670-4a7c-b08a-ebda59dffdc4",
+                        "socket": "Name"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "75b9ab6a-5884-41f8-a23a-5a7120cc72c6",
+                  "type": "math/toString/entity",
+                  "metadata": {
+                    "positionX": "1340.4281000411174",
+                    "positionY": "1946.7996949154558"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "53e11d42-38d1-4bf6-93be-ba62ccfa3ce9",
+                        "socket": "entity"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "3e3a1a90-9335-4ec9-ae65-732b09e309cb",
+                  "type": "logic/concat/string",
+                  "metadata": {
+                    "positionX": "1525.4281000411174",
+                    "positionY": "1955.7996949154558"
+                  },
+                  "parameters": {
+                    "a": {
+                      "value": "avatar = "
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "75b9ab6a-5884-41f8-a23a-5a7120cc72c6",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "53e11d42-38d1-4bf6-93be-ba62ccfa3ce9",
+                  "type": "engine/component/getAvatarComponent",
+                  "metadata": {
+                    "positionX": "1137.4281000411172",
+                    "positionY": "1884.799694915456"
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "543a20ab-b8f2-4735-b3a2-a8249debd368",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "b8bc8609-913e-4150-b678-9f905128e2c3",
+                  "type": "engine/onCollision",
+                  "metadata": {
+                    "positionX": "94.41044552909985",
+                    "positionY": "793.6820774123049"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "205384e5-0c82-4865-8d03-0ba6d5cedc2a",
+                        "socket": "entity"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "deec0e0e-e1d6-4c83-ad6d-38e2f45c1cf0",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "58cf1e08-d899-4561-b710-a3ba8103eed9",
+                  "type": "engine/entity/getEntityInScene",
+                  "metadata": {
+                    "positionX": "610.4181703579633",
+                    "positionY": "921.5121625326977"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "value": "c843091a-a7a4-4cd2-b8fb-3e742a1a02b3"
+                    }
+                  }
+                },
+                {
+                  "id": "bc418f1b-a669-4eab-80e6-7bee71270a20",
+                  "type": "engine/equal/entity",
+                  "metadata": {
+                    "positionX": "955.6255991158955",
+                    "positionY": "840.3595028007801"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "b8bc8609-913e-4150-b678-9f905128e2c3",
+                        "socket": "target"
+                      }
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "58cf1e08-d899-4561-b710-a3ba8103eed9",
+                        "socket": "entity"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "020f6389-50c8-45a8-9de1-dcfc8cfe1c3c",
+                  "type": "engine/equal/entity",
+                  "metadata": {
+                    "positionX": "959.4281000411174",
+                    "positionY": "288.4819741189085"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "98073c0f-c77f-404b-89f1-57553d1bbd69",
+                        "socket": "target"
+                      }
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "0a84ff3d-4e8a-403c-b5db-fe344943fb2f",
+                        "socket": "entity"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "177255c4-4670-4a7c-b08a-ebda59dffdc4",
+                  "type": "engine/component/getNameComponent",
+                  "metadata": {
+                    "positionX": "367.42810004111743",
+                    "positionY": "37.111775028581945"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "98073c0f-c77f-404b-89f1-57553d1bbd69",
+                        "socket": "target"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "8379001c-48ad-426b-9928-4575873f50a0",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "205384e5-0c82-4865-8d03-0ba6d5cedc2a",
+                  "type": "engine/entity/getEntityInScene",
+                  "metadata": {
+                    "positionX": "-288.916879604006",
+                    "positionY": "950.7187613630798"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "value": "bc8e43f4-5e64-467c-98d4-4e8424ddad6a"
+                    }
+                  }
+                },
+                {
+                  "id": "543a20ab-b8f2-4735-b3a2-a8249debd368",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "1811.4281000411174",
+                    "positionY": "1941.9117750285823"
+                  },
+                  "parameters": {
+                    "text": {
+                      "link": {
+                        "nodeId": "3e3a1a90-9335-4ec9-ae65-732b09e309cb",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "25488825-de9d-4862-831f-56e7922dc1bc",
+                  "type": "engine/entity/getEntityInScene",
+                  "metadata": {
+                    "positionX": "-303.1514168421023",
+                    "positionY": "383.14977873955206"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "value": "42526d35-5dd8-4d0d-95d4-7452df5c4030"
+                    }
+                  }
+                },
+                {
+                  "id": "98073c0f-c77f-404b-89f1-57553d1bbd69",
+                  "type": "engine/onCollision",
+                  "metadata": {
+                    "positionX": "94.18645956437418",
+                    "positionY": "231.97865121463587"
+                  },
+                  "parameters": {
+                    "entity": {
+                      "link": {
+                        "nodeId": "25488825-de9d-4862-831f-56e7922dc1bc",
+                        "socket": "entity"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "177255c4-4670-4a7c-b08a-ebda59dffdc4",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "c56d0edb-3319-41dc-ad7c-25df928ea267",
+                  "type": "math/toString/integer",
+                  "metadata": {
+                    "positionX": "1933.1930870880144",
+                    "positionY": "1174.1538703713777"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "6b124f77-48a8-4fb6-adc2-21763cb37066",
+                        "socket": "count"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "a849b04e-1bbc-4703-95ab-485a85e32743",
+                  "type": "logic/concat/string",
+                  "metadata": {
+                    "positionX": "1929.588085237571",
+                    "positionY": "1034.9688759227076"
+                  },
+                  "parameters": {
+                    "a": {
+                      "value": "plate 2 hit count is "
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "c56d0edb-3319-41dc-ad7c-25df928ea267",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "22a0184d-0133-4a82-8b59-6b06e690f2ec",
+                  "type": "math/toString/integer",
+                  "metadata": {
+                    "positionX": "1929.6381037420042",
+                    "positionY": "615.7588722218211"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "ca09da6b-3f64-4542-b412-cfca5dc75601",
+                        "socket": "count"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "1fac07c3-1a70-4366-90b0-a56db4aef9f0",
+                  "type": "logic/concat/string",
+                  "metadata": {
+                    "positionX": "1926.4281000411174",
+                    "positionY": "470.77137684792933"
+                  },
+                  "parameters": {
+                    "a": {
+                      "value": "plate 1 hit count is "
+                    },
+                    "b": {
+                      "link": {
+                        "nodeId": "22a0184d-0133-4a82-8b59-6b06e690f2ec",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "b6dff5b3-f232-4f98-9620-adf1107a7f86",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "1927.430579558074",
+                    "positionY": "859.5030851127322"
+                  },
+                  "parameters": {
+                    "text": {
+                      "link": {
+                        "nodeId": "a849b04e-1bbc-4703-95ab-485a85e32743",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "187eddc8-f6be-4f9d-90e2-baec4a6c9da8",
+                  "type": "math/greaterThan/integer",
+                  "metadata": {
+                    "positionX": "1637.2830989877289",
+                    "positionY": "932.4905804866239"
+                  },
+                  "parameters": {
+                    "b": {
+                      "value": "9"
+                    },
+                    "a": {
+                      "link": {
+                        "nodeId": "6b124f77-48a8-4fb6-adc2-21763cb37066",
+                        "socket": "count"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "3ad71045-2f81-403a-8cf1-708818d757cd",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "1635.2830989877289",
+                    "positionY": "774.4905804866239"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "187eddc8-f6be-4f9d-90e2-baec4a6c9da8",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "false": {
+                      "nodeId": "b6dff5b3-f232-4f98-9620-adf1107a7f86",
+                      "socket": "flow"
+                    },
+                    "true": {
+                      "nodeId": "1116ebd4-ab2b-4b62-b486-890e70056cc5",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "6b124f77-48a8-4fb6-adc2-21763cb37066",
+                  "type": "flow/counter",
+                  "metadata": {
+                    "positionX": "1419.2830989877289",
+                    "positionY": "776.4905804866239"
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "3ad71045-2f81-403a-8cf1-708818d757cd",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "019b1b9d-305f-45a9-88ae-99cf6fb980b0",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "1179.2830989877289",
+                    "positionY": "778.4905804866239"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "bc418f1b-a669-4eab-80e6-7bee71270a20",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "false": {
+                      "nodeId": "0f4078b5-6037-4916-add3-531ed0cbcaa0",
+                      "socket": "flow"
+                    },
+                    "true": {
+                      "nodeId": "6b124f77-48a8-4fb6-adc2-21763cb37066",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "3289a1b6-4065-4f83-9958-a60aab35942d",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "1928.2830989877289",
+                    "positionY": "297.59804611394725"
+                  },
+                  "parameters": {
+                    "text": {
+                      "link": {
+                        "nodeId": "1fac07c3-1a70-4366-90b0-a56db4aef9f0",
+                        "socket": "result"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "1116ebd4-ab2b-4b62-b486-890e70056cc5",
+                  "type": "debug/log",
+                  "metadata": {
+                    "positionX": "3090.283098987729",
+                    "positionY": "81.59804611394725"
+                  },
+                  "parameters": {
+                    "text": {
+                      "value": "end game"
+                    }
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "4bbdbf57-9727-47e9-abdc-462f461690ed",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "370eb6bf-73ed-4a96-88f5-ad83ec8e254c",
+                  "type": "math/greaterThan/integer",
+                  "metadata": {
+                    "positionX": "287.4830989877296",
+                    "positionY": "-578.4019538860528"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "4bbdbf57-9727-47e9-abdc-462f461690ed",
+                        "socket": "count"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "8c4233c8-4343-4425-bb40-f8c6c9e89aa3",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "283.4830989877296",
+                    "positionY": "-730.4019538860528"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "370eb6bf-73ed-4a96-88f5-ad83ec8e254c",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "false": {
+                      "nodeId": "dad095bb-55e5-4085-b094-01b327e5dc1b",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "493b4882-5f5d-4e90-b434-3bc623173e1f",
+                  "type": "math/greaterThan/integer",
+                  "metadata": {
+                    "positionX": "285.4830989877296",
+                    "positionY": "-1190.4019538860528"
+                  },
+                  "parameters": {
+                    "a": {
+                      "link": {
+                        "nodeId": "4bbdbf57-9727-47e9-abdc-462f461690ed",
+                        "socket": "count"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "b971cec5-ee61-46e0-8a40-7ab44a7f47c6",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "279.3821365824997",
+                    "positionY": "-1331.8939641178881"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "493b4882-5f5d-4e90-b434-3bc623173e1f",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "false": {
+                      "nodeId": "a95b0f72-c4f6-4edc-9ce6-be78affad887",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "4bbdbf57-9727-47e9-abdc-462f461690ed",
+                  "type": "flow/counter",
+                  "metadata": {
+                    "positionX": "-607.4268989054942",
+                    "positionY": "-311.14157263964967"
+                  }
+                },
+                {
+                  "id": "3e4fdf24-ca0e-45fe-bb0c-ccf1d3a4c11a",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "1639.8079740921598",
+                    "positionY": "209.15385180208895"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "8af683e9-b033-4a59-bfcd-bef94c74a5c6",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "false": {
+                      "nodeId": "3289a1b6-4065-4f83-9958-a60aab35942d",
+                      "socket": "flow"
+                    },
+                    "true": {
+                      "nodeId": "1116ebd4-ab2b-4b62-b486-890e70056cc5",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "8af683e9-b033-4a59-bfcd-bef94c74a5c6",
+                  "type": "math/greaterThan/integer",
+                  "metadata": {
+                    "positionX": "1633.3583129718595",
+                    "positionY": "355.9727185163288"
+                  },
+                  "parameters": {
+                    "b": {
+                      "value": "9"
+                    },
+                    "a": {
+                      "link": {
+                        "nodeId": "ca09da6b-3f64-4542-b412-cfca5dc75601",
+                        "socket": "count"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "0cad516b-300d-4fd0-9e08-c0ea91894c6b",
+                  "type": "flow/branch",
+                  "metadata": {
+                    "positionX": "1181.2410423165607",
+                    "positionY": "206.67799104735184"
+                  },
+                  "parameters": {
+                    "condition": {
+                      "link": {
+                        "nodeId": "020f6389-50c8-45a8-9de1-dcfc8cfe1c3c",
+                        "socket": "result"
+                      }
+                    }
+                  },
+                  "flows": {
+                    "true": {
+                      "nodeId": "ca09da6b-3f64-4542-b412-cfca5dc75601",
+                      "socket": "flow"
+                    }
+                  }
+                },
+                {
+                  "id": "ca09da6b-3f64-4542-b412-cfca5dc75601",
+                  "type": "flow/counter",
+                  "metadata": {
+                    "positionX": "1420.374129323537",
+                    "positionY": "206.5991807752588"
+                  },
+                  "flows": {
+                    "flow": {
+                      "nodeId": "3e4fdf24-ca0e-45fe-bb0c-ccf1d3a4c11a",
+                      "socket": "flow"
+                    }
+                  }
+                },
                 {
                   "id": "cab3c77b-dfd0-4fd4-a64d-9b7557ed455c",
                   "type": "math/toVec3/float",
@@ -630,8 +1447,8 @@
                   "id": "c5efc77e-5d92-40f1-b368-281118b4382e",
                   "type": "engine/entity/getEntityInScene",
                   "metadata": {
-                    "positionX": "574.464992253537",
-                    "positionY": "-1110.67134523484"
+                    "positionX": "572.464992253537",
+                    "positionY": "-1186.67134523484"
                   },
                   "parameters": {
                     "entity": {
@@ -643,12 +1460,12 @@
                   "id": "a806d1e0-5488-4363-ac23-1b47109edd6d",
                   "type": "lifecycle/onTick",
                   "metadata": {
-                    "positionX": "507.4310787437681",
-                    "positionY": "-1312.1605587027914"
+                    "positionX": "89.48193061628263",
+                    "positionY": "-1332.677023783042"
                   },
                   "flows": {
                     "flow": {
-                      "nodeId": "a95b0f72-c4f6-4edc-9ce6-be78affad887",
+                      "nodeId": "b971cec5-ee61-46e0-8a40-7ab44a7f47c6",
                       "socket": "flow"
                     }
                   }
@@ -759,94 +1576,15 @@
                   }
                 },
                 {
-                  "id": "859f0636-6b11-4c2b-b55c-cfa64d3c93e7",
-                  "type": "engine/component/getNameComponent",
-                  "metadata": {
-                    "positionX": "744.1840260006392",
-                    "positionY": "236.14618834128277"
-                  },
-                  "parameters": {
-                    "entity": {
-                      "link": {
-                        "nodeId": "cf172ff5-dc3e-4b55-949c-d7468a97a555",
-                        "socket": "target"
-                      }
-                    }
-                  },
-                  "flows": {
-                    "flow": {
-                      "nodeId": "a37356ca-4eca-4d23-8f2f-c55f670edb70",
-                      "socket": "flow"
-                    }
-                  }
-                },
-                {
-                  "id": "5fcac7f6-dcca-4b07-8aaa-e7de4c5987f7",
-                  "type": "logic/concat/string",
-                  "metadata": {
-                    "positionX": "936.1840260006394",
-                    "positionY": "312.1461883412828"
-                  },
-                  "parameters": {
-                    "a": {
-                      "value": "plate collision with "
-                    },
-                    "b": {
-                      "link": {
-                        "nodeId": "859f0636-6b11-4c2b-b55c-cfa64d3c93e7",
-                        "socket": "Name"
-                      }
-                    }
-                  }
-                },
-                {
-                  "id": "a37356ca-4eca-4d23-8f2f-c55f670edb70",
-                  "type": "debug/log",
-                  "metadata": {
-                    "positionX": "1228.1840260006393",
-                    "positionY": "230.14618834128277"
-                  },
-                  "parameters": {
-                    "text": {
-                      "link": {
-                        "nodeId": "5fcac7f6-dcca-4b07-8aaa-e7de4c5987f7",
-                        "socket": "result"
-                      }
-                    }
-                  }
-                },
-                {
                   "id": "0a84ff3d-4e8a-403c-b5db-fe344943fb2f",
                   "type": "engine/entity/getEntityInScene",
                   "metadata": {
-                    "positionX": "110.2828679217539",
-                    "positionY": "-83.65375440747668"
+                    "positionX": "533.0956088442382",
+                    "positionY": "420.4234369925982"
                   },
                   "parameters": {
                     "entity": {
-                      "value": "42526d35-5dd8-4d0d-95d4-7452df5c4030"
-                    }
-                  }
-                },
-                {
-                  "id": "cf172ff5-dc3e-4b55-949c-d7468a97a555",
-                  "type": "engine/onCollision",
-                  "metadata": {
-                    "positionX": "516.2576095234023",
-                    "positionY": "-83.65375440747667"
-                  },
-                  "parameters": {
-                    "entity": {
-                      "link": {
-                        "nodeId": "0a84ff3d-4e8a-403c-b5db-fe344943fb2f",
-                        "socket": "entity"
-                      }
-                    }
-                  },
-                  "flows": {
-                    "flow": {
-                      "nodeId": "859f0636-6b11-4c2b-b55c-cfa64d3c93e7",
-                      "socket": "flow"
+                      "value": "c843091a-a7a4-4cd2-b8fb-3e742a1a02b3"
                     }
                   }
                 },
@@ -854,12 +1592,12 @@
                   "id": "4bb99f89-11c4-471e-ba46-f507d86ffc93",
                   "type": "lifecycle/onTick",
                   "metadata": {
-                    "positionX": "522.7537000303012",
-                    "positionY": "-726.7364926607547"
+                    "positionX": "88.75370003030116",
+                    "positionY": "-728.7364926607547"
                   },
                   "flows": {
                     "flow": {
-                      "nodeId": "dad095bb-55e5-4085-b094-01b327e5dc1b",
+                      "nodeId": "8c4233c8-4343-4425-bb40-f8c6c9e89aa3",
                       "socket": "flow"
                     }
                   }
@@ -868,8 +1606,8 @@
                   "id": "0",
                   "type": "lifecycle/onStart",
                   "metadata": {
-                    "positionX": "513.8229553912433",
-                    "positionY": "-1569.7325473999172"
+                    "positionX": "79.82295539124334",
+                    "positionY": "-1747.7325473999172"
                   },
                   "flows": {
                     "flow": {
@@ -882,8 +1620,8 @@
                   "id": "6",
                   "type": "debug/log",
                   "metadata": {
-                    "positionX": "784.625413094036",
-                    "positionY": "-1570.9478267907652"
+                    "positionX": "286.62541309403605",
+                    "positionY": "-1750.9478267907652"
                   },
                   "parameters": {
                     "text": {

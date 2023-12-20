@@ -31,17 +31,16 @@
 
 ## behave graph variant todo
 
-* plate exists and is a trigger and is sensitive to onCollision events
-  * successfully collides with avatar
-    - detect 'on enter' and 'on exit' -> i actually could hack that a different way with an exit plate
-    - set game started flag
+* ontick ball launcher
+  x ? some kind of bug with trying to set forces on the ball -> looks like broken code in the engine
+  - if game started test -> we could have a game reset pad
+  * periodically launch the ball
 
-  * collides with ball? (after manually changing the ball mask to 15)
-    - increment damage
-    - show damage in score
-    - reset ball
-    - may stop game
+* plate collider
+  * if it is a ball -> then increase damage -> reset ball
+    * if damage is greater than 9 then end game
+  - if it is an avatar -> if game is stopped then start game
 
-- ontick ball launcher
-  - ? some kind of bug with trying to set forces on the ball -> looks like broken code in the engine
-  - if game started then periodically launch the ball
+- if ball hit ground -> reset ball
+
+ 
