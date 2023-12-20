@@ -26,6 +26,7 @@ import { BallComponent } from './components/BallComponent'
 import { PlateComponent } from './components/PlateComponent'
 import { PaddleComponent } from './components/PaddleComponent'
 import { netlog } from './PongLogging'
+import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -77,11 +78,13 @@ function setNetworkAuthorityPaddleAvatar(paddle: Entity,avatar : Entity ) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
-/// goals have a paddle1, paddle2, text, a plate - they are organized as children of the goal at startup
+/// goals have a paddle1, paddle2, text, a plate
+/// they are organized as children of the goal at startup
 ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function goalBindParts(goal:Entity) {
+function goalBindParts(goal:Entity,pong:Entity) {
+  const parentEntity = getComponent(pong,EntityTreeComponent).parentEntity
   const goalMutable = getMutableComponent(goal,GoalComponent)
   if(goalMutable.paddle1.value && goalMutable.paddle2.value && goalMutable.text.value && goalMutable.plate.value) {
     return
@@ -94,11 +97,13 @@ function goalBindParts(goal:Entity) {
   node.children.forEach( child => {
     if(!goalMutable.paddle1.value && getComponent(child,PaddleComponent) && !goalMutable.paddle1.value && child != goalMutable.paddle2.value) {
       goalMutable.paddle1.set(child)
+      getMutableComponent(child,EntityTreeComponent).parentEntity.set(parentEntity)
       netlog("goal added a paddle1, goal="+getComponent(goal,NameComponent)+" paddle="+getComponent(child,NameComponent))
       return
     }
     if(!goalMutable.paddle2.value && getComponent(child,PaddleComponent) && !goalMutable.paddle2.value && child != goalMutable.paddle1.value) {
       goalMutable.paddle2.set(child)
+      //getMutableComponent(child,EntityTreeComponent).parentEntity.set(parentEntity)
       netlog("goal added a paddle2, goal="+getComponent(goal,NameComponent)+" paddle="+getComponent(child,NameComponent))
       return
     }
@@ -111,6 +116,9 @@ function goalBindParts(goal:Entity) {
       goalMutable.plate.set(child)
       const plateMutable = getMutableComponent(child,PlateComponent)
       plateMutable.goal.set(goal)
+      //getMutableComponent(child,EntityTreeComponent).parentEntity.set(parentEntity)
+      //const position = getComponent(goal,TransformComponent).position
+      //getMutableComponent(child,TransformComponent).position.set(position)
       netlog("goal set plate, goal="+getComponent(goal,NameComponent)+" plate="+getComponent(child,NameComponent))
       return
     }
@@ -119,7 +127,7 @@ function goalBindParts(goal:Entity) {
 
 export function pongBindGoalParts(pong:Entity) {
   const pongComponent = getComponent(pong, PongComponent)
-  pongComponent.goals.forEach(goal => { goalBindParts(goal) } )
+  pongComponent.goals.forEach(goal => { goalBindParts(goal,pong) } )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,6 +227,7 @@ export function pongBindBalls(pong:Entity) {
 /// find if any avatars have recently been on any plates
 ///
 /// @todo a trigger callback could be used to reduce the busy polling here
+/// @todo don't let an avatar be on more than one plate at a time
 ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -231,17 +240,21 @@ export function platesBindAvatars(pong:Entity) {
     const goalMutable = getMutableComponent(goal,GoalComponent)
     const collidants = getComponent(goalMutable.plate.value, CollisionComponent)
     if(collidants && collidants.size) {
-      for (let [avatar, collision] of collidants) {
-        if(getComponent(avatar,AvatarComponent)) {
+      for (let [thing, collision] of collidants) {
+        if(getComponent(thing,AvatarComponent)) {
           // if avatar changed then change ownership
-          if(goalMutable.avatar.value != avatar) {
-            goalMutable.avatar.set(avatar)
-            setNetworkAuthorityPaddleAvatar(goalMutable.paddle1.value,avatar)
-            setNetworkAuthorityPaddleAvatar(goalMutable.paddle2.value,avatar)
+          if(goalMutable.avatar.value != thing) {
+            netlog("goal bound avatar goal="+getComponent(goal,NameComponent)+" avatar="+getComponent(thing,NameComponent))
+            goalMutable.avatar.set(thing)
+            setNetworkAuthorityPaddleAvatar(goalMutable.paddle1.value,thing)
+            setNetworkAuthorityPaddleAvatar(goalMutable.paddle2.value,thing)
           }
           // in general set a busy poll timer for the future
           goalMutable.avatarTimer.set(seconds+5)
+          break
         }
+        //if(!getComponent(thing,PaddleComponent))
+        //netlog("goal hit thing goal="+getComponent(goal,NameComponent)+" thing="+getComponent(thing,NameComponent))
       }
     }
     // if the timer has expired then clear the plate
@@ -255,6 +268,7 @@ export function platesBindAvatars(pong:Entity) {
 ///
 /// attach paddles to player hands if they are on a plate
 /// this works only for the local player and is networked
+/// transfering state is done elsewhere
 ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

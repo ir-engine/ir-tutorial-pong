@@ -1,7 +1,6 @@
 
 import { Vector3 } from 'three'
 
-import { isClient } from '@etherealengine/engine/src/common/functions/getEnvironment'
 import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
 
 import { Entity } from '@etherealengine/engine/src/ecs/classes/Entity'
@@ -14,7 +13,6 @@ import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDC
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 import { RigidBodyComponent } from '@etherealengine/engine/src/physics/components/RigidBodyComponent'
 import { CollisionComponent } from '@etherealengine/engine/src/physics/components/CollisionComponent'
-import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 
 import { PongComponent, PongMode } from './components/PongComponent'
 import { TextComponent } from './components/TextComponent'
@@ -22,11 +20,9 @@ import { BallComponent } from './components/BallComponent'
 import { PlateComponent } from './components/PlateComponent'
 import { GoalComponent } from './components/GoalComponent'
 
-import { platesBindAvatars } from './PongBindParts'
 import { PongAction } from './PongActions'
 import { netlog } from './PongLogging'
 import { GroundPlaneComponent } from '@etherealengine/engine/src/scene/components/GroundPlaneComponent'
-import { CollisionEvents } from '@etherealengine/engine/src/physics/types/PhysicsTypes'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 import { PaddleComponent } from './components/PaddleComponent'
 import { VisibleComponent } from '@etherealengine/engine/src/scene/components/VisibleComponent'
@@ -46,7 +42,7 @@ const BALL_POSITION_OFF_SCREEN = new Vector3(100,-10,100)
 ///
 
 export const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
-  const goal = UUIDComponent.entitiesByUUID[action.entityUUID]
+  const goal = UUIDComponent.getEntityByUUID(action.entityUUID)
   if(!goal) return
   const goalMutable = getMutableComponent(goal,GoalComponent)
   if(!goalMutable) return
@@ -88,7 +84,7 @@ export const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
 ///
 
 export const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
-  const pong = UUIDComponent.entitiesByUUID[action.uuid]
+  const pong = UUIDComponent.getEntityByUUID(action.uuid)
   if(!pong) return
   const pongMutable = getMutableComponent(pong,PongComponent)
   if(!pongMutable) return
@@ -109,7 +105,7 @@ export const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
 
 export const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
 
-  const entity = UUIDComponent.entitiesByUUID[action.entityUUID]
+  const entity = UUIDComponent.getEntityByUUID(action.entityUUID)
   if(!entity) return
   const transform = getComponent(entity,TransformComponent)
   if(!transform) return
@@ -140,13 +136,10 @@ export const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
     // const ballTransform = getComponent(ball,TransformComponent)
     // ballTransform.position.copy(position)
 
-    // a ball is dynamic - not kinematic so this should not work...
-    // rigid.targetKinematicPosition.copy(position)
-
-    // this should work but does not? ...
+    // this does not work
     //rigid.position.copy(action.position)
 
-    // this may work?
+    // this works
     rigid.body.setTranslation(action.position, true)
   }
   
@@ -163,7 +156,8 @@ export const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
 
 export function pongMoveNetwork(ball:Entity,position:Vector3,impulse:Vector3) {
 
-  // get authority over ball - this is problematic as it has a one frame delay - this is a design bug in ee
+  // get authority over the ball - there can a one frmae delay and also contention over authority, a more complex round robin scheme is needed
+  // for now just have the server own the ball - note that we dispatch move the ball anyway and bypass authority
   /*
   const net = getComponent(ball,NetworkObjectComponent)
   if(!net) {
@@ -188,9 +182,10 @@ export function pongMoveNetwork(ball:Entity,position:Vector3,impulse:Vector3) {
   }
   */
 
-  // there's a bug where server issued move events don't work - so this line does not work - instead network it
+  // there's a bug where server issued move events don't work - so this line does not work; this would be ideal
   // pongMove(PongAction.pongMove({ entityUUID, position, impulse }))
 
+  // for now have server dispatch the move event - this works but is slightly inelegant; it bypasses authority
   const entityUUID = getComponent(ball,UUIDComponent)
   dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
 }
@@ -206,6 +201,10 @@ export function pongHideNetwork(entity:Entity) {
 export function pongHideHack(entity:Entity) {
   getComponent(entity,RigidBodyComponent).body.setTranslation(BALL_POSITION_OFF_SCREEN, true)
 }
+
+///
+/// volley control
+///
 
 export function ballVolley(pong:Entity) {
 
@@ -257,11 +256,13 @@ export function ballVolley(pong:Entity) {
 
   // hopefully a goal was found, volley towards it
   if(goal) {
-    const goalTransform = getComponent(goal,TransformComponent)
+    const goalComponent = getComponent(goal,GoalComponent)
+    if(!goalComponent.avatar) return
+    const goalTransform = getComponent(goalComponent.avatar,TransformComponent)
     const pongTransform = getComponent(pong,TransformComponent)
     const impulse = goalTransform.position.clone()
     //const mass = 4/3*3.14*(ballTransform.scale.x + 1.0)
-    impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() + 2)
+    impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() + 3)
     const position = new Vector3(pongTransform.position.x,BALL_START_HEIGHT,pongTransform.position.z)
     pongMoveNetwork(ball,position,impulse)
     netlog("volleying")

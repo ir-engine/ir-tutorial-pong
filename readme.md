@@ -9,20 +9,35 @@
 
 # Code
 
-1) A PongComponent acts as a parent node to collect GoalComponents that make up a game
-2) GoalComponents themselves have a collision zone or 'plate' that the player can step on to begin play
-3) GoalComponents also may have a damage counter that indicates how many times the goal was hit
-4) A PongSystem handles all the logic
+The game objects are arranged like so and there can be any number of players:
 
-# Todo / Issues
+```
+  pong
+    goal
+      paddle
+      paddle
+      plate
+      score
+```
 
-- move entire TextComponent feature out of pong into etherealengine as a general reasource - and also fetch font more directly; rather than from 3js github repo
+A pong game is started when a player is on any plate, and ended when there are no players on any plates
+While the game is started balls are volleyed in order to each player
+When a plate is hit more than 9 times a game ends
 
-## Minor / Later
+# Todo / Issues [minor]
+
+- ball is moved by a dispatch, this is not elegant, there's a bug where server implicit change doesn't network
+- discovery of parts could be done at startup only; minor but could improve
+- clients don't need to do full discovery of all part relationships; minor
+- only server needs to delegate authority; minor
+- don't let avatars own more than one set of paddles; minor
+- move entire TextComponent feature out of pong into etherealengine as a general reasource
+- and also fetch font more directly; rather than from 3js github repo
+
+## Features to consider later
 
 - perhaps some win effect?
 - optionally a robot player?
-- optionally improve scoreboard art to be not arabic numerals but rather just dots
 - different shaped volumes
 - obstacles
 - gravity, attractors, fans etc
@@ -43,4 +58,3 @@
 
 - if ball hit ground -> reset ball
 
- 
