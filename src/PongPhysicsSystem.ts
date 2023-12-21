@@ -86,10 +86,10 @@ const mat4 = new Matrix4()
 
 /** get the player that missed it by slicing down the diagonal of the cardinal directions relative to the game */
 const getPlayerIndex = (position: Vector3) => {
-  if (position.x > 0 && position.z > 0) return 0
-  if (position.x < 0 && position.z > 0) return 1
-  if (position.x < 0 && position.z < 0) return 2
-  if (position.x > 0 && position.z < 0) return 3
+  if (position.z > Math.abs(position.x)) return 0
+  if (position.z < -Math.abs(position.x)) return 1
+  if (position.x > Math.abs(position.z)) return 2
+  if (position.x < -Math.abs(position.z)) return 3
 
   return 0
 }
@@ -152,11 +152,12 @@ const gameLogic = (gameUUID: EntityUUID) => {
     )
 
     if (game.players[playerIndex].score.value <= 0) {
-      dispatchAction(
-        PongActions.endGame({
-          gameEntityUUID: gameUUID
-        })
-      )
+      /** @todo */
+      // dispatchAction(
+      //   PongActions.endGame({
+      //     gameEntityUUID: gameUUID
+      //   })
+      // )
     }
     return
   }
