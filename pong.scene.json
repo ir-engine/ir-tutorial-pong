@@ -370,7 +370,7 @@
             "position": {
               "x": 0,
               "y": 0,
-              "z": 15
+              "z": 5
             },
             "rotation": {
               "x": -5.053215498074303e-16,
@@ -485,14 +485,14 @@
       "name": "directional light"
     },
     "2be2d0f1-68f1-45fb-8674-f629f7956a29": {
-      "name": "pong",
+      "name": "Pong Game 1",
       "components": [
         {
-          "name": "pong",
+          "name": "ee.pong.game",
           "props": {}
         },
         {
-          "name": "visible",
+          "name": "gltf-model",
           "props": {}
         },
         {
@@ -515,6 +515,10 @@
               "z": 1
             }
           }
+        },
+        {
+          "name": "visible",
+          "props": true
         }
       ],
       "parent": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71",
@@ -804,10 +808,6 @@
       "name": "goalA",
       "components": [
         {
-          "name": "pong.goal",
-          "props": {}
-        },
-        {
           "name": "visible",
           "props": {}
         },
@@ -839,10 +839,6 @@
     "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362": {
       "name": "goalB",
       "components": [
-        {
-          "name": "pong.goal",
-          "props": {}
-        },
         {
           "name": "transform",
           "props": {
@@ -876,10 +872,6 @@
       "name": "goalC",
       "components": [
         {
-          "name": "pong.goal",
-          "props": {}
-        },
-        {
           "name": "transform",
           "props": {
             "position": {
@@ -912,10 +904,6 @@
       "name": "goalD",
       "components": [
         {
-          "name": "pong.goal",
-          "props": {}
-        },
-        {
           "name": "transform",
           "props": {
             "position": {
@@ -944,510 +932,9 @@
       "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
       "index": 1
     },
-    "0a3dc842-d789-4ce9-a07a-49db5a44381f": {
-      "name": "paddleA1",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        }
-      ],
-      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
-      "index": 0
-    },
-    "0a3dc842-d789-4ce9-a07a-49db5a44381e": {
-      "name": "paddleA2",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        }
-      ],
-      "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
-      "index": 0
-    },
-    "a118a168-6434-46a3-bd21-2e15e5ce41c5": {
-      "name": "paddleB1",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
-      "index": 0
-    },
-    "a118a168-6434-46a3-bd21-2e15e5ce41c4": {
-      "name": "paddleB2",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
-      "index": 0
-    },
-    "3a3dc842-d789-4ce9-a07a-49db5a443813": {
-      "name": "paddleC1",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        }
-      ],
-      "parent": "824e9fa3-f23e-4cdb-ad30-0b0ed622a3b8",
-      "index": 0
-    },
-    "4a3dc842-d789-4ce9-a07a-49db5a443814": {
-      "name": "paddleC2",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        }
-      ],
-      "parent": "824e9fa3-f23e-4cdb-ad30-0b0ed622a3b8",
-      "index": 0
-    },
-    "5a3dc842-d789-4ce9-a07a-49db5a443815": {
-      "name": "paddleD1",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        }
-      ],
-      "parent": "91ee4ba8-9ec7-4048-b8bd-571c2cd42369",
-      "index": 0
-    },
-    "6a3dc842-d789-4ce9-a07a-49db5a443816": {
-      "name": "paddleD2",
-      "components": [
-        {
-          "name": "pong.paddle",
-          "props": {}
-        },
-        {
-          "name": "visible",
-          "props": true
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": -1,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.2,
-              "y": 0.2,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 2,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 1,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 0,
-            "geometryParams": null
-          }
-        }
-      ],
-      "parent": "91ee4ba8-9ec7-4048-b8bd-571c2cd42369",
-      "index": 0
-    },
     "e1b552de-c601-488f-8725-a0d28ef5249a": {
       "name": "scoreA",
       "components": [
-        {
-          "name": "pong.score",
-          "props": {
-          }
-        },
         {
           "name": "primitive-geometry",
           "props": {
@@ -1500,11 +987,6 @@
       "name": "scoreB",
       "components": [
         {
-          "name": "pong.score",
-          "props": {
-          }
-        },
-        {
           "name": "primitive-geometry",
           "props": {
             "color": [
@@ -1522,10 +1004,6 @@
               "depthSegments": 1
             }
           }
-        },
-        {
-          "name": "visible",
-          "props": {}
         },
         {
           "name": "transform",
@@ -1547,6 +1025,10 @@
               "z": 0.1
             }
           }
+        },
+        {
+          "name": "visible",
+          "props": true
         }
       ],
       "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
@@ -1555,11 +1037,6 @@
     "35723371-2332-4b04-a08c-ba253eadb0b3": {
       "name": "scoreC",
       "components": [
-        {
-          "name": "pong.score",
-          "props": {
-          }
-        },
         {
           "name": "primitive-geometry",
           "props": {
@@ -1612,11 +1089,6 @@
       "name": "scoreD",
       "components": [
         {
-          "name": "pong.score",
-          "props": {
-          }
-        },
-        {
           "name": "primitive-geometry",
           "props": {
             "color": [
@@ -1668,7 +1140,7 @@
       "name": "plateA",
       "components": [
         {
-          "name": "pong.plate",
+          "name": "ee.pong.plate",
           "props": {}
         },
         {
@@ -1683,9 +1155,9 @@
             "restitution": 0.5,
             "triggers": [
               {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
               }
             ]
           }
@@ -1709,9 +1181,9 @@
               "w": 1
             },
             "scale": {
-              "x": 1,
+              "x": 0.8,
               "y": 0.8,
-              "z": 1
+              "z": 0.8
             }
           }
         }
@@ -1723,7 +1195,7 @@
       "name": "plateB",
       "components": [
         {
-          "name": "pong.plate",
+          "name": "ee.pong.plate",
           "props": {}
         },
         {
@@ -1738,9 +1210,9 @@
             "restitution": 0.5,
             "triggers": [
               {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
               }
             ]
           }
@@ -1764,9 +1236,9 @@
               "w": 1
             },
             "scale": {
-              "x": 1,
+              "x": 0.8,
               "y": 0.8,
-              "z": 1
+              "z": 0.8
             }
           }
         }
@@ -1778,7 +1250,7 @@
       "name": "plateC",
       "components": [
         {
-          "name": "pong.plate",
+          "name": "ee.pong.plate",
           "props": {}
         },
         {
@@ -1793,9 +1265,9 @@
             "restitution": 0.5,
             "triggers": [
               {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
               }
             ]
           }
@@ -1819,9 +1291,9 @@
               "w": 1
             },
             "scale": {
-              "x": 1,
+              "x": 0.8,
               "y": 0.8,
-              "z": 1
+              "z": 0.8
             }
           }
         }
@@ -1833,7 +1305,7 @@
       "name": "plateD",
       "components": [
         {
-          "name": "pong.plate",
+          "name": "ee.pong.plate",
           "props": {}
         },
         {
@@ -1848,9 +1320,9 @@
             "restitution": 0.5,
             "triggers": [
               {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
               }
             ]
           }
@@ -1874,85 +1346,15 @@
               "w": 1
             },
             "scale": {
-              "x": 1,
+              "x": 0.8,
               "y": 0.8,
-              "z": 1
+              "z": 0.8
             }
           }
         }
       ],
       "parent": "91ee4ba8-9ec7-4048-b8bd-571c2cd42369",
       "index": 2
-    },
-    "72c046eb-9cb7-4509-b485-0338bd7d50ee": {
-      "name": "ball1",
-      "components": [
-        {
-          "name": "pong.ball",
-          "props": {}
-        },
-        {
-          "name": "primitive-geometry",
-          "props": {
-            "geometryType": 1,
-            "geometryParams": {
-              "radius": 1,
-              "widthSegments": 32,
-              "heightSegments": 16,
-              "phiStart": 0,
-              "phiLength": 6.283185307179586,
-              "thetaStart": 0,
-              "thetaLength": 3.141592653589793
-            }
-          }
-        },
-        {
-          "name": "visible",
-          "props": {}
-        },
-        {
-          "name": "transform",
-          "props": {
-            "position": {
-              "x": 0,
-              "y": 10,
-              "z": 0
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.1,
-              "y": 0.1,
-              "z": 0.1
-            }
-          }
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 0,
-            "shapeType": 0,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 15,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
-          }
-        }
-      ],
-      "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
-      "index": 3
     }
   },
   "root": "d32b1c4e-d08e-4fb0-9107-4c88a281ee71"
