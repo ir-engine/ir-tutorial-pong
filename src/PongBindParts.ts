@@ -25,7 +25,8 @@ import { ScoreComponent } from './components/ScoreComponent'
 import { BallComponent } from './components/BallComponent'
 import { PlateComponent } from './components/PlateComponent'
 import { PaddleComponent } from './components/PaddleComponent'
-import { netlog } from './PongLogging'
+
+const netlog = console.log
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
