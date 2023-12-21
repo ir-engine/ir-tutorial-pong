@@ -15,13 +15,12 @@ import { RigidBodyComponent } from '@etherealengine/engine/src/physics/component
 import { CollisionComponent } from '@etherealengine/engine/src/physics/components/CollisionComponent'
 
 import { PongComponent, PongMode } from './components/PongComponent'
-import { TextComponent } from './components/TextComponent'
+import { ScoreComponent } from './components/ScoreComponent'
 import { BallComponent } from './components/BallComponent'
 import { PlateComponent } from './components/PlateComponent'
 import { GoalComponent } from './components/GoalComponent'
 
 import { PongAction } from './PongActions'
-import { netlog } from './PongLogging'
 import { GroundPlaneComponent } from '@etherealengine/engine/src/scene/components/GroundPlaneComponent'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 import { PaddleComponent } from './components/PaddleComponent'
@@ -35,7 +34,6 @@ const BALL_AGE_BEFORE_EXPIRED = 5.0
 const BALL_START_HEIGHT = 3.0
 const ZERO = new Vector3(0,0,0)
 const BALL_POSITION_OFF_SCREEN = new Vector3(100,-10,100)
-//const BALL_MAX_DAMAGE = 9
 
 ///
 /// Update the local goal / score
@@ -48,35 +46,20 @@ export const pongGoal = (action: ReturnType<typeof PongAction.pongGoal>) => {
   if(!goalMutable) return
   const val = parseInt(action.damage)
   if(!isNaN(val)) goalMutable.damage.set( val )
-  if(goalMutable.text.value) {
-    const textMutable = getMutableComponent(goalMutable.text.value,TextComponent)
-    if(textMutable) {
-      // let's not use text for now
-      // textMutable.text.set(action.damage)
-      // instead let's scale the component as a power bar
-      if(val && !isNaN(val)) {
-        const x = (goalMutable.maxDamage.value-val) / goalMutable.maxDamage.value
-        const transform = getMutableComponent(goalMutable.text.value,TransformComponent)
-        //transform.scale.set(x,transform.scale.y,transform.scale.z)
-        //transform.scale.setX(x)
-        //transform.scale.x = x
-        transform.scale.set( new Vector3(x,0.1,0.1) )
-
-        // hack force update
-        const geometryComponent = getMutableComponent(goalMutable.text.value, PrimitiveGeometryComponent)
-        if(geometryComponent) {
-          //if(geometryComponent.geometryType.value == GeometryTypeEnum.BoxGeometry)
-            geometryComponent.geometryType.set( GeometryTypeEnum.CapsuleGeometry )
-          //else
-            geometryComponent.geometryType.set( GeometryTypeEnum.BoxGeometry )
-        }
-
-      }
-    } else {
-      console.log("....... pong text bad")
+  if(!goalMutable.score.value) return
+  const textMutable = getMutableComponent(goalMutable.score.value,ScoreComponent)
+  if(!textMutable) return
+  if(val && !isNaN(val)) {
+    const x = (goalMutable.maxDamage.value-val) / goalMutable.maxDamage.value
+    const transform = getMutableComponent(goalMutable.score.value,TransformComponent)
+    transform.scale.set( new Vector3(x,0.1,0.1) )
+    // hack force update
+    const geometryComponent = getMutableComponent(goalMutable.score.value, PrimitiveGeometryComponent)
+    if(geometryComponent) {
+        geometryComponent.geometryType.set( GeometryTypeEnum.CapsuleGeometry )
+        geometryComponent.geometryType.set( GeometryTypeEnum.BoxGeometry )
     }
   }
-  //netlog("*** pong: set goal in game ="+action.damage+" goal="+entity2UUID(goal))
 }
 
 ///
@@ -95,111 +78,22 @@ export const pongPong = (action: ReturnType<typeof PongAction.pongPong>) => {
     case 'playing': pongMutable.mode.set( PongMode.playing ); break
     case 'completed': pongMutable.mode.set( PongMode.completed ); break
   }
-  netlog("setting gamestate " + action.mode)
 }
 
-///
-/// coerce an entity position
-/// @todo this is not the right way to do this but there are some issues with networking of state such as forces
-///
-
-export const pongMove = (action: ReturnType<typeof PongAction.pongMove>) => {
-
-  const entity = UUIDComponent.getEntityByUUID(action.entityUUID)
-  if(!entity) return
-  const transform = getComponent(entity,TransformComponent)
-  if(!transform) return
+function move(entity:Entity,position:Vector3,impulse:Vector3) {
   const rigid = getComponent(entity,RigidBodyComponent)
-
   if(rigid) {
     rigid.body.wakeUp()
     rigid.body.resetForces(true)
     rigid.body.setLinvel(ZERO, true)
     rigid.body.setAngvel(ZERO, true)
   }
-
-  /*
-  if(rigid && action.kinematicPosition) {
-    rigid.targetKinematicPosition.copy(action.kinematicPosition)
-    transform.position.copy(action.kinematicPosition)
-  }
-
-  if(rigid && action.kinematicRotation) {
-    rigid.targetKinematicRotation.copy(action.kinematicRotation)
-    transform.rotation.copy(action.kinematicRotation)
-  }
-  */
- 
-  // strategies to try set the ball position over the network (these are NOT working if issued from server - known bug)
-  if(action.position) {
-    // this is not networked for objects with physics
-    // const ballTransform = getComponent(ball,TransformComponent)
-    // ballTransform.position.copy(position)
-
-    // this does not work
-    //rigid.position.copy(action.position)
-
-    // this works
-    rigid.body.setTranslation(action.position, true)
-  }
-  
-  if( action.impulse ) {
-    //setTimeout(()=>{
-      rigid.body.setLinvel(action.impulse as Vector3,true)
-      //},10);
-  }
+  rigid.body.setTranslation(position, true)
+  rigid.body.setLinvel(impulse as Vector3,true)
 }
 
-///
-/// Move something by forcing it to move over network
-///
-
-export function pongMoveNetwork(ball:Entity,position:Vector3,impulse:Vector3) {
-
-  // get authority over the ball - there can a one frmae delay and also contention over authority, a more complex round robin scheme is needed
-  // for now just have the server own the ball - note that we dispatch move the ball anyway and bypass authority
-  /*
-  const net = getComponent(ball,NetworkObjectComponent)
-  if(!net) {
-    netlog("error: no network for ball")
-    return
-  }
-  if(net.authorityPeerID != Engine.instance.store.peerID) {
-    console.log("***** pong authority is=" + net.authorityPeerID + " local =" + Engine.instance.store.peerID)
-    netlog("ball: transferring ownership for ball name = " + getComponent(ball,NameComponent))
-    dispatchAction(
-      WorldNetworkAction.requestAuthorityOverObject({
-        ownerId: net.ownerId,
-        networkId: net.networkId,
-        newAuthority: Engine.instance.store.peerID
-      })
-    )
-    console.log("***** pong binding ball ",getComponent(ball,NameComponent),net.authorityPeerID,net.networkId,net.ownerId,Engine.instance.store.peerID)
-    //setComponent(ball,NetworkObjectSendPeriodicUpdatesTag)
-    //setComponent(ball,NetworkObjectOwnedTag)
-    //setComponent(ball,NetworkObjectAuthorityTag)
-    // @todo the latency here is unclear; it may be that the below fails if the ball is not locally owned first
-  }
-  */
-
-  // there's a bug where server issued move events don't work - so this line does not work; this would be ideal
-  // pongMove(PongAction.pongMove({ entityUUID, position, impulse }))
-
-  // for now have server dispatch the move event - this works but is slightly inelegant; it bypasses authority
-  const entityUUID = getComponent(ball,UUIDComponent)
-  dispatchAction(PongAction.pongMove({ entityUUID, position, impulse }))
-}
-
-///
-/// hide an entity
-///
-
-export function pongHideNetwork(entity:Entity) {
-  pongMoveNetwork(entity,BALL_POSITION_OFF_SCREEN,ZERO)
-}
-
-export function pongHideHack(entity:Entity) {
-  getComponent(entity,RigidBodyComponent).body.setTranslation(BALL_POSITION_OFF_SCREEN, true)
+function hide(entity:Entity) {
+  move(entity,BALL_POSITION_OFF_SCREEN,ZERO)
 }
 
 ///
@@ -264,8 +158,7 @@ export function ballVolley(pong:Entity) {
     //const mass = 4/3*3.14*(ballTransform.scale.x + 1.0)
     impulse.sub(pongTransform.position).normalize().multiplyScalar(Math.random() + 3)
     const position = new Vector3(pongTransform.position.x,BALL_START_HEIGHT,pongTransform.position.z)
-    pongMoveNetwork(ball,position,impulse)
-    netlog("volleying")
+    move(ball,position,impulse)
   }
 }
 
@@ -290,7 +183,6 @@ export function ballCollisions(pong:Entity) {
         // plates goal should be valid, let's use it to increase damage - only if there is a player there
         const goalComponent = getComponent(plateComponent.goal,GoalComponent)
         if(!goalComponent || !goalComponent.avatar) {
-          netlog("hit a plate but no player")
           break
         }
         // set not visible flag as a hack to detect if ball is out of play - there is network latency on the below
@@ -299,29 +191,25 @@ export function ballCollisions(pong:Entity) {
         }
         removeComponent(ball,VisibleComponent)
         // hide ball; there is some latency on this event - hence the hack above
-        pongHideNetwork(ball)
+        hide(ball)
         // increase damage and publish (server will resolve end game conditions by watching changes)
         const damage = `${goalComponent.damage + 1}`
         const entityUUID = getComponent(plateComponent.goal, UUIDComponent) as EntityUUID
         dispatchAction(PongAction.pongGoal({ entityUUID, damage }))   
-        netlog("increased damage")   
         break
       }
       if(getComponent(entity,AvatarComponent)) {
         // reset ball recentness
         getMutableComponent(ball,BallComponent).elapsedSeconds.set(seconds)
-        netlog("ball hit player")   
         break
       }
       if(getComponent(entity,PaddleComponent)) {
         // reset ball recentness
         getMutableComponent(ball,BallComponent).elapsedSeconds.set(seconds)
-        netlog("ball hit paddle")   
         break
       }
       if(getComponent(entity,GroundPlaneComponent)) {
-        netlog("ball hit ground")
-        pongHideNetwork(ball)
+        hide(ball)
         break
       }
     }
@@ -371,7 +259,7 @@ export function pongReason(pong:Entity) {
 
       // make balls not be around
       pongComponent.balls.forEach(ball=>{
-        pongHideNetwork(ball)
+        hide(ball)
       })
 
       // switch to playing

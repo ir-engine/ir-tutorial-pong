@@ -13,7 +13,7 @@ import { NameComponent } from '@etherealengine/engine/src/scene/components/NameC
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
 
 import { PongComponent } from '../components/PongComponent'
-import { TextComponent } from '../components/TextComponent'
+import { TextComponent } from '../components/ScoreComponent'
 
 export const PongComponentEditor: EditorComponentType = (props) => {
   const pong = useComponent(props.entity, PongComponent)

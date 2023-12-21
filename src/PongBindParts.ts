@@ -21,12 +21,11 @@ import { dispatchAction, getState } from '@etherealengine/hyperflux'
 
 import { PongComponent } from './components/PongComponent'
 import { GoalComponent } from './components/GoalComponent'
-import { TextComponent } from './components/TextComponent'
+import { ScoreComponent } from './components/ScoreComponent'
 import { BallComponent } from './components/BallComponent'
 import { PlateComponent } from './components/PlateComponent'
 import { PaddleComponent } from './components/PaddleComponent'
 import { netlog } from './PongLogging'
-import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -86,7 +85,7 @@ function setNetworkAuthorityPaddleAvatar(paddle: Entity,avatar : Entity ) {
 function goalBindParts(goal:Entity,pong:Entity) {
   const parentEntity = getComponent(pong,EntityTreeComponent).parentEntity
   const goalMutable = getMutableComponent(goal,GoalComponent)
-  if(goalMutable.paddle1.value && goalMutable.paddle2.value && goalMutable.text.value && goalMutable.plate.value) {
+  if(goalMutable.paddle1.value && goalMutable.paddle2.value && goalMutable.score.value && goalMutable.plate.value) {
     return
   }
   const node = getComponent(goal,EntityTreeComponent)
@@ -107,9 +106,9 @@ function goalBindParts(goal:Entity,pong:Entity) {
       netlog("goal added a paddle2, goal="+getComponent(goal,NameComponent)+" paddle="+getComponent(child,NameComponent))
       return
     }
-    if(!goalMutable.text.value && getComponent(child,TextComponent)) {
-      goalMutable.text.set(child)
-      netlog("goal set text, goal="+getComponent(goal,NameComponent)+" text="+getComponent(child,NameComponent))
+    if(!goalMutable.score.value && getComponent(child,ScoreComponent)) {
+      goalMutable.score.set(child)
+      netlog("goal set score, goal="+getComponent(goal,NameComponent)+" score="+getComponent(child,NameComponent))
       return
     }
     if(!goalMutable.plate.value && getComponent(child,PlateComponent)) {

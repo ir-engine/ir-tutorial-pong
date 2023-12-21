@@ -1444,9 +1444,8 @@
       "name": "scoreA",
       "components": [
         {
-          "name": "text-geometry",
+          "name": "pong.score",
           "props": {
-            "text": ""
           }
         },
         {
@@ -1501,9 +1500,8 @@
       "name": "scoreB",
       "components": [
         {
-          "name": "text-geometry",
+          "name": "pong.score",
           "props": {
-            "text": ""
           }
         },
         {
@@ -1558,9 +1556,8 @@
       "name": "scoreC",
       "components": [
         {
-          "name": "text-geometry",
+          "name": "pong.score",
           "props": {
-            "text": ""
           }
         },
         {
@@ -1615,9 +1612,8 @@
       "name": "scoreD",
       "components": [
         {
-          "name": "text-geometry",
+          "name": "pong.score",
           "props": {
-            "text": ""
           }
         },
         {

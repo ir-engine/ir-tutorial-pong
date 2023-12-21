@@ -9,7 +9,7 @@ export const GoalComponent = defineComponent({
       plate: 0 as Entity,
       paddle1: 0 as Entity,
       paddle2: 0 as Entity,
-      text: 0 as Entity,
+      score: 0 as Entity,
       avatar: 0 as Entity,
       avatarTimer: 0,
       damage: 0,

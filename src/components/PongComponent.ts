@@ -23,11 +23,9 @@ export const PongComponent = defineComponent({
     }
   },
   onSet: (entity, pong, json) => {
-    if (!json) return
   },
   toJSON: (entity, pong) => {
-    return {
-    }
+    return {}
   }
 })
 

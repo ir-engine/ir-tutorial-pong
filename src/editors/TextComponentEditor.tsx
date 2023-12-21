@@ -7,7 +7,7 @@ import { useComponent } from '@etherealengine/engine/src/ecs/functions/Component
 import AlbumIcon from '@mui/icons-material/Album'
 
 import StringInput from '@etherealengine/editor/src/components/inputs/StringInput'
-import { TextComponent } from '../components/TextComponent'
+import { TextComponent } from '../components/ScoreComponent'
 
 export const TextComponentEditor: EditorComponentType = (props) => {
   const text = useComponent(props.entity, TextComponent)

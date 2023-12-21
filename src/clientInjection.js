@@ -1,4 +1,4 @@
-import { TextComponent } from './components/TextComponent'
+import { TextComponent } from './components/ScoreComponent'
 import { BallComponent } from './components/BallComponent'
 import { PaddleComponent } from './components/PaddleComponent'
 import { PlateComponent } from './components/PlateComponent'
