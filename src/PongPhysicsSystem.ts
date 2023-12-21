@@ -4,10 +4,6 @@ import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFun
 import { PhysicsSystem } from '@etherealengine/engine/src/physics/PhysicsModule'
 import { dispatchAction, getMutableState, getState } from '@etherealengine/hyperflux'
 
-import './GoalComponent'
-import './PlateComponent'
-import './PongComponent'
-
 import { isClient } from '@etherealengine/engine/src/common/functions/getEnvironment'
 import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
 import { getComponent, setComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'

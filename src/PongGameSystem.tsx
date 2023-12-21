@@ -14,7 +14,6 @@ import {
 } from '@etherealengine/hyperflux'
 import React, { useEffect } from 'react'
 
-import './GoalComponent'
 import './PlateComponent'
 import './PongComponent'
 

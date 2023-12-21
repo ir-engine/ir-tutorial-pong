@@ -808,10 +808,6 @@
       "name": "goalA",
       "components": [
         {
-          "name": "ee.pong.goal",
-          "props": {}
-        },
-        {
           "name": "visible",
           "props": {}
         },
@@ -843,10 +839,6 @@
     "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362": {
       "name": "goalB",
       "components": [
-        {
-          "name": "ee.pong.goal",
-          "props": {}
-        },
         {
           "name": "transform",
           "props": {
@@ -880,10 +872,6 @@
       "name": "goalC",
       "components": [
         {
-          "name": "ee.pong.goal",
-          "props": {}
-        },
-        {
           "name": "transform",
           "props": {
             "position": {
@@ -915,10 +903,6 @@
     "91ee4ba8-9ec7-4048-b8bd-571c2cd42369": {
       "name": "goalD",
       "components": [
-        {
-          "name": "ee.pong.goal",
-          "props": {}
-        },
         {
           "name": "transform",
           "props": {

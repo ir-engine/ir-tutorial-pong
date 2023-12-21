@@ -33,9 +33,6 @@ import {
 } from '@etherealengine/engine/src/transform/components/DistanceComponents'
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 import { Vector3 } from 'three'
-import './GoalComponent'
-import './PlateComponent'
-import './PongComponent'
 
 export class PaddleActions {
   static spawnPaddle = defineAction({
