@@ -12,7 +12,9 @@ import { platesBindAvatarPaddles, platesBindAvatars, pongBindBalls, pongBindGoal
 
 export const PongNetworkState = defineState({
   name: 'pong.PongNetworkStateReceptors',
-  initial: {},
+  initial: {
+    // @todo state could/should be kept here for clarity; although functionally it is the same either way
+  },
   receptors: [
     [
       PongAction.pongGoal,
