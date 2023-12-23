@@ -11,6 +11,7 @@ import { setCallback } from '@etherealengine/engine/src/scene/components/Callbac
 import { GLTFLoadedComponent } from '@etherealengine/engine/src/scene/components/GLTFLoadedComponent'
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
 
+import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 import { UndefinedEntity } from '@etherealengine/engine/src/ecs/classes/Entity'
 import { traverseEntityNodeParent } from '@etherealengine/engine/src/ecs/functions/EntityTree'
 import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
@@ -55,6 +56,7 @@ export const PlateComponent = defineComponent({
 
       /** Set callbacks to dispatch join/leave events */
       setCallback(entity, 'playerJoin', (triggerEntity, otherEntity) => {
+        if (!hasComponent(otherEntity, AvatarComponent)) return
         const playerUserID = getComponent(otherEntity, UUIDComponent) as any as UserID
 
         /** Dispatch a player change event with this player */
@@ -68,6 +70,7 @@ export const PlateComponent = defineComponent({
       })
 
       setCallback(entity, 'playerLeave', (triggerEntity, otherEntity) => {
+        if (!hasComponent(otherEntity, AvatarComponent)) return
         const connected = getState(PongState)[gameEntityUUID].players[index].connected
         /** Check if the currently connected player is not this player */
         if (connected !== (getComponent(otherEntity, UUIDComponent) as any as UserID)) return

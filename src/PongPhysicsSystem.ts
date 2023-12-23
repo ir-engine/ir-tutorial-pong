@@ -24,6 +24,7 @@ import {
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 import { computeTransformMatrix } from '@etherealengine/engine/src/transform/systems/TransformSystem'
 import { Matrix4, Quaternion, Vector3 } from 'three'
+import { PongCollisionGroups } from './PaddleSystem'
 import { PongActions, PongState } from './PongGameSystem'
 
 const ballVelocity = 0.025
@@ -55,8 +56,12 @@ export const spawnBall = (gameUUID: EntityUUID, entityUUID: EntityUUID) => {
 
   const rigidBody = getComponent(entity, RigidBodyComponent)
 
-  const interactionGroups = getInteractionGroups(CollisionGroups.Default, DefaultCollisionMask)
-  const colliderDesc = ColliderDesc.ball(0.1).setCollisionGroups(interactionGroups)
+  const interactionGroups = getInteractionGroups(
+    CollisionGroups.Default,
+    DefaultCollisionMask | PongCollisionGroups.PaddleCollisionGroup
+  )
+  const colliderDesc = ColliderDesc.ball(0.1)
+  colliderDesc.setCollisionGroups(interactionGroups)
   colliderDesc.setRestitution(1)
 
   Physics.createColliderAndAttachToRigidBody(getState(PhysicsState).physicsWorld, colliderDesc, rigidBody.body)
