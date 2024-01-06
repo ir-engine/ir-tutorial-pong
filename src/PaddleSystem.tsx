@@ -1,9 +1,9 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
+import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/engine/src/common/functions/MatchesUtils'
 import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFunctions'
 import { NetworkTopics } from '@etherealengine/engine/src/networking/classes/Network'
 import { PhysicsSystem } from '@etherealengine/engine/src/physics/PhysicsModule'
-import { UserID } from '@etherealengine/engine/src/schemas/user/user.schema'
 import {
   defineAction,
   defineState,
