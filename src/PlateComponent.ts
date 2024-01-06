@@ -11,12 +11,12 @@ import { setCallback } from '@etherealengine/engine/src/scene/components/Callbac
 import { GLTFLoadedComponent } from '@etherealengine/engine/src/scene/components/GLTFLoadedComponent'
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
 
+import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 import { UndefinedEntity } from '@etherealengine/engine/src/ecs/classes/Entity'
 import { traverseEntityNodeParent } from '@etherealengine/engine/src/ecs/functions/EntityTree'
 import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
-import { UserID } from '@etherealengine/engine/src/schemas/user/user.schema'
 import { useEffect } from 'react'
 import { PongComponent } from './PongComponent'
 import { PongActions, PongState } from './PongGameSystem'
