@@ -10,7 +10,6 @@ import {
   dispatchAction,
   getMutableState,
   none,
-  receiveActions,
   useHookstate
 } from '@etherealengine/hyperflux'
 import React, { useEffect } from 'react'
@@ -61,29 +60,21 @@ export const PaddleState = defineState({
     }
   >,
 
-  receptors: [
-    [
-      PaddleActions.spawnPaddle,
-      (state, action: typeof PaddleActions.spawnPaddle.matches._TYPE) => {
-        state[action.entityUUID].merge({
-          owner: action.owner,
-          handedness: action.handedness,
-          gameEntityUUID: action.gameEntityUUID
-        })
-      }
-    ],
-    [
-      WorldNetworkAction.destroyObject,
-      (state, action: typeof WorldNetworkAction.destroyObject.matches._TYPE) => {
-        state[action.entityUUID].set(none)
-      }
-    ]
-  ]
+  receptors: {
+    onSpawnPaddle: PaddleActions.spawnPaddle.receive((action) => {
+      const state = getMutableState(PaddleState)
+      state[action.entityUUID].merge({
+        owner: action.owner,
+        handedness: action.handedness,
+        gameEntityUUID: action.gameEntityUUID
+      })
+    }),
+    onDestroyPaddle: WorldNetworkAction.destroyObject.receive((action) => {
+      const state = getMutableState(PaddleState)
+      state[action.entityUUID].set(none)
+    })
+  }
 })
-
-const execute = () => {
-  receiveActions(PaddleState)
-}
 
 const PaddleReactor = ({ entityUUID }: { entityUUID: EntityUUID }) => {
   const paddleState = useHookstate(getMutableState(PaddleState)[entityUUID])
@@ -153,7 +144,6 @@ const reactor = () => {
 
 export const PaddleSystem = defineSystem({
   uuid: 'pong.paddle-system',
-  execute,
   reactor,
   insert: { after: PhysicsSystem }
 })
