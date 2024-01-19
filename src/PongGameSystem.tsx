@@ -9,7 +9,6 @@ import {
   dispatchAction,
   getMutableState,
   none,
-  receiveActions,
   useHookstate
 } from '@etherealengine/hyperflux'
 import React, { useEffect } from 'react'
@@ -85,73 +84,61 @@ export const PongState = defineState({
     }
   >,
 
-  receptors: [
-    [
-      PongActions.startGame,
-      (state, action: typeof PongActions.startGame.matches._TYPE) => {
-        state[action.gameEntityUUID].set({
-          players: [
-            {
-              score: maxScore,
-              connected: null
-            },
-            {
-              score: maxScore,
-              connected: null
-            },
-            {
-              score: maxScore,
-              connected: null
-            },
-            {
-              score: maxScore,
-              connected: null
-            }
-          ],
-          ball: null,
-          ballCooldown: 3000 // start in three seconds
-        })
-      }
-    ],
-    [
-      PongActions.endGame,
-      (state, action: typeof PongActions.endGame.matches._TYPE) => {
-        state[action.gameEntityUUID].set(none)
-      }
-    ],
-    [
-      PongActions.playerChange,
-      (state, action: typeof PongActions.playerChange.matches._TYPE) => {
-        state[action.gameEntityUUID].players[action.playerIndex].connected.set(action.playerUserID ?? null)
-      }
-    ],
-    [
-      PongActions.playerScore,
-      (state, action: typeof PongActions.playerScore.matches._TYPE) => {
-        state[action.gameEntityUUID].players[action.playerIndex].score.set((current) => current - 1)
-      }
-    ],
-    [
-      PongActions.spawnBall,
-      (state, action: typeof PaddleActions.spawnPaddle.matches._TYPE) => {
-        state[action.gameEntityUUID].ball.set(action.entityUUID)
-        spawnBall(action.gameEntityUUID, action.entityUUID)
-      }
-    ],
-    [
-      WorldNetworkAction.destroyObject,
-      (state, action: typeof WorldNetworkAction.destroyObject.matches._TYPE) => {
-        for (const gameUUID of state.keys) {
-          const game = state[gameUUID as EntityUUID]
-          if (game.ball.value === action.entityUUID) {
-            game.ballCooldown.set(3000)
-            game.ball.set(null)
-            return
+  receptors: {
+    onStartGame: PongActions.startGame.receive((action) => {
+      const state = getMutableState(PongState)
+      state[action.gameEntityUUID].set({
+        players: [
+          {
+            score: maxScore,
+            connected: null
+          },
+          {
+            score: maxScore,
+            connected: null
+          },
+          {
+            score: maxScore,
+            connected: null
+          },
+          {
+            score: maxScore,
+            connected: null
           }
+        ],
+        ball: null,
+        ballCooldown: 3000 // start in three seconds
+      })
+    }),
+    onEndGame: PongActions.endGame.receive((action) => {
+      const state = getMutableState(PongState)
+      state[action.gameEntityUUID].set(none)
+    }),
+    onPlayerChange: PongActions.playerChange.receive((action) => {
+      const state = getMutableState(PongState)
+      state[action.gameEntityUUID].players[action.playerIndex].connected.set(action.playerUserID ?? null)
+    }),
+    onPlayerScore: PongActions.playerScore.receive((action) => {
+      const state = getMutableState(PongState)
+      state[action.gameEntityUUID].players[action.playerIndex].score.set((current) => current - 1)
+    }),
+    onSpawnBall: PongActions.spawnBall.receive((action) => {
+      const state = getMutableState(PongState)
+      state[action.gameEntityUUID].ball.set(action.entityUUID)
+      spawnBall(action.gameEntityUUID, action.entityUUID)
+    }),
+    onDestroyBall: WorldNetworkAction.destroyObject.receive((action) => {
+      const state = getMutableState(PongState)
+      for (const gameUUID of state.keys) {
+        const game = state[gameUUID as EntityUUID]
+        if (game.ball.value === action.entityUUID) {
+          game.ballCooldown.set(3000)
+          game.ball.set(null)
+          return
         }
       }
-    ]
-  ]
+    })
+  }
 })
 
 const PlayerReactor = (props: { playerIndex: number; gameUUID: EntityUUID }) => {
@@ -260,7 +247,6 @@ const reactor = () => {
 
 export const PongGameSystem = defineSystem({
   uuid: 'ee.pong.game-system',
-  execute: () => receiveActions(PongState),
   reactor,
   insert: { after: EntityNetworkStateSystem }
 })
