@@ -1,12 +1,11 @@
 import { ColliderDesc, RigidBodyDesc } from '@dimforge/rapier3d-compat'
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
-import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFunctions'
 import { PhysicsSystem } from '@etherealengine/engine/src/physics/PhysicsModule'
 import { dispatchAction, getMutableState, getState } from '@etherealengine/hyperflux'
 
-import { isClient } from '@etherealengine/engine/src/common/functions/getEnvironment'
-import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
-import { getComponent, setComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
+import { defineSystem, getComponent, setComponent } from '@etherealengine/ecs'
+import { ECSState } from '@etherealengine/ecs/src/ECSState'
 import { WorldNetworkAction } from '@etherealengine/engine/src/networking/functions/WorldNetworkAction'
 import { Physics } from '@etherealengine/engine/src/physics/classes/Physics'
 import { RigidBodyComponent } from '@etherealengine/engine/src/physics/components/RigidBodyComponent'
@@ -116,7 +115,7 @@ const gameLogic = (gameUUID: EntityUUID) => {
   if (!game.players.find((player) => player.connected.value)) return
 
   if (game.ballCooldown.value > 0) {
-    game.ballCooldown.set((current) => current - getState(EngineState).simulationTimestep)
+    game.ballCooldown.set((current) => current - getState(ECSState).simulationTimestep)
     return
   }
 
