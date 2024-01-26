@@ -1,7 +1,6 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/engine/src/common/functions/MatchesUtils'
-import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFunctions'
 import { NetworkTopics } from '@etherealengine/engine/src/networking/classes/Network'
 import {
   defineAction,
@@ -16,16 +15,15 @@ import React, { useEffect } from 'react'
 import './PlateComponent'
 import './PongComponent'
 
-import multiLogger from '@etherealengine/engine/src/common/functions/logger'
-import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
-import { EngineState } from '@etherealengine/engine/src/ecs/classes/EngineState'
-import { UndefinedEntity } from '@etherealengine/engine/src/ecs/classes/Entity'
-import { getComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
-import { iterateEntityNode } from '@etherealengine/engine/src/ecs/functions/EntityTree'
+import multiLogger from '@etherealengine/common/src/logger'
+import { UndefinedEntity, defineSystem, getComponent } from '@etherealengine/ecs'
+import { Engine } from '@etherealengine/ecs/src/Engine'
 import { WorldNetworkAction } from '@etherealengine/engine/src/networking/functions/WorldNetworkAction'
 import { EntityNetworkStateSystem } from '@etherealengine/engine/src/networking/state/EntityNetworkState'
+import { SceneState } from '@etherealengine/engine/src/scene/Scene'
 import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
+import { iterateEntityNode } from '@etherealengine/engine/src/transform/components/EntityTree'
 import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
 import { PaddleActions } from './PaddleSystem'
 import { spawnBall } from './PongPhysicsSystem'
@@ -232,7 +230,7 @@ const GameReactor = (props: { gameUUID: EntityUUID }) => {
 
 const reactor = () => {
   const pongState = useHookstate(getMutableState(PongState))
-  const sceneLoaded = useHookstate(getMutableState(EngineState).sceneLoaded)
+  const sceneLoaded = useHookstate(getMutableState(SceneState).sceneLoaded)
 
   if (!sceneLoaded.value) return null
 

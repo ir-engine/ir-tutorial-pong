@@ -1,7 +1,6 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/engine/src/common/functions/MatchesUtils'
-import { defineSystem } from '@etherealengine/engine/src/ecs/functions/SystemFunctions'
 import { NetworkTopics } from '@etherealengine/engine/src/networking/classes/Network'
 import { PhysicsSystem } from '@etherealengine/engine/src/physics/PhysicsModule'
 import {
@@ -14,7 +13,7 @@ import {
 } from '@etherealengine/hyperflux'
 import React, { useEffect } from 'react'
 
-import { getComponent, setComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { defineSystem, getComponent, setComponent } from '@etherealengine/ecs'
 import {
   GrabbableComponent,
   GrabbedComponent
