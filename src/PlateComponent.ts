@@ -14,8 +14,8 @@ import {
   useEntityContext
 } from '@etherealengine/ecs'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
-import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
-import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
+import { NameComponent } from '@etherealengine/engine/src/common/NameComponent'
+import { UUIDComponent } from '@etherealengine/engine/src/common/UUIDComponent'
 import { traverseEntityNodeParent } from '@etherealengine/engine/src/transform/components/EntityTree'
 import { useEffect } from 'react'
 import { PongComponent } from './PongComponent'

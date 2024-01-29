@@ -22,10 +22,10 @@ import { GrabbableNetworkAction } from '@etherealengine/engine/src/interaction/s
 import { WorldNetworkAction } from '@etherealengine/engine/src/networking/functions/WorldNetworkAction'
 import { CollisionGroups } from '@etherealengine/engine/src/physics/enums/CollisionGroups'
 import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
-import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
+import { NameComponent } from '@etherealengine/engine/src/common/NameComponent'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
-import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
-import { VisibleComponent } from '@etherealengine/engine/src/scene/components/VisibleComponent'
+import { UUIDComponent } from '@etherealengine/engine/src/common/UUIDComponent'
+import { VisibleComponent } from '@etherealengine/engine/src/renderer/components/VisibleComponent'
 import {
   DistanceFromCameraComponent,
   FrustumCullCameraComponent
