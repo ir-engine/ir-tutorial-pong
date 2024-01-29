@@ -1,5 +1,5 @@
 
-import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
+import { UUIDComponent } from '@etherealengine/engine/src/common/UUIDComponent'
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
 import { useEffect } from 'react'
 import { PongActions } from './PongGameSystem'

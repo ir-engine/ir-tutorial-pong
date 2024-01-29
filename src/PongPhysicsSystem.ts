@@ -12,9 +12,9 @@ import { RigidBodyComponent } from '@etherealengine/engine/src/physics/component
 import { CollisionGroups, DefaultCollisionMask } from '@etherealengine/engine/src/physics/enums/CollisionGroups'
 import { getInteractionGroups } from '@etherealengine/engine/src/physics/functions/getInteractionGroups'
 import { PhysicsState } from '@etherealengine/engine/src/physics/state/PhysicsState'
-import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
+import { NameComponent } from '@etherealengine/engine/src/common/NameComponent'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
-import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
+import { UUIDComponent } from '@etherealengine/engine/src/common/UUIDComponent'
 import { VisibleComponent } from '@etherealengine/engine/src/scene/components/VisibleComponent'
 import {
   DistanceFromCameraComponent,
