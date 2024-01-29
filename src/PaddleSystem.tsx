@@ -25,7 +25,7 @@ import { ColliderComponent } from '@etherealengine/engine/src/scene/components/C
 import { NameComponent } from '@etherealengine/engine/src/common/NameComponent'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
 import { UUIDComponent } from '@etherealengine/engine/src/common/UUIDComponent'
-import { VisibleComponent } from '@etherealengine/engine/src/scene/components/VisibleComponent'
+import { VisibleComponent } from '@etherealengine/engine/src/renderer/components/VisibleComponent'
 import {
   DistanceFromCameraComponent,
   FrustumCullCameraComponent
