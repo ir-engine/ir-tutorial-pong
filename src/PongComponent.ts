@@ -4,7 +4,7 @@ import { dispatchAction, getState } from '@etherealengine/hyperflux'
 import { useEffect } from 'react'
 import { PongActions } from './PongGameSystem'
 import { defineComponent, useEntityContext, getComponent } from '@etherealengine/ecs'
-import { EngineState } from '@etherealengine/engine/src/EngineState'
+import { EngineState } from '@etherealengine/spatial/src/EngineState'
 
 export const PongComponent = defineComponent({
   name: 'PongComponent',
