@@ -1,8 +1,8 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
-import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/engine/src/common/functions/MatchesUtils'
-import { NetworkTopics } from '@etherealengine/engine/src/networking/classes/Network'
-import { PhysicsSystem } from '@etherealengine/engine/src/physics/PhysicsModule'
+import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/spatial/src/common/functions/MatchesUtils'
+import { NetworkTopics } from '@etherealengine/spatial/src/networking/classes/Network'
+import { PhysicsSystem } from '@etherealengine/spatial/src/physics/PhysicsModule'
 import {
   defineAction,
   defineState,
@@ -19,18 +19,18 @@ import {
   GrabbedComponent
 } from '@etherealengine/engine/src/interaction/components/GrabbableComponent'
 import { GrabbableNetworkAction } from '@etherealengine/engine/src/interaction/systems/GrabbableSystem'
-import { WorldNetworkAction } from '@etherealengine/engine/src/networking/functions/WorldNetworkAction'
-import { CollisionGroups } from '@etherealengine/engine/src/physics/enums/CollisionGroups'
+import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
+import { CollisionGroups } from '@etherealengine/spatial/src/physics/enums/CollisionGroups'
 import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
-import { NameComponent } from '@etherealengine/engine/src/common/NameComponent'
+import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
-import { UUIDComponent } from '@etherealengine/engine/src/common/UUIDComponent'
-import { VisibleComponent } from '@etherealengine/engine/src/renderer/components/VisibleComponent'
+import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
+import { VisibleComponent } from '@etherealengine/spatial/src/renderer/components/VisibleComponent'
 import {
   DistanceFromCameraComponent,
   FrustumCullCameraComponent
-} from '@etherealengine/engine/src/transform/components/DistanceComponents'
-import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
+} from '@etherealengine/spatial/src/transform/components/DistanceComponents'
+import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 import { Vector3 } from 'three'
 
 export enum PongCollisionGroups {
