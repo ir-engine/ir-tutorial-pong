@@ -1,5 +1,5 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
-import { setCallback } from '@etherealengine/engine/src/scene/components/CallbackComponent'
+import { setCallback } from '@etherealengine/spatial/src/common/CallbackComponent'
 import { GLTFLoadedComponent } from '@etherealengine/engine/src/scene/components/GLTFLoadedComponent'
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
 
