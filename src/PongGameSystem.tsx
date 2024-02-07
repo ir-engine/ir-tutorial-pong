@@ -1,7 +1,5 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
-import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/spatial/src/common/functions/MatchesUtils'
-import { NetworkTopics } from '@etherealengine/spatial/src/networking/classes/Network'
 import {
   defineAction,
   defineState,
@@ -10,6 +8,8 @@ import {
   none,
   useHookstate
 } from '@etherealengine/hyperflux'
+import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/spatial/src/common/functions/MatchesUtils'
+import { NetworkTopics } from '@etherealengine/spatial/src/networking/classes/Network'
 import React, { useEffect } from 'react'
 
 import './PlateComponent'
@@ -18,11 +18,11 @@ import './PongComponent'
 import multiLogger from '@etherealengine/common/src/logger'
 import { UndefinedEntity, defineSystem, getComponent } from '@etherealengine/ecs'
 import { Engine } from '@etherealengine/ecs/src/Engine'
-import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
-import { EntityNetworkStateSystem } from '@etherealengine/spatial/src/networking/state/EntityNetworkState'
 import { SceneState } from '@etherealengine/engine/src/scene/Scene'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
+import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
+import { EntityNetworkStateSystem } from '@etherealengine/spatial/src/networking/state/EntityNetworkState'
 import { iterateEntityNode } from '@etherealengine/spatial/src/transform/components/EntityTree'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 import { PaddleActions } from './PaddleSystem'

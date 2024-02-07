@@ -1,7 +1,7 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
-import { setCallback } from '@etherealengine/spatial/src/common/CallbackComponent'
 import { GLTFLoadedComponent } from '@etherealengine/engine/src/scene/components/GLTFLoadedComponent'
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
+import { setCallback } from '@etherealengine/spatial/src/common/CallbackComponent'
 
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { isClient } from '@etherealengine/common/src/utils/getEnvironment'

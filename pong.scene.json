@@ -568,27 +568,23 @@
           }
         },
         {
-          "name": "collider",
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "EE_rigidbody",
           "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
+            "type": "fixed"
           }
         },
         {
-          "name": "visible",
-          "props": true
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5
+          }
         }
       ],
       "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
@@ -638,27 +634,23 @@
           }
         },
         {
-          "name": "collider",
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "EE_rigidbody",
           "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
+            "type": "fixed"
           }
         },
         {
-          "name": "visible",
-          "props": true
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5
+          }
         }
       ],
       "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
@@ -708,27 +700,23 @@
           }
         },
         {
-          "name": "collider",
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "EE_rigidbody",
           "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
+            "type": "fixed"
           }
         },
         {
-          "name": "visible",
-          "props": true
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5
+          }
         }
       ],
       "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
@@ -778,27 +766,23 @@
           }
         },
         {
-          "name": "collider",
+          "name": "visible",
+          "props": true
+        },
+        {
+          "name": "EE_rigidbody",
           "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": false,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 7,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": null,
-                "onExit": null,
-                "target": null
-              }
-            ]
+            "type": "fixed"
           }
         },
         {
-          "name": "visible",
-          "props": true
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 7,
+            "restitution": 0.5
+          }
         }
       ],
       "parent": "2be2d0f1-68f1-45fb-8674-f629f7956a29",
@@ -1144,25 +1128,6 @@
           "props": {}
         },
         {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": true,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 3,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": "playerJoin",
-                "onExit": "playerLeave",
-                "target": ""
-              }
-            ]
-          }
-        },
-        {
           "name": "visible",
           "props": {}
         },
@@ -1186,6 +1151,33 @@
               "z": 0.8
             }
           }
+        },
+        {
+          "name": "EE_rigidbody",
+          "props": {
+            "type": "fixed"
+          }
+        },
+        {
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 3,
+            "restitution": 0.5
+          }
+        },
+        {
+          "name": "EE_trigger",
+          "props": {
+            "triggers": [
+              {
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
+              }
+            ]
+          }
         }
       ],
       "parent": "124e9fa3-f23e-4cdb-ad30-0b0ed62283be",
@@ -1197,25 +1189,6 @@
         {
           "name": "ee.pong.plate",
           "props": {}
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": true,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 3,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": "playerJoin",
-                "onExit": "playerLeave",
-                "target": ""
-              }
-            ]
-          }
         },
         {
           "name": "visible",
@@ -1241,6 +1214,33 @@
               "z": 0.8
             }
           }
+        },
+        {
+          "name": "EE_rigidbody",
+          "props": {
+            "type": "fixed"
+          }
+        },
+        {
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 3,
+            "restitution": 0.5
+          }
+        },
+        {
+          "name": "EE_trigger",
+          "props": {
+            "triggers": [
+              {
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
+              }
+            ]
+          }
         }
       ],
       "parent": "d1ee4ba8-9ec7-4048-b8bd-571c6cd42362",
@@ -1252,25 +1252,6 @@
         {
           "name": "ee.pong.plate",
           "props": {}
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": true,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 3,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": "playerJoin",
-                "onExit": "playerLeave",
-                "target": ""
-              }
-            ]
-          }
         },
         {
           "name": "visible",
@@ -1296,6 +1277,33 @@
               "z": 0.8
             }
           }
+        },
+        {
+          "name": "EE_rigidbody",
+          "props": {
+            "type": "fixed"
+          }
+        },
+        {
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 3,
+            "restitution": 0.5
+          }
+        },
+        {
+          "name": "EE_trigger",
+          "props": {
+            "triggers": [
+              {
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
+              }
+            ]
+          }
         }
       ],
       "parent": "824e9fa3-f23e-4cdb-ad30-0b0ed622a3b8",
@@ -1307,25 +1315,6 @@
         {
           "name": "ee.pong.plate",
           "props": {}
-        },
-        {
-          "name": "collider",
-          "props": {
-            "bodyType": 1,
-            "shapeType": 1,
-            "isTrigger": true,
-            "removeMesh": false,
-            "collisionLayer": 1,
-            "collisionMask": 3,
-            "restitution": 0.5,
-            "triggers": [
-              {
-                "onEnter": "playerJoin",
-                "onExit": "playerLeave",
-                "target": ""
-              }
-            ]
-          }
         },
         {
           "name": "visible",
@@ -1350,6 +1339,33 @@
               "y": 0.8,
               "z": 0.8
             }
+          }
+        },
+        {
+          "name": "EE_rigidbody",
+          "props": {
+            "type": "fixed"
+          }
+        },
+        {
+          "name": "EE_collider",
+          "props": {
+            "shape": 1,
+            "collisionLayer": 1,
+            "collisionMask": 3,
+            "restitution": 0.5
+          }
+        },
+        {
+          "name": "EE_trigger",
+          "props": {
+            "triggers": [
+              {
+                "onEnter": "playerJoin",
+                "onExit": "playerLeave",
+                "target": ""
+              }
+            ]
           }
         }
       ],

@@ -1,8 +1,5 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
-import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/spatial/src/common/functions/MatchesUtils'
-import { NetworkTopics } from '@etherealengine/spatial/src/networking/classes/Network'
-import { PhysicsSystem } from '@etherealengine/spatial/src/physics/PhysicsModule'
 import {
   defineAction,
   defineState,
@@ -11,6 +8,9 @@ import {
   none,
   useHookstate
 } from '@etherealengine/hyperflux'
+import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/spatial/src/common/functions/MatchesUtils'
+import { NetworkTopics } from '@etherealengine/spatial/src/networking/classes/Network'
+import { PhysicsSystem } from '@etherealengine/spatial/src/physics/PhysicsModule'
 import React, { useEffect } from 'react'
 
 import { defineSystem, getComponent, setComponent } from '@etherealengine/ecs'
@@ -19,12 +19,14 @@ import {
   GrabbedComponent
 } from '@etherealengine/engine/src/interaction/components/GrabbableComponent'
 import { GrabbableNetworkAction } from '@etherealengine/engine/src/interaction/systems/GrabbableSystem'
-import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
-import { CollisionGroups } from '@etherealengine/spatial/src/physics/enums/CollisionGroups'
-import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
-import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
+import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
+import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
+import { ColliderComponent } from '@etherealengine/spatial/src/physics/components/ColliderComponent'
+import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
+import { CollisionGroups } from '@etherealengine/spatial/src/physics/enums/CollisionGroups'
+import { BodyTypes } from '@etherealengine/spatial/src/physics/types/PhysicsTypes'
 import { VisibleComponent } from '@etherealengine/spatial/src/renderer/components/VisibleComponent'
 import {
   DistanceFromCameraComponent,
@@ -102,9 +104,9 @@ const PaddleReactor = ({ entityUUID }: { entityUUID: EntityUUID }) => {
     })
 
     /** Grabbable system handles setting collider as kinematic, so just set it to dynamic here */
+    setComponent(entity, RigidBodyComponent, { type: BodyTypes.Dynamic })
     setComponent(entity, ColliderComponent, {
-      bodyType: 0, // dynamic
-      shapeType: 1, // sphere
+      shape: 'sphere',
       collisionLayer: PongCollisionGroups.PaddleCollisionGroup as any,
       collisionMask: CollisionGroups.Default,
       restitution: 0.5
