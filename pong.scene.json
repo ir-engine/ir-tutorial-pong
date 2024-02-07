@@ -580,7 +580,7 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
+            "shape": "box",
             "collisionLayer": 1,
             "collisionMask": 7,
             "restitution": 0.5
@@ -646,7 +646,7 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
+            "shape": "box",
             "collisionLayer": 1,
             "collisionMask": 7,
             "restitution": 0.5
@@ -712,7 +712,7 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
+            "shape": "box",
             "collisionLayer": 1,
             "collisionMask": 7,
             "restitution": 0.5
@@ -778,7 +778,7 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
+            "shape": "box",
             "collisionLayer": 1,
             "collisionMask": 7,
             "restitution": 0.5
@@ -1161,8 +1161,8 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
-            "collisionLayer": 1,
+            "shape": "box",
+            "collisionLayer": 8,
             "collisionMask": 3,
             "restitution": 0.5
           }
@@ -1224,8 +1224,8 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
-            "collisionLayer": 1,
+            "shape": "box",
+            "collisionLayer": 8,
             "collisionMask": 3,
             "restitution": 0.5
           }
@@ -1287,8 +1287,8 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
-            "collisionLayer": 1,
+            "shape": "box",
+            "collisionLayer": 8,
             "collisionMask": 3,
             "restitution": 0.5
           }
@@ -1350,8 +1350,8 @@
         {
           "name": "EE_collider",
           "props": {
-            "shape": 1,
-            "collisionLayer": 1,
+            "shape": "box",
+            "collisionLayer": 8,
             "collisionMask": 3,
             "restitution": 0.5
           }
