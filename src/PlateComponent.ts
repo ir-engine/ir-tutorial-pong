@@ -1,18 +1,10 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
-import { GLTFLoadedComponent } from '@etherealengine/engine/src/scene/components/GLTFLoadedComponent'
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
 import { setCallback } from '@etherealengine/spatial/src/common/CallbackComponent'
 
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
-import {
-  UndefinedEntity,
-  defineComponent,
-  getComponent,
-  hasComponent,
-  removeComponent,
-  useEntityContext
-} from '@etherealengine/ecs'
+import { UndefinedEntity, defineComponent, getComponent, hasComponent, useEntityContext } from '@etherealengine/ecs'
 import { AvatarComponent } from '@etherealengine/engine/src/avatar/components/AvatarComponent'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
@@ -28,18 +20,12 @@ export const PlateComponent = defineComponent({
   jsonID: 'ee.pong.plate',
 
   reactor: function () {
+    /** Run player enter logic only on the server */
+    if (isClient) return null
+
     const entity = useEntityContext()
 
     useEffect(() => {
-      /**
-       * hack to fix GLTFLoadedComponent on colliders
-       * - this will be removed when the new physics ECS API is implemented
-       */
-      removeComponent(entity, GLTFLoadedComponent)
-
-      /** Configure player enter colliders on the server */
-      if (isClient) return
-
       let gameEntity = UndefinedEntity
 
       traverseEntityNodeParent(entity, (parent) => {

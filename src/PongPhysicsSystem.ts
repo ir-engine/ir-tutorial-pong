@@ -4,7 +4,7 @@ import { dispatchAction, getMutableState, getState } from '@etherealengine/hyper
 import { PhysicsSystem } from '@etherealengine/spatial/src/physics/PhysicsModule'
 
 import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
-import { defineSystem, getComponent, setComponent } from '@etherealengine/ecs'
+import { defineSystem, getComponent, getOptionalComponent, setComponent } from '@etherealengine/ecs'
 import { ECSState } from '@etherealengine/ecs/src/ECSState'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
@@ -134,7 +134,9 @@ const gameLogic = (gameUUID: EntityUUID) => {
   const ball = UUIDComponent.getEntityByUUID(game.ball.value)
   if (!ball) return
 
-  const ballRigidBody = getComponent(ball, RigidBodyComponent)
+  const ballRigidBody = getOptionalComponent(ball, RigidBodyComponent)
+  if (!ballRigidBody) return
+
   const gameTransform = getComponent(UUIDComponent.getEntityByUUID(gameUUID), TransformComponent)
 
   mat4.copy(gameTransform.matrixWorld).invert()

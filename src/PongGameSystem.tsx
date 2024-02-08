@@ -123,7 +123,6 @@ export const PongState = defineState({
     onSpawnBall: PongActions.spawnBall.receive((action) => {
       const state = getMutableState(PongState)
       state[action.gameEntityUUID].ball.set(action.entityUUID)
-      spawnBall(action.gameEntityUUID, action.entityUUID)
     }),
     onDestroyBall: WorldNetworkAction.destroyObject.receive((action) => {
       const state = getMutableState(PongState)
@@ -210,6 +209,17 @@ const PlayerReactor = (props: { playerIndex: number; gameUUID: EntityUUID }) => 
   return null
 }
 
+const BallReactor = (props: { gameUUID: EntityUUID }) => {
+  const ballState = useHookstate(getMutableState(PongState)[props.gameUUID].ball)
+
+  useEffect(() => {
+    if (!ballState.value) return
+    spawnBall(props.gameUUID, ballState.value)
+  }, [ballState])
+
+  return null
+}
+
 const GameReactor = (props: { gameUUID: EntityUUID }) => {
   useEffect(() => {
     logger.info(`Game ${props.gameUUID} started`)
@@ -224,6 +234,7 @@ const GameReactor = (props: { gameUUID: EntityUUID }) => {
       <PlayerReactor playerIndex={1} gameUUID={props.gameUUID} />
       <PlayerReactor playerIndex={2} gameUUID={props.gameUUID} />
       <PlayerReactor playerIndex={3} gameUUID={props.gameUUID} />
+      <BallReactor gameUUID={props.gameUUID} />
     </>
   )
 }
