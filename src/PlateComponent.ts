@@ -11,7 +11,7 @@ import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
 import { traverseEntityNodeParent } from '@etherealengine/spatial/src/transform/components/EntityTree'
 import { useEffect } from 'react'
 import { PongComponent } from './PongComponent'
-import { PongActions, PongState } from './PongGameSystem'
+import { PongActions, PongState } from './PongGameState'
 
 const plateNames = ['plateA', 'plateB', 'plateC', 'plateD']
 

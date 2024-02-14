@@ -23,8 +23,8 @@ import {
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 import { computeTransformMatrix } from '@etherealengine/spatial/src/transform/systems/TransformSystem'
 import { Matrix4, Quaternion, Vector3 } from 'three'
-import { PongCollisionGroups } from './PaddleSystem'
-import { PongActions, PongState } from './PongGameSystem'
+import { PongCollisionGroups } from './PaddleState'
+import { PongActions, PongState } from './PongGameState'
 
 const ballVelocity = 0.025
 

@@ -3,7 +3,7 @@ import { dispatchAction, getState } from '@etherealengine/hyperflux'
 import { EngineState } from '@etherealengine/spatial/src/EngineState'
 import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
 import { useEffect } from 'react'
-import { PongActions } from './PongGameSystem'
+import { PongActions } from './PongGameState'
 
 export const PongComponent = defineComponent({
   name: 'PongComponent',
