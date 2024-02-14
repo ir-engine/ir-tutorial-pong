@@ -10,10 +10,9 @@ import {
 } from '@etherealengine/hyperflux'
 import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/spatial/src/common/functions/MatchesUtils'
 import { NetworkTopics } from '@etherealengine/spatial/src/networking/classes/Network'
-import { PhysicsSystem } from '@etherealengine/spatial/src/physics/PhysicsModule'
 import React, { useEffect } from 'react'
 
-import { defineSystem, getComponent, setComponent } from '@etherealengine/ecs'
+import { getComponent, setComponent } from '@etherealengine/ecs'
 import {
   GrabbableComponent,
   GrabbedComponent
@@ -74,6 +73,18 @@ export const PaddleState = defineState({
       const state = getMutableState(PaddleState)
       state[action.entityUUID].set(none)
     })
+  },
+
+  reactor: () => {
+    const paddlesState = useHookstate(getMutableState(PaddleState))
+
+    return (
+      <>
+        {paddlesState.keys.map((entityUUID: EntityUUID) => (
+          <PaddleReactor key={entityUUID} entityUUID={entityUUID} />
+        ))}
+      </>
+    )
   }
 })
 
@@ -130,21 +141,3 @@ const PaddleReactor = ({ entityUUID }: { entityUUID: EntityUUID }) => {
 
   return null
 }
-
-const reactor = () => {
-  const paddlesState = useHookstate(getMutableState(PaddleState))
-
-  return (
-    <>
-      {paddlesState.keys.map((entityUUID: EntityUUID) => (
-        <PaddleReactor key={entityUUID} entityUUID={entityUUID} />
-      ))}
-    </>
-  )
-}
-
-export const PaddleSystem = defineSystem({
-  uuid: 'pong.paddle-system',
-  reactor,
-  insert: { after: PhysicsSystem }
-})

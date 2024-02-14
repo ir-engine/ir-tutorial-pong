@@ -22,10 +22,9 @@ import { SceneState } from '@etherealengine/engine/src/scene/Scene'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
 import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
-import { EntityNetworkStateSystem } from '@etherealengine/spatial/src/networking/state/EntityNetworkState'
 import { iterateEntityNode } from '@etherealengine/spatial/src/transform/components/EntityTree'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
-import { PaddleActions } from './PaddleSystem'
+import { PaddleActions } from './PaddleState'
 import { spawnBall } from './PongPhysicsSystem'
 
 const logger = multiLogger.child({ component: 'PongSystem' })
@@ -135,6 +134,19 @@ export const PongState = defineState({
         }
       }
     })
+  },
+
+  reactor: () => {
+    const pongState = useHookstate(getMutableState(PongState))
+    const sceneLoaded = useHookstate(getMutableState(SceneState).sceneLoaded)
+    if (!sceneLoaded.value) return null
+    return (
+      <>
+        {pongState.keys.map((gameUUID: EntityUUID) => (
+          <GameReactor key={gameUUID} gameUUID={gameUUID} />
+        ))}
+      </>
+    )
   }
 })
 
@@ -238,24 +250,3 @@ const GameReactor = (props: { gameUUID: EntityUUID }) => {
     </>
   )
 }
-
-const reactor = () => {
-  const pongState = useHookstate(getMutableState(PongState))
-  const sceneLoaded = useHookstate(getMutableState(SceneState).sceneLoaded)
-
-  if (!sceneLoaded.value) return null
-
-  return (
-    <>
-      {pongState.keys.map((gameUUID: EntityUUID) => (
-        <GameReactor key={gameUUID} gameUUID={gameUUID} />
-      ))}
-    </>
-  )
-}
-
-export const PongGameSystem = defineSystem({
-  uuid: 'ee.pong.game-system',
-  reactor,
-  insert: { after: EntityNetworkStateSystem }
-})
