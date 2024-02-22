@@ -8,7 +8,7 @@ import { PongActions } from './PongGameState'
 export const PongComponent = defineComponent({
   name: 'PongComponent',
 
-  jsonID: 'ee.pong.game',
+  jsonID: 'EE_tutorial_pong_game',
 
   reactor: () => {
     const entity = useEntityContext()

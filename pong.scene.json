@@ -488,7 +488,7 @@
       "name": "Pong Game 1",
       "components": [
         {
-          "name": "ee.pong.game",
+          "name": "EE_tutorial_pong_game",
           "props": {}
         },
         {
@@ -1124,7 +1124,7 @@
       "name": "plateA",
       "components": [
         {
-          "name": "ee.pong.plate",
+          "name": "EE_tutorial_pong_plate",
           "props": {}
         },
         {
@@ -1187,7 +1187,7 @@
       "name": "plateB",
       "components": [
         {
-          "name": "ee.pong.plate",
+          "name": "EE_tutorial_pong_plate",
           "props": {}
         },
         {
@@ -1250,7 +1250,7 @@
       "name": "plateC",
       "components": [
         {
-          "name": "ee.pong.plate",
+          "name": "EE_tutorial_pong_plate",
           "props": {}
         },
         {
@@ -1313,7 +1313,7 @@
       "name": "plateD",
       "components": [
         {
-          "name": "ee.pong.plate",
+          "name": "EE_tutorial_pong_plate",
           "props": {}
         },
         {

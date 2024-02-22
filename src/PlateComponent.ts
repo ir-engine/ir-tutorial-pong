@@ -17,7 +17,7 @@ const plateNames = ['plateA', 'plateB', 'plateC', 'plateD']
 
 export const PlateComponent = defineComponent({
   name: 'PlateComponent',
-  jsonID: 'ee.pong.plate',
+  jsonID: 'EE_tutorial_pong_plate',
 
   reactor: function () {
     /** Run player enter logic only on the server */
