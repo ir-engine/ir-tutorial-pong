@@ -50,8 +50,10 @@ export const spawnBall = (gameUUID: EntityUUID, entityUUID: EntityUUID) => {
     geometryType: 1
   })
 
+  const physicsWorld = getState(PhysicsState).physicsWorld
+
   const rigidBodyDesc = RigidBodyDesc.dynamic()
-  Physics.createRigidBody(entity, getState(PhysicsState).physicsWorld, rigidBodyDesc, [])
+  const body = Physics.createRigidBody(entity, physicsWorld, rigidBodyDesc)
 
   const rigidBody = getComponent(entity, RigidBodyComponent)
 
@@ -63,7 +65,7 @@ export const spawnBall = (gameUUID: EntityUUID, entityUUID: EntityUUID) => {
   colliderDesc.setCollisionGroups(interactionGroups)
   colliderDesc.setRestitution(1)
 
-  Physics.createColliderAndAttachToRigidBody(getState(PhysicsState).physicsWorld, colliderDesc, rigidBody.body)
+  physicsWorld.createCollider(colliderDesc, body)
 
   if (isClient) return
 
