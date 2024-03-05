@@ -16,7 +16,7 @@ import {
 } from '@etherealengine/hyperflux'
 import { NetworkTopics, WorldNetworkAction } from '@etherealengine/network'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
-import { UUIDComponent } from '@etherealengine/network'
+import { UUIDComponent } from '@etherealengine/ecs'
 import { SpawnObjectActions } from '@etherealengine/spatial/src/transform/SpawnObjectActions'
 import { iterateEntityNode } from '@etherealengine/spatial/src/transform/components/EntityTree'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
