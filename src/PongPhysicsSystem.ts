@@ -7,9 +7,9 @@ import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
 import { defineSystem, getComponent, getOptionalComponent, setComponent } from '@etherealengine/ecs'
 import { ECSState } from '@etherealengine/ecs/src/ECSState'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
+import { WorldNetworkAction } from '@etherealengine/network'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
-import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
 import { Physics } from '@etherealengine/spatial/src/physics/classes/Physics'
 import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
 import { CollisionGroups, DefaultCollisionMask } from '@etherealengine/spatial/src/physics/enums/CollisionGroups'
@@ -146,7 +146,7 @@ const gameLogic = (gameUUID: EntityUUID) => {
 
   if (vec3.y < 0.2) {
     dispatchAction(
-      WorldNetworkAction.destroyObject({
+      WorldNetworkAction.destroyEntity({
         entityUUID: game.ball.value
       })
     )

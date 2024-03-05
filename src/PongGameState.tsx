@@ -1,30 +1,29 @@
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
+import multiLogger from '@etherealengine/common/src/logger'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
+import { UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'
+import { Engine } from '@etherealengine/ecs/src/Engine'
+import { SceneState } from '@etherealengine/engine/src/scene/Scene'
 import {
   defineAction,
   defineState,
   dispatchAction,
   getMutableState,
+  matches,
+  matchesUserId,
   none,
   useHookstate
 } from '@etherealengine/hyperflux'
-import { matches, matchesEntityUUID, matchesUserId } from '@etherealengine/spatial/src/common/functions/MatchesUtils'
-import { NetworkTopics } from '@etherealengine/spatial/src/networking/classes/Network'
-import React, { useEffect } from 'react'
-
-import './PlateComponent'
-import './PongComponent'
-
-import multiLogger from '@etherealengine/common/src/logger'
-import { UndefinedEntity, defineSystem, getComponent } from '@etherealengine/ecs'
-import { Engine } from '@etherealengine/ecs/src/Engine'
-import { SceneState } from '@etherealengine/engine/src/scene/Scene'
+import { NetworkTopics, WorldNetworkAction } from '@etherealengine/network'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
-import { WorldNetworkAction } from '@etherealengine/spatial/src/networking/functions/WorldNetworkAction'
+import { SpawnObjectActions } from '@etherealengine/spatial/src/transform/SpawnObjectActions'
 import { iterateEntityNode } from '@etherealengine/spatial/src/transform/components/EntityTree'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
+import React, { useEffect } from 'react'
 import { PaddleActions } from './PaddleState'
+import './PlateComponent'
+import './PongComponent'
 import { spawnBall } from './PongPhysicsSystem'
 
 const logger = multiLogger.child({ component: 'PongSystem' })
@@ -58,7 +57,7 @@ export class PongActions {
   })
 
   static spawnBall = defineAction({
-    ...WorldNetworkAction.spawnObject.actionShape,
+    ...SpawnObjectActions.spawnObject.actionShape,
     prefab: 'ee.pong.ball',
     gameEntityUUID: matchesEntityUUID,
     $topic: NetworkTopics.world
@@ -123,7 +122,7 @@ export const PongState = defineState({
       const state = getMutableState(PongState)
       state[action.gameEntityUUID].ball.set(action.entityUUID)
     }),
-    onDestroyBall: WorldNetworkAction.destroyObject.receive((action) => {
+    onDestroyBall: WorldNetworkAction.destroyEntity.receive((action) => {
       const state = getMutableState(PongState)
       for (const gameUUID of state.keys) {
         const game = state[gameUUID as EntityUUID]
@@ -189,12 +188,12 @@ const PlayerReactor = (props: { playerIndex: number; gameUUID: EntityUUID }) => 
       logger.info(`Player ${props.playerIndex} disconnected`)
 
       dispatchAction(
-        WorldNetworkAction.destroyObject({
+        WorldNetworkAction.destroyEntity({
           entityUUID: (userID + '_paddle_left') as EntityUUID
         })
       )
       dispatchAction(
-        WorldNetworkAction.destroyObject({
+        WorldNetworkAction.destroyEntity({
           entityUUID: (userID + '_paddle_right') as EntityUUID
         })
       )
