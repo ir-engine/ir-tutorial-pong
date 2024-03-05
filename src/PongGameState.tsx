@@ -1,4 +1,4 @@
-import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
+import { EntityUUID } from '@etherealengine/ecs'
 import multiLogger from '@etherealengine/common/src/logger'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'

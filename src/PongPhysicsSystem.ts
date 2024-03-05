@@ -1,5 +1,5 @@
 import { ColliderDesc, RigidBodyDesc } from '@dimforge/rapier3d-compat'
-import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
+import { EntityUUID } from '@etherealengine/ecs'
 import { dispatchAction, getMutableState, getState } from '@etherealengine/hyperflux'
 import { PhysicsSystem } from '@etherealengine/spatial/src/physics/PhysicsModule'
 
