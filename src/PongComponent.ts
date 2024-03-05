@@ -1,7 +1,7 @@
 import { defineComponent, getComponent, useEntityContext } from '@etherealengine/ecs'
 import { dispatchAction, getState } from '@etherealengine/hyperflux'
 import { EngineState } from '@etherealengine/spatial/src/EngineState'
-import { UUIDComponent } from '@etherealengine/spatial/src/common/UUIDComponent'
+import { UUIDComponent } from '@etherealengine/network'
 import { useEffect } from 'react'
 import { PongActions } from './PongGameState'
 
