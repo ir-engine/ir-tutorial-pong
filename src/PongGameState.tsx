@@ -1,7 +1,6 @@
-import { EntityUUID } from '@etherealengine/ecs'
 import multiLogger from '@etherealengine/common/src/logger'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
-import { UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'
+import { EntityUUID, UUIDComponent, UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'
 import { Engine } from '@etherealengine/ecs/src/Engine'
 import { SceneState } from '@etherealengine/engine/src/scene/Scene'
 import {
@@ -10,13 +9,11 @@ import {
   dispatchAction,
   getMutableState,
   matches,
-  matchesUserId,
   none,
   useHookstate
 } from '@etherealengine/hyperflux'
-import { NetworkTopics, WorldNetworkAction } from '@etherealengine/network'
+import { NetworkTopics, WorldNetworkAction, matchesUserID } from '@etherealengine/network'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
-import { UUIDComponent } from '@etherealengine/ecs'
 import { SpawnObjectActions } from '@etherealengine/spatial/src/transform/SpawnObjectActions'
 import { iterateEntityNode } from '@etherealengine/spatial/src/transform/components/EntityTree'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
@@ -45,7 +42,7 @@ export class PongActions {
     type: 'ee.pong.PLAYER_CONNECTED',
     gameEntityUUID: matchesEntityUUID,
     playerIndex: matches.number,
-    playerUserID: matchesUserId.optional(),
+    playerUserID: matchesUserID.optional(),
     $topic: NetworkTopics.world
   })
 

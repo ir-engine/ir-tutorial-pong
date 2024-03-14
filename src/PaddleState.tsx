@@ -1,27 +1,22 @@
-import { EntityUUID } from '@etherealengine/ecs'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
-import {
-  defineAction,
-  defineState,
-  dispatchAction,
-  getMutableState,
-  matches,
-  matchesUserId,
-  none,
-  useHookstate
-} from '@etherealengine/hyperflux'
-import { NetworkTopics, WorldNetworkAction } from '@etherealengine/network'
-import React, { useEffect } from 'react'
-
-import { getComponent, matchesEntityUUID, setComponent } from '@etherealengine/ecs'
+import { EntityUUID, UUIDComponent, getComponent, matchesEntityUUID, setComponent } from '@etherealengine/ecs'
 import {
   GrabbableComponent,
   GrabbedComponent
 } from '@etherealengine/engine/src/interaction/components/GrabbableComponent'
 import { GrabbableNetworkAction } from '@etherealengine/engine/src/interaction/systems/GrabbableSystem'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
+import {
+  defineAction,
+  defineState,
+  dispatchAction,
+  getMutableState,
+  matches,
+  none,
+  useHookstate
+} from '@etherealengine/hyperflux'
+import { NetworkTopics, WorldNetworkAction, matchesUserID } from '@etherealengine/network'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
-import { UUIDComponent } from '@etherealengine/ecs'
 import { ColliderComponent } from '@etherealengine/spatial/src/physics/components/ColliderComponent'
 import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
 import { CollisionGroups } from '@etherealengine/spatial/src/physics/enums/CollisionGroups'
@@ -33,6 +28,7 @@ import {
   FrustumCullCameraComponent
 } from '@etherealengine/spatial/src/transform/components/DistanceComponents'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
+import React, { useEffect } from 'react'
 import { Vector3 } from 'three'
 
 export enum PongCollisionGroups {
@@ -45,7 +41,7 @@ export class PaddleActions {
     prefab: 'ee.pong.paddle',
     gameEntityUUID: matchesEntityUUID,
     handedness: matches.literals('left', 'right'),
-    owner: matchesUserId,
+    owner: matchesUserID,
     $topic: NetworkTopics.world
   })
 }
