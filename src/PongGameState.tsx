@@ -2,7 +2,7 @@ import multiLogger from '@etherealengine/common/src/logger'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { EntityUUID, UUIDComponent, UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'
 import { Engine } from '@etherealengine/ecs/src/Engine'
-import { SceneState } from '@etherealengine/engine/src/scene/Scene'
+import { GLTFSourceState } from '@etherealengine/engine/src/scene/GLTFSourceState'
 import {
   defineAction,
   defineState,
@@ -134,7 +134,7 @@ export const PongState = defineState({
 
   reactor: () => {
     const pongState = useHookstate(getMutableState(PongState))
-    const sceneLoaded = useHookstate(getMutableState(SceneState).sceneLoaded)
+    const sceneLoaded = useHookstate(getMutableState(GLTFSourceState).sceneLoaded)
     if (!sceneLoaded.value) return null
     return (
       <>
