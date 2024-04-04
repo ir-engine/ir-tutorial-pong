@@ -2,7 +2,7 @@ import multiLogger from '@etherealengine/common/src/logger'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { EntityUUID, UUIDComponent, UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'
 import { Engine } from '@etherealengine/ecs/src/Engine'
-import { SceneState } from '@etherealengine/engine/src/scene/Scene'
+import { SceneState } from '@etherealengine/engine/src/scene/SceneState'
 import {
   defineAction,
   defineState,
@@ -166,6 +166,7 @@ const PlayerReactor = (props: { playerIndex: number; gameUUID: EntityUUID }) => 
 
     dispatchAction(
       PaddleActions.spawnPaddle({
+        parentUUID: props.gameUUID,
         entityUUID: (userID + '_paddle_left') as EntityUUID,
         gameEntityUUID: props.gameUUID,
         handedness: 'left',
@@ -174,6 +175,7 @@ const PlayerReactor = (props: { playerIndex: number; gameUUID: EntityUUID }) => 
     )
     dispatchAction(
       PaddleActions.spawnPaddle({
+        parentUUID: props.gameUUID,
         entityUUID: (userID + '_paddle_right') as EntityUUID,
         gameEntityUUID: props.gameUUID,
         handedness: 'right',
