@@ -166,6 +166,7 @@ const PlayerReactor = (props: { playerIndex: number; gameUUID: EntityUUID }) => 
 
     dispatchAction(
       PaddleActions.spawnPaddle({
+        parentUUID: props.gameUUID,
         entityUUID: (userID + '_paddle_left') as EntityUUID,
         gameEntityUUID: props.gameUUID,
         handedness: 'left',
@@ -174,6 +175,7 @@ const PlayerReactor = (props: { playerIndex: number; gameUUID: EntityUUID }) => 
     )
     dispatchAction(
       PaddleActions.spawnPaddle({
+        parentUUID: props.gameUUID,
         entityUUID: (userID + '_paddle_right') as EntityUUID,
         gameEntityUUID: props.gameUUID,
         handedness: 'right',

@@ -126,6 +126,7 @@ const gameLogic = (gameUUID: EntityUUID) => {
     game.ball.set(ballID)
     dispatchAction(
       PongActions.spawnBall({
+        parentUUID: gameUUID,
         entityUUID: ballID,
         gameEntityUUID: gameUUID
       })
