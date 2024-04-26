@@ -4,7 +4,7 @@ import {
   GrabbableComponent,
   GrabbedComponent
 } from '@etherealengine/engine/src/interaction/components/GrabbableComponent'
-import { GrabbableNetworkAction } from '@etherealengine/engine/src/interaction/systems/GrabbableSystem'
+import { GrabbableNetworkAction } from '@etherealengine/engine/src/interaction/functions/grabbableFunctions'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
 import {
   defineAction,
