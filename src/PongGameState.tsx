@@ -134,8 +134,6 @@ export const PongState = defineState({
 
   reactor: () => {
     const pongState = useHookstate(getMutableState(PongState))
-    const sceneLoaded = useHookstate(getMutableState(SceneState).sceneLoaded)
-    if (!sceneLoaded.value) return null
     return (
       <>
         {pongState.keys.map((gameUUID: EntityUUID) => (
