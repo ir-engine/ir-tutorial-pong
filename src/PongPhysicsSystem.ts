@@ -1,20 +1,17 @@
-import { ColliderDesc, RigidBodyDesc } from '@dimforge/rapier3d-compat'
 import { EntityUUID } from '@etherealengine/ecs'
 import { dispatchAction, getMutableState, getState } from '@etherealengine/hyperflux'
 import { PhysicsSystem } from '@etherealengine/spatial/src/physics/PhysicsModule'
 
 import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
-import { defineSystem, getComponent, getOptionalComponent, setComponent } from '@etherealengine/ecs'
+import { UUIDComponent, defineSystem, getComponent, getOptionalComponent, setComponent } from '@etherealengine/ecs'
 import { ECSState } from '@etherealengine/ecs/src/ECSState'
 import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
 import { WorldNetworkAction } from '@etherealengine/network'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
-import { UUIDComponent } from '@etherealengine/ecs'
-import { Physics } from '@etherealengine/spatial/src/physics/classes/Physics'
+import { ColliderComponent } from '@etherealengine/spatial/src/physics/components/ColliderComponent'
 import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
 import { CollisionGroups, DefaultCollisionMask } from '@etherealengine/spatial/src/physics/enums/CollisionGroups'
-import { getInteractionGroups } from '@etherealengine/spatial/src/physics/functions/getInteractionGroups'
-import { PhysicsState } from '@etherealengine/spatial/src/physics/state/PhysicsState'
+import { BodyTypes, Shapes } from '@etherealengine/spatial/src/physics/types/PhysicsTypes'
 import { VisibleComponent } from '@etherealengine/spatial/src/renderer/components/VisibleComponent'
 import {
   DistanceFromCameraComponent,
@@ -23,8 +20,8 @@ import {
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 import { computeTransformMatrix } from '@etherealengine/spatial/src/transform/systems/TransformSystem'
 import { Matrix4, Quaternion, Vector3 } from 'three'
-import { PongCollisionGroups } from './PaddleState'
 import { PongActions, PongState } from './PongGameState'
+import { Physics } from '@etherealengine/spatial/src/physics/classes/Physics'
 
 const ballVelocity = 0.025
 
@@ -50,22 +47,16 @@ export const spawnBall = (gameUUID: EntityUUID, entityUUID: EntityUUID) => {
     geometryType: 1
   })
 
-  const physicsWorld = getState(PhysicsState).physicsWorld
-
-  const rigidBodyDesc = RigidBodyDesc.dynamic()
-  const body = Physics.createRigidBody(entity, physicsWorld, rigidBodyDesc)
-
-  const rigidBody = getComponent(entity, RigidBodyComponent)
-
-  const interactionGroups = getInteractionGroups(
-    CollisionGroups.Default,
-    DefaultCollisionMask | PongCollisionGroups.PaddleCollisionGroup
-  )
-  const colliderDesc = ColliderDesc.ball(0.1)
-  colliderDesc.setCollisionGroups(interactionGroups)
-  colliderDesc.setRestitution(1)
-
-  physicsWorld.createCollider(colliderDesc, body)
+  setComponent(entity, RigidBodyComponent, {
+    type: BodyTypes.Dynamic
+  })
+  setComponent(entity, ColliderComponent, {
+    shape: Shapes.Sphere,
+    friction: 0,
+    restitution: 1,
+    collisionLayer: CollisionGroups.Default,
+    collisionMask: DefaultCollisionMask
+  })
 
   if (isClient) return
 
@@ -82,7 +73,7 @@ export const spawnBall = (gameUUID: EntityUUID, entityUUID: EntityUUID) => {
   if (player === 2) direction.set(1, 0, 0)
   if (player === 3) direction.set(-1, 0, 0)
 
-  rigidBody.body.applyImpulse(direction.multiplyScalar(ballVelocity), true)
+  Physics.applyImpulse(entity, direction.multiplyScalar(ballVelocity))
 
   delete TransformComponent.dirtyTransforms[entity]
 }
