@@ -2,7 +2,6 @@ import multiLogger from '@etherealengine/common/src/logger'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
 import { EntityUUID, UUIDComponent, UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'
 import { Engine } from '@etherealengine/ecs/src/Engine'
-import { SceneState } from '@etherealengine/engine/src/scene/SceneState'
 import {
   defineAction,
   defineState,
