@@ -1,1 +1,23 @@
-[{"id":"664a29e1-3615-40f0-94d5-79b14a9d59d1","sid":"vrHx9sYn","hash":"63d9873822756278bc1f05ab57f5647d0c561e45373ab1b88b6a3caf61d8772a","url":"","key":"projects/ee-tutorial-pong/assets/strange.png","mimeType":"image/png","project":"ee-tutorial-pong","tags":["Image"],"createdAt":"2024-01-05T23:12:31.000Z","updatedAt":"2024-01-05T23:12:31.000Z"},{"id":"85ce4bf4-b9c9-4d6c-8296-b1958c9e0603","sid":"gIU9Fw4q","hash":"179d79c866128b03e17f944f8ae0f49828a04d97bea7b5c338c62f889dfd6c70","url":"","key":"projects/ee-tutorial-pong/assets/strange.glb","mimeType":"model/gltf-binary","project":"ee-tutorial-pong","tags":["Model"],"createdAt":"2024-01-05T23:12:31.000Z","updatedAt":"2024-01-05T23:12:31.000Z"}]
+{
+  "assets/helvetiker_regular.js": {
+    "type": "file",
+    "tags": [
+      "unknown"
+    ],
+    "dependencies": []
+  },
+  "assets/strange.png": {
+    "type": "file",
+    "tags": [
+      "Image"
+    ],
+    "dependencies": []
+  },
+  "assets/strange.glb": {
+    "type": "file",
+    "tags": [
+      "Model"
+    ],
+    "dependencies": []
+  }
+}
