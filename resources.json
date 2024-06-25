@@ -6,17 +6,17 @@
     ],
     "dependencies": []
   },
-  "assets/strange.png": {
-    "type": "file",
-    "tags": [
-      "Image"
-    ],
-    "dependencies": []
-  },
   "assets/strange.glb": {
     "type": "file",
     "tags": [
       "Model"
+    ],
+    "dependencies": []
+  },
+  "assets/strange.png": {
+    "type": "file",
+    "tags": [
+      "Image"
     ],
     "dependencies": []
   }
