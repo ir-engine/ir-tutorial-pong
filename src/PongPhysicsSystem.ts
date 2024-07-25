@@ -73,7 +73,8 @@ export const spawnBall = (gameUUID: EntityUUID, entityUUID: EntityUUID) => {
   if (player === 2) direction.set(1, 0, 0)
   if (player === 3) direction.set(-1, 0, 0)
 
-  Physics.applyImpulse(entity, direction.multiplyScalar(ballVelocity))
+  const world = Physics.getWorld(entity)!
+  Physics.applyImpulse(world, entity, direction.multiplyScalar(ballVelocity))
 
   delete TransformComponent.dirtyTransforms[entity]
 }
