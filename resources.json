@@ -7,14 +7,14 @@
     "dependencies": []
   },
   "assets/strange.glb": {
-    "type": "file",
+    "type": "asset",
     "tags": [
       "Model"
     ],
     "dependencies": []
   },
   "assets/strange.png": {
-    "type": "file",
+    "type": "asset",
     "tags": [
       "Image"
     ],
