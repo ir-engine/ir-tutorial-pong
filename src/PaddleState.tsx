@@ -1,11 +1,11 @@
-import { UserID } from '@etherealengine/common/src/schema.type.module'
-import { EntityUUID, UUIDComponent, getComponent, matchesEntityUUID, setComponent } from '@etherealengine/ecs'
+import { UserID } from '@ir-engine/common/src/schema.type.module'
+import { EntityUUID, UUIDComponent, getComponent, matchesEntityUUID, setComponent } from '@ir-engine/ecs'
 import {
   GrabbableComponent,
   GrabbedComponent
-} from '@etherealengine/engine/src/interaction/components/GrabbableComponent'
-import { GrabbableNetworkAction } from '@etherealengine/engine/src/interaction/functions/grabbableFunctions'
-import { PrimitiveGeometryComponent } from '@etherealengine/engine/src/scene/components/PrimitiveGeometryComponent'
+} from '@ir-engine/engine/src/interaction/components/GrabbableComponent'
+import { GrabbableNetworkAction } from '@ir-engine/engine/src/interaction/functions/grabbableFunctions'
+import { PrimitiveGeometryComponent } from '@ir-engine/engine/src/scene/components/PrimitiveGeometryComponent'
 import {
   defineAction,
   defineState,
@@ -14,20 +14,20 @@ import {
   matches,
   none,
   useHookstate
-} from '@etherealengine/hyperflux'
-import { NetworkTopics, WorldNetworkAction, matchesUserID } from '@etherealengine/network'
-import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
-import { ColliderComponent } from '@etherealengine/spatial/src/physics/components/ColliderComponent'
-import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
-import { CollisionGroups } from '@etherealengine/spatial/src/physics/enums/CollisionGroups'
-import { BodyTypes } from '@etherealengine/spatial/src/physics/types/PhysicsTypes'
-import { VisibleComponent } from '@etherealengine/spatial/src/renderer/components/VisibleComponent'
-import { SpawnObjectActions } from '@etherealengine/spatial/src/transform/SpawnObjectActions'
+} from '@ir-engine/hyperflux'
+import { NetworkTopics, WorldNetworkAction, matchesUserID } from '@ir-engine/network'
+import { NameComponent } from '@ir-engine/spatial/src/common/NameComponent'
+import { ColliderComponent } from '@ir-engine/spatial/src/physics/components/ColliderComponent'
+import { RigidBodyComponent } from '@ir-engine/spatial/src/physics/components/RigidBodyComponent'
+import { CollisionGroups } from '@ir-engine/spatial/src/physics/enums/CollisionGroups'
+import { BodyTypes } from '@ir-engine/spatial/src/physics/types/PhysicsTypes'
+import { VisibleComponent } from '@ir-engine/spatial/src/renderer/components/VisibleComponent'
+import { SpawnObjectActions } from '@ir-engine/spatial/src/transform/SpawnObjectActions'
 import {
   DistanceFromCameraComponent,
   FrustumCullCameraComponent
-} from '@etherealengine/spatial/src/transform/components/DistanceComponents'
-import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
+} from '@ir-engine/spatial/src/transform/components/DistanceComponents'
+import { TransformComponent } from '@ir-engine/spatial/src/transform/components/TransformComponent'
 import React, { useEffect } from 'react'
 import { Vector3 } from 'three'
 

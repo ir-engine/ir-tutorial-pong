@@ -1,7 +1,7 @@
-import multiLogger from '@etherealengine/common/src/logger'
-import { UserID } from '@etherealengine/common/src/schema.type.module'
-import { EntityUUID, UUIDComponent, UndefinedEntity, getComponent, matchesEntityUUID } from '@etherealengine/ecs'
-import { Engine } from '@etherealengine/ecs/src/Engine'
+import multiLogger from '@ir-engine/common/src/logger'
+import { UserID } from '@ir-engine/common/src/schema.type.module'
+import { EntityUUID, UUIDComponent, UndefinedEntity, getComponent, matchesEntityUUID } from '@ir-engine/ecs'
+import { Engine } from '@ir-engine/ecs/src/Engine'
 import {
   defineAction,
   defineState,
@@ -10,12 +10,12 @@ import {
   matches,
   none,
   useHookstate
-} from '@etherealengine/hyperflux'
-import { NetworkTopics, WorldNetworkAction, matchesUserID } from '@etherealengine/network'
-import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
-import { SpawnObjectActions } from '@etherealengine/spatial/src/transform/SpawnObjectActions'
-import { iterateEntityNode } from '@etherealengine/spatial/src/transform/components/EntityTree'
-import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
+} from '@ir-engine/hyperflux'
+import { NetworkTopics, WorldNetworkAction, matchesUserID } from '@ir-engine/network'
+import { NameComponent } from '@ir-engine/spatial/src/common/NameComponent'
+import { SpawnObjectActions } from '@ir-engine/spatial/src/transform/SpawnObjectActions'
+import { iterateEntityNode } from '@ir-engine/spatial/src/transform/components/EntityTree'
+import { TransformComponent } from '@ir-engine/spatial/src/transform/components/TransformComponent'
 import React, { useEffect } from 'react'
 import { PaddleActions } from './PaddleState'
 import './PlateComponent'
