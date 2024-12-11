@@ -1,7 +1,6 @@
-import { defineComponent, getComponent, useEntityContext } from '@ir-engine/ecs'
+import { UUIDComponent, defineComponent, getComponent, useEntityContext } from '@ir-engine/ecs'
 import { dispatchAction, getState } from '@ir-engine/hyperflux'
 import { EngineState } from '@ir-engine/spatial/src/EngineState'
-import { UUIDComponent } from '@ir-engine/ecs'
 import { useEffect } from 'react'
 import { PongActions } from './PongGameState'
 

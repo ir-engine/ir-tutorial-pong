@@ -8,6 +8,7 @@ import { ECSState } from '@ir-engine/ecs/src/ECSState'
 import { PrimitiveGeometryComponent } from '@ir-engine/engine/src/scene/components/PrimitiveGeometryComponent'
 import { WorldNetworkAction } from '@ir-engine/network'
 import { NameComponent } from '@ir-engine/spatial/src/common/NameComponent'
+import { Physics } from '@ir-engine/spatial/src/physics/classes/Physics'
 import { ColliderComponent } from '@ir-engine/spatial/src/physics/components/ColliderComponent'
 import { RigidBodyComponent } from '@ir-engine/spatial/src/physics/components/RigidBodyComponent'
 import { CollisionGroups, DefaultCollisionMask } from '@ir-engine/spatial/src/physics/enums/CollisionGroups'
@@ -21,7 +22,6 @@ import { TransformComponent } from '@ir-engine/spatial/src/transform/components/
 import { computeTransformMatrix } from '@ir-engine/spatial/src/transform/systems/TransformSystem'
 import { Matrix4, Quaternion, Vector3 } from 'three'
 import { PongActions, PongState } from './PongGameState'
-import { Physics } from '@ir-engine/spatial/src/physics/classes/Physics'
 
 const ballVelocity = 0.025
 

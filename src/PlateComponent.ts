@@ -4,10 +4,16 @@ import { setCallback } from '@ir-engine/spatial/src/common/CallbackComponent'
 
 import { UserID } from '@ir-engine/common/src/schema.type.module'
 import { isClient } from '@ir-engine/common/src/utils/getEnvironment'
-import { UndefinedEntity, defineComponent, getComponent, hasComponent, useEntityContext } from '@ir-engine/ecs'
+import {
+  UUIDComponent,
+  UndefinedEntity,
+  defineComponent,
+  getComponent,
+  hasComponent,
+  useEntityContext
+} from '@ir-engine/ecs'
 import { AvatarComponent } from '@ir-engine/engine/src/avatar/components/AvatarComponent'
 import { NameComponent } from '@ir-engine/spatial/src/common/NameComponent'
-import { UUIDComponent } from '@ir-engine/ecs'
 import { traverseEntityNodeParent } from '@ir-engine/spatial/src/transform/components/EntityTree'
 import { useEffect } from 'react'
 import { PongComponent } from './PongComponent'
