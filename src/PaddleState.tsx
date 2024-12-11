@@ -2,9 +2,9 @@ import { UserID } from '@ir-engine/common/src/schema.type.module'
 import { EntityUUID, UUIDComponent, getComponent, matchesEntityUUID, setComponent } from '@ir-engine/ecs'
 import {
   GrabbableComponent,
+  GrabbableNetworkAction,
   GrabbedComponent
-} from '@ir-engine/engine/src/interaction/components/GrabbableComponent'
-import { GrabbableNetworkAction } from '@ir-engine/engine/src/interaction/functions/grabbableFunctions'
+} from '@ir-engine/engine/src/grabbable/GrabbableComponent'
 import { PrimitiveGeometryComponent } from '@ir-engine/engine/src/scene/components/PrimitiveGeometryComponent'
 import {
   defineAction,
@@ -129,7 +129,7 @@ const PaddleReactor = ({ entityUUID }: { entityUUID: EntityUUID }) => {
     dispatchAction(
       GrabbableNetworkAction.setGrabbedObject({
         entityUUID,
-        grabberUserId: paddleState.owner.value as any as EntityUUID,
+        grabberEntityUUID: paddleState.owner.value as any as EntityUUID,
         grabbed: true,
         attachmentPoint: paddleState.handedness.value
       })
